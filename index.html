@@ -16,8 +16,8 @@
     <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="./icon-180.png" sizes="180x180" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=15" />
-    <script src="./app.js?v=10" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=16" />
+    <script src="./app.js?v=11" defer></script>
   </head>
   <body class="locked">
     <section class="access-gate" id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title" aria-describedby="gate-description">
@@ -25,23 +25,23 @@
         <div class="gate-welcome">
           <div class="gate-brand" aria-hidden="true">
             <span class="brand-symbol"><i></i><b>A</b></span>
-            <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL COMMAND CENTER</small></span>
+            <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL DAILY OS</small></span>
           </div>
           <div class="gate-briefing">
             <p class="micro-label">PRIVATE DASHBOARD <b>/</b> PALM COAST</p>
             <p class="gate-date" id="gate-date">LOADING TODAY…</p>
             <p class="gate-time"><strong id="gate-clock">--:--</strong><small id="gate-period">--</small></p>
             <h1 id="access-title">Welcome back,<br /><span>Alex.</span></h1>
-            <p class="gate-tagline">Everything important. Nothing noisy.</p>
+            <p class="gate-tagline">Your day, on your terms.</p>
           </div>
           <div class="gate-local-status"><i></i><span><strong>LOCAL-FIRST</strong><small>YOUR DATA STAYS ON THIS DEVICE</small></span></div>
         </div>
 
         <div class="gate-panel">
-          <div class="gate-panel-top"><span>01</span><b>PRIVATE ENTRY</b></div>
+          <div class="gate-panel-top"><span>01</span><b>PRIVATE ACCESS</b></div>
           <div class="gate-rule"><span></span><i></i></div>
           <p class="micro-label">WELCOME TO YOUR HQ</p>
-          <h2>Unlock the<br />command center.</h2>
+          <h2>Open your private<br />workspace.</h2>
           <p class="gate-copy" id="gate-description">Your password blocks casual access. Tasks and notes stay inside this browser.</p>
           <form class="access-form" id="access-form">
             <label for="access-password">PASSWORD</label>
@@ -54,7 +54,7 @@
               <p class="gate-error" id="access-error" role="alert" aria-live="polite"></p>
               <p class="caps-lock-warning" id="caps-lock-warning" hidden>CAPS LOCK IS ON</p>
             </div>
-            <button class="gate-submit" type="submit"><span>ENTER HQ</span><b>→</b></button>
+            <button class="gate-submit" type="submit"><span>OPEN WORKSPACE</span><b>→</b></button>
           </form>
           <div class="gate-assurances">
             <span><i></i> SESSION LOCKED</span>
@@ -72,128 +72,125 @@
       <header class="app-header">
         <button class="brand-lockup" data-view-target="today" aria-label="Open dashboard">
           <span class="brand-symbol"><i></i><b>A</b></span>
-          <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL COMMAND CENTER</small></span>
+          <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL DAILY OS</small></span>
         </button>
-
-        <nav class="view-switcher" aria-label="Main navigation">
-          <button class="switch active" data-view-target="today" aria-current="page"><span>01</span>Today</button>
-          <button class="switch" data-view-target="tasks"><span>02</span>Tasks</button>
-          <button class="switch" data-view-target="notes"><span>03</span>Notes</button>
-          <button class="switch" data-view-target="projects"><span>04</span>Projects</button>
-          <button class="switch" data-view-target="settings"><span>05</span>Settings</button>
-        </nav>
 
         <div class="header-status">
           <div class="clock-block"><strong id="live-clock">--:--</strong><small id="clock-period">--</small></div>
-          <span class="local-badge"><i></i>LOCAL VAULT</span>
+          <span class="local-badge"><i></i>ON DEVICE</span>
           <button class="lock-control" id="lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
         </div>
         <button class="mobile-lock-control" id="mobile-lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
       </header>
+
+      <nav class="view-switcher" aria-label="Main navigation">
+        <button class="switch active" data-view-target="today" aria-current="page"><span>01</span>Today</button>
+        <button class="switch" data-view-target="tasks"><span>02</span>Tasks</button>
+        <button class="switch" data-view-target="notes"><span>03</span>Notes</button>
+        <button class="switch" data-view-target="projects"><span>04</span>Projects</button>
+        <button class="switch" data-view-target="settings"><span>05</span>Settings</button>
+        <div class="nav-status"><i></i><span><strong>Private workspace</strong><small>Stored on this device</small></span></div>
+      </nav>
 
       <main>
         <div class="briefing-head">
           <div>
             <p class="micro-label"><span id="date-label"></span><b>/</b> PALM COAST</p>
             <h1 id="greeting">Good morning, Alex.</h1>
-            <p class="briefing-copy">Everything important. Nothing noisy.</p>
+            <p class="briefing-copy">Your day, organized around what matters.</p>
           </div>
           <button class="outline-action" id="header-note-button"><span>+</span> Quick note</button>
         </div>
 
         <section class="view active" id="view-today" aria-labelledby="greeting">
           <div class="today-layout">
-            <div class="main-deck">
-              <article class="mission-card">
-                <div class="mission-topline">
-                  <span class="status-code">DAILY MISSION</span>
-                  <span class="signal"><i></i>READY</span>
+            <article class="mission-card">
+              <div class="mission-topline">
+                <span class="status-code">TODAY’S FOCUS</span>
+                <span class="signal"><i></i>READY</span>
+              </div>
+              <div class="mission-content">
+                <div class="mission-date">
+                  <p class="mission-number" id="day-number">--</p>
+                  <p class="mission-month" id="month-label">---</p>
                 </div>
-                <div class="mission-content">
+                <div class="mission-message">
+                  <h2>Decide what wins today.</h2>
+                  <p>Choose the next move, finish it, then take the next one.</p>
+                </div>
+              </div>
+              <form class="command-input" id="today-task-form">
+                <label class="sr-only" for="today-task-input">Add a task</label>
+                <span aria-hidden="true">+</span>
+                <input id="today-task-input" maxlength="240" placeholder="What needs your attention?" autocomplete="off" />
+                <button type="submit">ADD TASK</button>
+              </form>
+            </article>
+
+            <article class="progress-module deck-panel">
+              <div class="module-top"><p class="micro-label">DAILY PROGRESS</p><span id="progress-fraction">0 / 0</span></div>
+              <div class="progress-display">
+                <div class="progress-orbit" id="progress-orbit"><strong id="progress-percent">0%</strong><small>DONE</small></div>
+                <div class="progress-copy"><strong id="remaining-count">No tasks queued</strong><p id="progress-message">Your runway is clear.</p></div>
+              </div>
+            </article>
+
+            <article class="weather-deck deck-panel" aria-labelledby="weather-title">
+              <div class="weather-overview">
+                <div class="weather-current">
+                  <span class="weather-glyph" id="weather-glyph" aria-hidden="true">•</span>
                   <div>
-                    <p class="mission-number" id="day-number">--</p>
-                    <p class="mission-month" id="month-label">---</p>
-                  </div>
-                  <div class="mission-message">
-                    <h2>Decide what wins today.</h2>
-                    <p>Capture the next move. Finish it. Then take the next one.</p>
+                    <p class="micro-label"><span id="weather-location-label">PALM COAST</span> · LIVE WEATHER</p>
+                    <h2 id="weather-title"><span id="weather-temp">--°</span><small id="weather-condition">Loading forecast…</small></h2>
                   </div>
                 </div>
-                <form class="command-input" id="today-task-form">
-                  <label class="sr-only" for="today-task-input">Add a task</label>
-                  <span aria-hidden="true">→</span>
-                  <input id="today-task-input" maxlength="240" placeholder="Enter your next move…" autocomplete="off" />
-                  <button type="submit">QUEUE TASK</button>
-                </form>
-              </article>
-
-              <article class="weather-deck deck-panel" aria-labelledby="weather-title">
-                <div class="weather-overview">
-                  <div class="weather-current">
-                    <span class="weather-glyph" id="weather-glyph" aria-hidden="true">•</span>
-                    <div>
-                      <p class="micro-label"><span id="weather-location-label">PALM COAST</span> / LIVE WEATHER</p>
-                      <h2 id="weather-title"><span id="weather-temp">--°</span><small id="weather-condition">Loading forecast…</small></h2>
-                    </div>
-                  </div>
-                  <div class="weather-meta">
-                    <span>FEELS <b id="weather-feels">--°</b></span>
-                    <span>RAIN <b id="weather-rain">--%</b></span>
-                    <span>WIND <b id="weather-wind">--</b></span>
-                  </div>
+                <div class="weather-meta">
+                  <span>FEELS <b id="weather-feels">--°</b></span>
+                  <span>RAIN <b id="weather-rain">--%</b></span>
+                  <span>WIND <b id="weather-wind">--</b></span>
                 </div>
-                <div class="forecast-strip" id="forecast-strip" aria-live="polite">
-                  <div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div>
-                </div>
-                <div class="weather-footer">
-                  <span id="weather-updated">CONNECTING TO FORECAST…</span>
-                  <div class="weather-actions"><button class="weather-radar-action" id="weather-radar" type="button"><span aria-hidden="true">◉</span> VIEW RADAR</button><button id="weather-refresh" type="button">REFRESH</button><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">SOURCE ↗</a></div>
-                </div>
-              </article>
+              </div>
+              <div class="forecast-strip" id="forecast-strip" aria-live="polite">
+                <div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div>
+              </div>
+              <div class="weather-footer">
+                <span id="weather-updated">CONNECTING TO FORECAST…</span>
+                <div class="weather-actions"><button class="weather-radar-action" id="weather-radar" type="button"><span aria-hidden="true">◉</span> RADAR</button><button id="weather-refresh" type="button">REFRESH</button><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">SOURCE ↗</a></div>
+              </div>
+            </article>
 
-              <article class="deck-panel task-deck">
-                <div class="panel-heading">
-                  <div><p class="micro-label">ACTIVE QUEUE</p><h2>Today’s lineup</h2></div>
-                  <button class="arrow-link" data-view-target="tasks">OPEN ALL <span>↗</span></button>
-                </div>
-                <div class="task-list compact-list" id="today-task-list"></div>
-              </article>
+            <article class="scratch-module deck-panel">
+              <div class="module-top"><p class="micro-label">LATEST NOTE</p><button id="scratch-add" aria-label="Create a note">+</button></div>
+              <div id="latest-note"></div>
+            </article>
 
-              <article class="deck-panel project-deck">
-                <div class="panel-heading">
-                  <div><p class="micro-label">CURRENT BUILDS</p><h2>Projects in motion</h2></div>
-                  <button class="arrow-link" data-view-target="projects">DETAILS <span>↗</span></button>
-                </div>
-                <div class="project-ribbon" id="project-ribbon"></div>
-              </article>
-            </div>
+            <article class="deck-panel task-deck">
+              <div class="panel-heading">
+                <div><p class="micro-label">ACTIVE QUEUE</p><h2>Today’s lineup</h2></div>
+                <button class="arrow-link" data-view-target="tasks">VIEW ALL <span>↗</span></button>
+              </div>
+              <div class="task-list compact-list" id="today-task-list"></div>
+            </article>
 
-            <aside class="side-deck">
-              <article class="progress-module deck-panel">
-                <div class="module-top"><p class="micro-label">DAILY OUTPUT</p><span id="progress-fraction">0 / 0</span></div>
-                <div class="progress-display">
-                  <div class="progress-orbit" id="progress-orbit"><strong id="progress-percent">0%</strong><small>COMPLETE</small></div>
-                  <div class="progress-copy"><strong id="remaining-count">No tasks queued</strong><p id="progress-message">Your runway is clear.</p></div>
-                </div>
-              </article>
+            <article class="link-module deck-panel">
+              <div class="module-top"><p class="micro-label">QUICK LINKS</p><span>04 LINKS</span></div>
+              <div class="launch-grid">
+                <a href="https://github.com/alexthezero" target="_blank" rel="noreferrer"><span>GH</span><strong>GitHub</strong><b>↗</b></a>
+                <a href="https://ironnestco.etsy.com" target="_blank" rel="noreferrer"><span>IN</span><strong>IronNest</strong><b>↗</b></a>
+                <a href="https://chatgpt.com" target="_blank" rel="noreferrer"><span>AI</span><strong>ChatGPT</strong><b>↗</b></a>
+                <a href="https://www.weather.gov/" target="_blank" rel="noreferrer"><span>WX</span><strong>Weather</strong><b>↗</b></a>
+              </div>
+            </article>
 
-              <article class="scratch-module deck-panel">
-                <div class="module-top"><p class="micro-label">LATEST NOTE</p><button id="scratch-add" aria-label="Create a note">+</button></div>
-                <div id="latest-note"></div>
-              </article>
+            <article class="deck-panel project-deck">
+              <div class="panel-heading">
+                <div><p class="micro-label">CURRENT BUILDS</p><h2>Projects in motion</h2></div>
+                <button class="arrow-link" data-view-target="projects">VIEW ALL <span>↗</span></button>
+              </div>
+              <div class="project-ribbon" id="project-ribbon"></div>
+            </article>
 
-              <article class="link-module deck-panel">
-                <div class="module-top"><p class="micro-label">QUICK LAUNCH</p><span>04 LINKS</span></div>
-                <div class="launch-grid">
-                  <a href="https://github.com/alexthezero" target="_blank" rel="noreferrer"><span>GH</span><strong>GitHub</strong><b>↗</b></a>
-                  <a href="https://ironnestco.etsy.com" target="_blank" rel="noreferrer"><span>IN</span><strong>IronNest</strong><b>↗</b></a>
-                  <a href="https://chatgpt.com" target="_blank" rel="noreferrer"><span>AI</span><strong>ChatGPT</strong><b>↗</b></a>
-                  <a href="https://www.weather.gov/" target="_blank" rel="noreferrer"><span>WX</span><strong>Weather</strong><b>↗</b></a>
-                </div>
-              </article>
-
-              <div class="privacy-line"><i></i><span><strong>PRIVATE ON THIS DEVICE</strong>Your entries never leave this browser.</span></div>
-            </aside>
+            <div class="privacy-line"><i></i><span><strong>PRIVATE ON THIS DEVICE</strong>Your entries never leave this browser.</span></div>
           </div>
         </section>
 
@@ -318,7 +315,7 @@
         </section>
       </main>
 
-      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V2.7.2</b></footer>
+      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V3.0.0</b></footer>
 
       <section class="radar-modal" id="radar-modal" hidden>
         <div class="radar-backdrop" data-radar-close aria-hidden="true"></div>

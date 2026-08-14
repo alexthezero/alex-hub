@@ -126,7 +126,7 @@
       error.textContent = "SECURE CHECK UNAVAILABLE";
     } finally {
       submitButton.disabled = false;
-      submitLabel.textContent = "ENTER HQ";
+      submitLabel.textContent = "OPEN WORKSPACE";
     }
     passwordInput.value = "";
     $(".gate-panel").classList.remove("denied");
@@ -699,7 +699,7 @@
   }
 
   function setDashboardInert(inert) {
-    [$(".app-header"), $("main"), $(".app-footer"), $(".action-toast")].forEach((element) => {
+    [$(".app-header"), $(".view-switcher"), $("main"), $(".app-footer"), $(".action-toast")].forEach((element) => {
       if (element) element.inert = inert;
     });
   }
