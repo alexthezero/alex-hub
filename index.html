@@ -16,8 +16,8 @@
     <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="./icon-180.png" sizes="180x180" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=11" />
-    <script src="./app.js?v=8" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=12" />
+    <script src="./app.js?v=9" defer></script>
   </head>
   <body class="locked">
     <section class="access-gate" id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
@@ -110,7 +110,7 @@
                   <div class="weather-current">
                     <span class="weather-glyph" id="weather-glyph" aria-hidden="true">•</span>
                     <div>
-                      <p class="micro-label">PALM COAST / LIVE WEATHER</p>
+                      <p class="micro-label"><span id="weather-location-label">PALM COAST</span> / LIVE WEATHER</p>
                       <h2 id="weather-title"><span id="weather-temp">--°</span><small id="weather-condition">Loading forecast…</small></h2>
                     </div>
                   </div>
@@ -125,36 +125,7 @@
                 </div>
                 <div class="weather-footer">
                   <span id="weather-updated">CONNECTING TO FORECAST…</span>
-                  <div class="weather-actions"><button id="weather-refresh" type="button">REFRESH</button><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">SOURCE ↗</a></div>
-                </div>
-              </article>
-
-              <article class="radar-deck deck-panel" aria-labelledby="radar-title">
-                <div class="radar-heading">
-                  <div><p class="micro-label">LIVE PRECIPITATION</p><h2 id="radar-title">Radar around you.</h2></div>
-                  <div class="radar-heading-actions">
-                    <span class="radar-location-label" id="radar-location-label"><i></i> PALM COAST FALLBACK</span>
-                    <button id="radar-location" type="button">USE MY LOCATION</button>
-                  </div>
-                </div>
-                <div class="radar-map-shell">
-                  <div class="radar-map" id="radar-map" role="region" aria-label="Animated precipitation radar centered on Palm Coast">
-                    <div class="radar-tile-layer radar-base-layer" id="radar-base-layer" aria-hidden="true"></div>
-                    <div class="radar-tile-layer radar-overlay-layer" id="radar-overlay-layer" aria-hidden="true"></div>
-                    <span class="radar-center-marker" aria-hidden="true"><i></i></span>
-                    <div class="radar-zoom-controls" aria-label="Radar zoom controls"><button id="radar-zoom-in" type="button" aria-label="Zoom radar in">+</button><button id="radar-zoom-out" type="button" aria-label="Zoom radar out">−</button></div>
-                  </div>
-                  <div class="radar-state" id="radar-state" role="status">CONNECTING TO RADAR…</div>
-                </div>
-                <div class="radar-timeline">
-                  <button id="radar-play" type="button" disabled aria-label="Play radar animation">PLAY</button>
-                  <label class="sr-only" for="radar-frame">Radar time</label>
-                  <input id="radar-frame" type="range" min="0" max="0" value="0" disabled />
-                  <strong id="radar-time">LATEST</strong>
-                </div>
-                <div class="radar-footer">
-                  <span id="radar-status">LOCATION IS USED FOR THIS SESSION ONLY</span>
-                  <span><a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RADAR: RAINVIEWER ↗</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">MAP: OSM ↗</a></span>
+                  <div class="weather-actions"><button class="weather-radar-action" id="weather-radar" type="button"><span aria-hidden="true">◉</span> VIEW RADAR</button><button id="weather-refresh" type="button">REFRESH</button><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">SOURCE ↗</a></div>
                 </div>
               </article>
 
@@ -325,7 +296,44 @@
         </section>
       </main>
 
-      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V2.5</b></footer>
+      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V2.6</b></footer>
+
+      <section class="radar-modal" id="radar-modal" hidden>
+        <div class="radar-backdrop" data-radar-close aria-hidden="true"></div>
+        <div class="radar-dialog" role="dialog" aria-modal="true" aria-labelledby="radar-title" aria-describedby="radar-description" tabindex="-1">
+          <button class="radar-close" id="radar-close" type="button" aria-label="Close weather radar">×</button>
+          <div class="radar-heading">
+            <div>
+              <p class="micro-label">LIVE PRECIPITATION / PAST 70 MINUTES</p>
+              <h2 id="radar-title">Radar around you.</h2>
+              <p class="radar-description" id="radar-description">Open a local view when you need it, without crowding your daily dashboard.</p>
+            </div>
+            <div class="radar-heading-actions">
+              <span class="radar-location-label" id="radar-location-label"><i></i> PALM COAST FALLBACK</span>
+              <button id="radar-location" type="button">USE MY LOCATION</button>
+            </div>
+          </div>
+          <div class="radar-map-shell">
+            <div class="radar-map" id="radar-map" role="region" aria-label="Animated precipitation radar centered on Palm Coast">
+              <div class="radar-tile-layer radar-base-layer" id="radar-base-layer" aria-hidden="true"></div>
+              <div class="radar-tile-layer radar-overlay-layer" id="radar-overlay-layer" aria-hidden="true"></div>
+              <span class="radar-center-marker" aria-hidden="true"><i></i></span>
+              <div class="radar-zoom-controls" aria-label="Radar zoom controls"><button id="radar-zoom-in" type="button" aria-label="Zoom radar in">+</button><button id="radar-zoom-out" type="button" aria-label="Zoom radar out">−</button></div>
+            </div>
+            <div class="radar-state" id="radar-state" role="status">CONNECTING TO RADAR…</div>
+          </div>
+          <div class="radar-timeline">
+            <button id="radar-play" type="button" disabled aria-label="Play radar animation">PLAY</button>
+            <label class="sr-only" for="radar-frame">Radar time</label>
+            <input id="radar-frame" type="range" min="0" max="0" value="0" disabled />
+            <strong id="radar-time">LATEST</strong>
+          </div>
+          <div class="radar-footer">
+            <span id="radar-status">USE MY LOCATION FOR THE LOCAL VIEW · NOT SAVED</span>
+            <span><a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RADAR: RAINVIEWER ↗</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">MAP: OSM ↗</a></span>
+          </div>
+        </div>
+      </section>
       <div class="action-toast" id="action-toast" hidden role="region" aria-live="polite" aria-label="Recent action">
         <span id="toast-message"></span><div><button id="toast-undo" type="button">UNDO</button><button id="toast-dismiss" type="button" aria-label="Dismiss notification">×</button></div>
       </div>

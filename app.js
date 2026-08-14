@@ -4,12 +4,13 @@
   const TASKS_KEY = "alexHub.tasks.v1";
   const NOTES_KEY = "alexHub.notes.v1";
   const PROJECTS_KEY = "alexHub.projects.v1";
-  const WEATHER_KEY = "alexHub.weather.v3";
+  const WEATHER_KEY = "alexHub.weather.v4";
   const AUTH_KEY = "alexHQ.auth.v1";
   const LAST_BACKUP_KEY = "alexHQ.lastBackup.v1";
   const PASSWORD_HASH = "16a0b62c9aeb7ec7da8e886b84d7dfa38f73e711e83d97a1ebc2ba358c834c50";
   const IDLE_LOCK_MS = 30 * 60 * 1000;
   const VIEWS = ["today", "tasks", "notes", "projects", "settings"];
+  const DEFAULT_LOCATION = Object.freeze({ latitude: 29.5845, longitude: -81.2079, label: "PALM COAST" });
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const starterTasks = [
     { id: id(), title: "Review this week’s priorities", category: "Personal", completed: false },
@@ -74,14 +75,11 @@
     $("#access-error").textContent = "";
     lastActivity = Date.now();
     armIdleLock();
-    setTimeout(async () => {
-      await initRadar();
-      if (!radarLocateRequested) locateRadar();
-    }, 0);
   }
 
   function lockApp() {
     clearTimeout(idleTimer);
+    closeRadar(false);
     setSessionAccess(false);
     document.body.classList.add("locked");
     $("#access-gate").removeAttribute("aria-hidden");
@@ -137,7 +135,10 @@
   let editingNoteId = null;
   let selectedNoteColor = "ember";
   let pendingUndo = null;
-  let radarCenter = { latitude: 29.5845, longitude: -81.2079 };
+  let weatherCenter = { ...DEFAULT_LOCATION };
+  let weatherSessionCache = null;
+  let weatherRequestId = 0;
+  let radarCenter = { latitude: DEFAULT_LOCATION.latitude, longitude: DEFAULT_LOCATION.longitude };
   let radarZoom = 7;
   let radarFrames = [];
   let radarFrameIndex = 0;
@@ -145,6 +146,7 @@
   let radarHost = "";
   let radarInitialized = false;
   let radarLocateRequested = false;
+  let radarLastFocus = null;
 
   function announce(message = "ALL CHANGES SAVED LOCALLY") {
     const status = $("#save-status");
@@ -189,8 +191,7 @@
     });
     if (view === "notes") renderNotes();
     if (view === "settings") renderSettings();
-    if (view === "today" && radarInitialized) requestAnimationFrame(renderRadarMap);
-    if (view !== "today" && radarTimer) setRadarPlaying(false);
+    if (!$("#radar-modal").hidden) closeRadar(false);
     if (updateHash) history.replaceState(null, "", `#${view}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -432,6 +433,7 @@
     const current = weather.current || {};
     const periods = Array.isArray(weather.periods) ? weather.periods.slice(0, 4) : [];
     const rain = current.probabilityOfPrecipitation?.value;
+    $("#weather-location-label").textContent = weather.location?.label || weatherCenter.label;
     $("#weather-glyph").innerHTML = weatherIcon(current.shortForecast, current.isDaytime);
     $("#weather-temp").textContent = Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : "--°";
     $("#weather-condition").textContent = current.shortForecast || "Forecast available";
@@ -454,15 +456,26 @@
 
   async function loadWeather(force = false) {
     const refreshButton = $("#weather-refresh");
+    const requestId = ++weatherRequestId;
+    const requestedLocation = { ...weatherCenter };
     refreshButton.disabled = true;
     refreshButton.textContent = "UPDATING…";
     let cached;
     try {
-      cached = JSON.parse(localStorage.getItem(WEATHER_KEY) || "null");
+      cached = requestedLocation.label === "CURRENT LOCATION"
+        ? weatherSessionCache
+        : JSON.parse(localStorage.getItem(WEATHER_KEY) || "null");
+      const cachedLocationMatches = Number.isFinite(cached?.location?.latitude)
+        && Number.isFinite(cached?.location?.longitude)
+        && Math.abs(cached.location.latitude - requestedLocation.latitude) < .01
+        && Math.abs(cached.location.longitude - requestedLocation.longitude) < .01;
+      if (!cachedLocationMatches) cached = null;
       if (!force && Number.isFinite(cached?.current?.apparentTemperature) && cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < 20 * 60 * 1000) {
         renderWeather(cached);
-        refreshButton.disabled = false;
-        refreshButton.textContent = "REFRESH";
+        if (requestId === weatherRequestId) {
+          refreshButton.disabled = false;
+          refreshButton.textContent = "REFRESH";
+        }
         return;
       }
       if (cached) renderWeather(cached);
@@ -474,19 +487,20 @@
     const timer = setTimeout(() => controller.abort(), 12_000);
     try {
       const params = new URLSearchParams({
-        latitude: "29.5845",
-        longitude: "-81.2079",
+        latitude: String(requestedLocation.latitude),
+        longitude: String(requestedLocation.longitude),
         current: "temperature_2m,apparent_temperature,is_day,precipitation_probability,weather_code,wind_speed_10m",
         daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
         temperature_unit: "fahrenheit",
         wind_speed_unit: "mph",
         precipitation_unit: "inch",
-        timezone: "America/New_York",
+        timezone: "auto",
         forecast_days: "4",
       });
       const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal: controller.signal });
       if (!response.ok) throw new Error("Forecast unavailable");
       const forecast = await response.json();
+      if (requestId !== weatherRequestId) return;
       const currentCode = Number(forecast.current?.weather_code);
       const currentLabel = weatherCodeLabel(currentCode);
       const weather = {
@@ -512,9 +526,13 @@
           };
         }),
         fetchedAt: new Date().toISOString(),
+        location: requestedLocation,
       };
       renderWeather(weather);
-      try { localStorage.setItem(WEATHER_KEY, JSON.stringify(weather)); } catch { /* weather can work without caching */ }
+      if (requestedLocation.label === "CURRENT LOCATION") weatherSessionCache = weather;
+      else {
+        try { localStorage.setItem(WEATHER_KEY, JSON.stringify(weather)); } catch { /* weather can work without caching */ }
+      }
     } catch {
       if (!cached) {
         $("#weather-condition").textContent = "Forecast unavailable";
@@ -523,8 +541,10 @@
       }
     } finally {
       clearTimeout(timer);
-      refreshButton.disabled = false;
-      refreshButton.textContent = "REFRESH";
+      if (requestId === weatherRequestId) {
+        refreshButton.disabled = false;
+        refreshButton.textContent = "REFRESH";
+      }
     }
   }
 
@@ -647,6 +667,74 @@
     }
   }
 
+  function setDashboardInert(inert) {
+    [$(".app-header"), $("main"), $(".app-footer"), $(".action-toast")].forEach((element) => {
+      if (element) element.inert = inert;
+    });
+  }
+
+  async function useGrantedRadarLocation() {
+    if (radarLocateRequested || !navigator.permissions?.query) return;
+    try {
+      const permission = await navigator.permissions.query({ name: "geolocation" });
+      if (permission.state === "granted") locateRadar();
+      else if (permission.state === "denied") {
+        $("#radar-location-label").innerHTML = "<i></i> LOCATION PERMISSION OFF";
+        $("#radar-status").textContent = "SHOWING PALM COAST · ENABLE LOCATION IN BROWSER SETTINGS";
+        $("#radar-location").textContent = "TRY LOCATION";
+      }
+    } catch { /* location stays opt-in when permission state is unavailable */ }
+  }
+
+  async function openRadar() {
+    const modal = $("#radar-modal");
+    if (!modal.hidden || document.body.classList.contains("locked")) return;
+    radarLastFocus = document.activeElement;
+    modal.hidden = false;
+    document.body.classList.add("radar-open");
+    setDashboardInert(true);
+    requestAnimationFrame(() => {
+      $("#radar-close").focus();
+      renderRadarMap();
+    });
+    await initRadar();
+    if (!modal.hidden) useGrantedRadarLocation();
+  }
+
+  function closeRadar(restoreFocus = true) {
+    const modal = $("#radar-modal");
+    if (!modal || modal.hidden) return;
+    setRadarPlaying(false);
+    modal.hidden = true;
+    document.body.classList.remove("radar-open");
+    setDashboardInert(false);
+    if (restoreFocus && radarLastFocus instanceof HTMLElement) radarLastFocus.focus();
+    radarLastFocus = null;
+  }
+
+  function handleRadarKeys(event) {
+    const modal = $("#radar-modal");
+    if (modal.hidden) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeRadar();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = $$('button:not([disabled]), input:not([disabled]), a[href]', $(".radar-dialog"))
+      .filter((element) => element.getClientRects().length);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   function locateRadar(force = false) {
     if (!navigator.geolocation || !radarInitialized) {
       $("#radar-location-label").innerHTML = "<i></i> PALM COAST FALLBACK";
@@ -661,20 +749,23 @@
     $("#radar-status").textContent = "REQUESTING THIS DEVICE’S CURRENT LOCATION…";
     navigator.geolocation.getCurrentPosition((position) => {
       radarCenter = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+      weatherCenter = { latitude: position.coords.latitude, longitude: position.coords.longitude, label: "CURRENT LOCATION" };
       radarZoom = 7;
       renderRadarMap();
       $("#radar-location-label").innerHTML = "<i></i> CURRENT LOCATION";
+      $("#weather-location-label").textContent = weatherCenter.label;
       $("#radar-map").setAttribute("aria-label", "Animated precipitation radar centered on your current location");
       $("#radar-status").textContent = "CENTERED ON YOUR CURRENT LOCATION · NOT SAVED";
       button.disabled = false;
       button.textContent = "UPDATE LOCATION";
+      loadWeather(true);
     }, (error) => {
       const message = error.code === 1 ? "LOCATION PERMISSION OFF" : "LOCATION UNAVAILABLE";
       $("#radar-location-label").innerHTML = `<i></i> ${message}`;
       $("#radar-status").textContent = "SHOWING PALM COAST · TAP TO TRY LOCATION AGAIN";
       button.disabled = false;
       button.textContent = "TRY LOCATION";
-    }, { enableHighAccuracy: true, maximumAge: 0, timeout: 12000 });
+    }, { enableHighAccuracy: false, maximumAge: 300000, timeout: 12000 });
   }
 
   async function renderStorageStatus() {
@@ -859,6 +950,9 @@
   });
 
   $("#weather-refresh").addEventListener("click", () => loadWeather(true));
+  $("#weather-radar").addEventListener("click", openRadar);
+  $("#radar-close").addEventListener("click", () => closeRadar());
+  $(".radar-backdrop").addEventListener("click", () => closeRadar());
   $("#radar-location").addEventListener("click", () => locateRadar(true));
   $("#radar-zoom-in").addEventListener("click", () => changeRadarZoom(1));
   $("#radar-zoom-out").addEventListener("click", () => changeRadarZoom(-1));
@@ -870,10 +964,11 @@
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible" && radarTimer) setRadarPlaying(false);
   });
+  document.addEventListener("keydown", handleRadarKeys);
   window.addEventListener("resize", () => {
     clearTimeout(renderRadarMap.resizeTimer);
     renderRadarMap.resizeTimer = setTimeout(() => {
-      if (radarInitialized) renderRadarMap();
+      if (radarInitialized && !$("#radar-modal").hidden) renderRadarMap();
     }, 180);
   });
   $("#toast-undo").addEventListener("click", () => {
