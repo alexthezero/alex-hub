@@ -4,7 +4,7 @@
   const TASKS_KEY = "alexHub.tasks.v1";
   const NOTES_KEY = "alexHub.notes.v1";
   const PROJECTS_KEY = "alexHub.projects.v1";
-  const WEATHER_KEY = "alexHub.weather.v2";
+  const WEATHER_KEY = "alexHub.weather.v3";
   const AUTH_KEY = "alexHQ.auth.v1";
   const LAST_BACKUP_KEY = "alexHQ.lastBackup.v1";
   const PASSWORD_HASH = "16a0b62c9aeb7ec7da8e886b84d7dfa38f73e711e83d97a1ebc2ba358c834c50";
@@ -385,15 +385,19 @@
     renderSettings();
   }
 
-  function weatherSymbol(forecast = "", daytime = true) {
+  function weatherIcon(forecast = "", daytime = true) {
     const text = forecast.toLowerCase();
-    if (text.includes("thunder")) return "ϟ";
-    if (text.includes("snow") || text.includes("sleet") || text.includes("ice")) return "✻";
-    if (text.includes("rain") || text.includes("shower") || text.includes("drizzle")) return "☂";
-    if (text.includes("fog") || text.includes("mist")) return "≋";
-    if (text.includes("partly") || text.includes("mostly sunny") || text.includes("mostly clear")) return daytime ? "◒" : "◐";
-    if (text.includes("cloud") || text.includes("overcast")) return "●";
-    return daytime ? "☀" : "☾";
+    const open = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">';
+    const close = "</svg>";
+    const cloud = '<path d="M7 18h9.5a4 4 0 0 0 .4-8A5.5 5.5 0 0 0 6.5 9 4.5 4.5 0 0 0 7 18Z"/>';
+    if (text.includes("thunder")) return `${open}${cloud}<path d="m13 13-2 4h2l-1 4 4-6h-2l1-2"/>${close}`;
+    if (text.includes("snow") || text.includes("sleet") || text.includes("ice")) return `${open}${cloud}<path d="M9 20v2m-1-1h2m5-1v2m-1-1h2"/>${close}`;
+    if (text.includes("rain") || text.includes("shower") || text.includes("drizzle")) return `${open}${cloud}<path d="m9 20-1 2m5-2-1 2m5-2-1 2"/>${close}`;
+    if (text.includes("fog") || text.includes("mist")) return `${open}<path d="M4 8h16M2 12h17M5 16h17"/>${close}`;
+    if (text.includes("partly") || text.includes("mostly sunny") || text.includes("mostly clear")) return `${open}<circle cx="8" cy="8" r="3"/><path d="M8 2v2M2 8h2m.5-3.5L6 6"/>${cloud}${close}`;
+    if (text.includes("cloud") || text.includes("overcast")) return `${open}${cloud}${close}`;
+    if (!daytime) return `${open}<path d="M20 15.5A8 8 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/>${close}`;
+    return `${open}<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>${close}`;
   }
 
   function weatherCodeLabel(code) {
@@ -414,17 +418,18 @@
     const current = weather.current || {};
     const periods = Array.isArray(weather.periods) ? weather.periods.slice(0, 4) : [];
     const rain = current.probabilityOfPrecipitation?.value;
-    $("#weather-glyph").textContent = weatherSymbol(current.shortForecast, current.isDaytime);
+    $("#weather-glyph").innerHTML = weatherIcon(current.shortForecast, current.isDaytime);
     $("#weather-temp").textContent = Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : "--°";
     $("#weather-condition").textContent = current.shortForecast || "Forecast available";
-    $("#weather-feels").textContent = Number.isFinite(current.apparentTemperature) ? `${Math.round(current.apparentTemperature)}°` : "--°";
+    const apparentTemperature = Number.isFinite(current.apparentTemperature) ? current.apparentTemperature : current.temperature;
+    $("#weather-feels").textContent = Number.isFinite(apparentTemperature) ? `${Math.round(apparentTemperature)}°` : "--°";
     $("#weather-rain").textContent = `${Number.isFinite(rain) ? Math.round(rain) : 0}%`;
     $("#weather-wind").textContent = current.windSpeed || "CALM";
     $("#forecast-strip").innerHTML = periods.length ? periods.map((period) => {
       const periodRain = period.probabilityOfPrecipitation?.value;
       const label = period.name === "This Afternoon" ? "Today" : period.name;
       return `<article class="forecast-period">
-        <span aria-hidden="true">${weatherSymbol(period.shortForecast, period.isDaytime)}</span>
+        <span aria-hidden="true">${weatherIcon(period.shortForecast, period.isDaytime)}</span>
         <div><strong>${esc(label)}</strong><small>${Number.isFinite(periodRain) ? `${Math.round(periodRain)}% RAIN` : esc(period.shortForecast || "FORECAST")}</small></div>
         <b>${period.temperatureText ? esc(period.temperatureText) : Number.isFinite(period.temperature) ? `${Math.round(period.temperature)}°` : "--"}</b>
       </article>`;
@@ -440,7 +445,7 @@
     let cached;
     try {
       cached = JSON.parse(localStorage.getItem(WEATHER_KEY) || "null");
-      if (!force && cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < 20 * 60 * 1000) {
+      if (!force && Number.isFinite(cached?.current?.apparentTemperature) && cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < 20 * 60 * 1000) {
         renderWeather(cached);
         refreshButton.disabled = false;
         refreshButton.textContent = "REFRESH";

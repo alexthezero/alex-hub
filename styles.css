@@ -144,6 +144,7 @@ main { padding: 52px 0 64px; }
 .weather-overview { align-items: center; display: flex; gap: 24px; justify-content: space-between; position: relative; z-index: 1; }
 .weather-current { align-items: center; display: flex; gap: 16px; min-width: 0; }
 .weather-glyph { align-items: center; background: linear-gradient(145deg,#20272a,#111517); border: 1px solid #344044; border-radius: 15px; color: var(--cyan); display: flex; flex: 0 0 auto; font-size: 27px; height: 58px; justify-content: center; text-shadow: 0 0 18px rgba(85,217,202,.45); width: 58px; }
+.weather-glyph svg { height: 30px; width: 30px; }
 .weather-current h2 { align-items: baseline; display: flex; gap: 13px; margin: 7px 0 0; }
 .weather-current h2 > span { font-family: var(--mono); font-size: 34px; letter-spacing: -.08em; }
 .weather-current h2 small { color: #9aa1a5; font-size: 15px; font-weight: 570; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -153,6 +154,7 @@ main { padding: 52px 0 64px; }
 .forecast-strip { display: grid; gap: 8px; grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: 20px; position: relative; z-index: 1; }
 .forecast-period { align-items: center; background: rgba(9,12,13,.72); border: 1px solid #252d31; border-radius: 13px; display: grid; gap: 5px; grid-template-columns: auto 1fr auto; min-width: 0; padding: 10px 12px; }
 .forecast-period > span { align-items: center; background: #1b2225; border-radius: 8px; color: var(--cyan); display: flex; font-size: 15px; height: 31px; justify-content: center; width: 31px; }
+.forecast-period > span svg { height: 18px; width: 18px; }
 .forecast-period > div { min-width: 0; }
 .forecast-period strong, .forecast-period small { display: block; }
 .forecast-period strong { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -433,22 +435,25 @@ main { padding: 52px 0 64px; }
   .command-input input { padding: 11px 0; }
   .command-input button { grid-column: 1/-1; }
   .weather-deck { padding: 19px 16px; }
-  .weather-overview { align-items: flex-start; gap: 14px; }
+  .weather-overview { align-items: stretch; display: grid; gap: 15px; }
   .weather-current { gap: 11px; }
   .weather-glyph { border-radius: 12px; font-size: 22px; height: 47px; width: 47px; }
-  .weather-current h2 { align-items: flex-start; flex-direction: column; gap: 2px; margin-top: 5px; }
+  .weather-glyph svg { height: 25px; width: 25px; }
+  .weather-current .micro-label { font-size: 12px; letter-spacing: .1em; white-space: nowrap; }
+  .weather-current h2 { align-items: baseline; flex-direction: row; gap: 12px; margin-top: 5px; }
   .weather-current h2 > span { font-size: 30px; }
-  .weather-current h2 small { font-size: 14px; max-width: 145px; }
-  .weather-meta { display: grid; gap: 5px; }
-  .weather-meta > span { min-width: 72px; padding: 8px 9px; }
-  .forecast-strip { gap: 5px; margin-top: 15px; }
+  .weather-current h2 small { font-size: 14px; max-width: 170px; }
+  .weather-meta { display: grid; gap: 7px; grid-template-columns: repeat(3,minmax(0,1fr)); width: 100%; }
+  .weather-meta > span { min-width: 0; padding: 10px 11px; }
+  .weather-meta b { font-size: 14px; }
+  .forecast-strip { gap: 6px; margin-top: 14px; }
   .forecast-period { display: flex; flex-direction: column; gap: 4px; padding: 8px 4px; text-align: center; }
   .forecast-period > span { font-size: 13px; height: 27px; width: 27px; }
   .forecast-period strong { font-size: 12px; max-width: 68px; }
   .forecast-period small { display: none; }
   .forecast-period > b { font-size: 13px; }
   .forecast-loading { height: 78px; }
-  .weather-footer { align-items: flex-end; gap: 10px; }
+  .weather-footer { align-items: center; gap: 10px; margin-top: 10px; }
   .weather-footer > span { line-height: 1.45; }
   .weather-footer a { display: none; }
   .weather-actions button { min-height: 44px; }
