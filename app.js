@@ -137,9 +137,8 @@
   let editingNoteId = null;
   let selectedNoteColor = "ember";
   let pendingUndo = null;
-  let radarMap = null;
-  let radarLayer = null;
-  let radarMarker = null;
+  let radarCenter = { latitude: 29.5845, longitude: -81.2079 };
+  let radarZoom = 7;
   let radarFrames = [];
   let radarFrameIndex = 0;
   let radarTimer = null;
@@ -190,7 +189,7 @@
     });
     if (view === "notes") renderNotes();
     if (view === "settings") renderSettings();
-    if (view === "today" && radarMap) requestAnimationFrame(() => radarMap.invalidateSize());
+    if (view === "today" && radarInitialized) requestAnimationFrame(renderRadarMap);
     if (view !== "today" && radarTimer) setRadarPlaying(false);
     if (updateHash) history.replaceState(null, "", `#${view}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -533,21 +532,75 @@
     return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(timestamp * 1000)).toUpperCase();
   }
 
+  function radarTileLayout() {
+    const map = $("#radar-map");
+    const width = map.clientWidth || 860;
+    const height = map.clientHeight || 360;
+    const latitude = Math.min(85.0511, Math.max(-85.0511, radarCenter.latitude));
+    const latitudeRadians = latitude * Math.PI / 180;
+    const scale = 2 ** radarZoom;
+    const centerX = ((radarCenter.longitude + 180) / 360) * scale * 256;
+    const centerY = ((1 - Math.asinh(Math.tan(latitudeRadians)) / Math.PI) / 2) * scale * 256;
+    const centerTileX = Math.floor(centerX / 256);
+    const centerTileY = Math.floor(centerY / 256);
+    const radiusX = Math.ceil(width / 512);
+    const radiusY = Math.ceil(height / 512);
+    const tiles = [];
+    for (let offsetY = -radiusY; offsetY <= radiusY; offsetY += 1) {
+      const rawY = centerTileY + offsetY;
+      if (rawY < 0 || rawY >= scale) continue;
+      for (let offsetX = -radiusX; offsetX <= radiusX; offsetX += 1) {
+        const rawX = centerTileX + offsetX;
+        tiles.push({
+          left: Math.round(rawX * 256 - centerX + width / 2),
+          top: Math.round(rawY * 256 - centerY + height / 2),
+          x: ((rawX % scale) + scale) % scale,
+          y: rawY,
+        });
+      }
+    }
+    return tiles;
+  }
+
+  function fillRadarTiles(layer, urlForTile) {
+    const fragment = document.createDocumentFragment();
+    radarTileLayout().forEach((tile) => {
+      const image = new Image(256, 256);
+      image.alt = "";
+      image.className = "radar-map-tile";
+      image.decoding = "async";
+      image.loading = "eager";
+      image.src = urlForTile(tile);
+      image.style.left = `${tile.left}px`;
+      image.style.top = `${tile.top}px`;
+      fragment.append(image);
+    });
+    layer.replaceChildren(fragment);
+  }
+
+  function renderRadarMap() {
+    if (!radarInitialized) return;
+    fillRadarTiles($("#radar-base-layer"), (tile) => `https://tile.openstreetmap.org/${radarZoom}/${tile.x}/${tile.y}.png`);
+    if (radarFrames.length && radarHost) {
+      const frame = radarFrames[radarFrameIndex];
+      fillRadarTiles($("#radar-overlay-layer"), (tile) => `${radarHost}${frame.path}/256/${radarZoom}/${tile.x}/${tile.y}/2/1_1.png`);
+    } else $("#radar-overlay-layer").replaceChildren();
+    $("#radar-zoom-in").disabled = radarZoom >= 7;
+    $("#radar-zoom-out").disabled = radarZoom <= 4;
+  }
+
   function renderRadarFrame(index) {
-    if (!radarMap || !radarFrames.length || !radarHost) return;
+    if (!radarInitialized || !radarFrames.length || !radarHost) return;
     radarFrameIndex = Math.min(radarFrames.length - 1, Math.max(0, Number(index) || 0));
     const frame = radarFrames[radarFrameIndex];
-    if (radarLayer) radarMap.removeLayer(radarLayer);
-    radarLayer = L.tileLayer(`${radarHost}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
-      className: "radar-overlay-tiles",
-      maxNativeZoom: 7,
-      maxZoom: 7,
-      opacity: 0.78,
-      tileSize: 256,
-      zIndex: 4,
-    }).addTo(radarMap);
+    fillRadarTiles($("#radar-overlay-layer"), (tile) => `${radarHost}${frame.path}/256/${radarZoom}/${tile.x}/${tile.y}/2/1_1.png`);
     $("#radar-frame").value = radarFrameIndex;
     $("#radar-time").textContent = radarFrameIndex === radarFrames.length - 1 ? `LATEST · ${radarTimeLabel(frame.time)}` : radarTimeLabel(frame.time);
+  }
+
+  function changeRadarZoom(amount) {
+    radarZoom = Math.min(7, Math.max(4, radarZoom + amount));
+    renderRadarMap();
   }
 
   function setRadarPlaying(playing) {
@@ -566,27 +619,12 @@
 
   async function initRadar() {
     if (radarInitialized) {
-      requestAnimationFrame(() => radarMap?.invalidateSize());
+      requestAnimationFrame(renderRadarMap);
       return;
     }
     radarInitialized = true;
     const state = $("#radar-state");
-    if (!globalThis.L) {
-      state.textContent = "RADAR MAP COULD NOT LOAD";
-      $("#radar-status").textContent = "MAP LIBRARY UNAVAILABLE · TRY REFRESHING";
-      return;
-    }
-
-    const fallback = [29.5845, -81.2079];
-    radarMap = L.map("radar-map", { attributionControl: true, maxZoom: 7, minZoom: 4, zoomControl: true }).setView(fallback, 7);
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap",
-      className: "radar-base-tiles",
-      maxNativeZoom: 19,
-      maxZoom: 19,
-      zIndex: 1,
-    }).addTo(radarMap);
-    radarMarker = L.circleMarker(fallback, { color: "#ffffff", fillColor: "#ff7448", fillOpacity: 1, radius: 6, weight: 2 }).addTo(radarMap);
+    renderRadarMap();
 
     try {
       const response = await fetch("https://api.rainviewer.com/public/weather-maps.json", { cache: "no-store" });
@@ -595,7 +633,7 @@
       const host = new URL(data.host || "");
       if (host.protocol !== "https:" || host.hostname !== "tilecache.rainviewer.com") throw new Error("Unexpected radar host");
       radarHost = host.origin;
-      radarFrames = Array.isArray(data.radar?.past) ? data.radar.past.slice(-8) : [];
+      radarFrames = Array.isArray(data.radar?.past) ? data.radar.past.filter((frame) => Number.isFinite(frame.time) && /^\/v2\/radar\/[a-z0-9]+$/i.test(frame.path || "")).slice(-8) : [];
       if (!radarFrames.length) throw new Error("No radar frames available");
       radarFrameIndex = radarFrames.length - 1;
       $("#radar-frame").max = radarFrames.length - 1;
@@ -610,7 +648,7 @@
   }
 
   function locateRadar(force = false) {
-    if (!navigator.geolocation || !radarMap) {
+    if (!navigator.geolocation || !radarInitialized) {
       $("#radar-location-label").innerHTML = "<i></i> PALM COAST FALLBACK";
       $("#radar-status").textContent = "LOCATION IS NOT AVAILABLE IN THIS BROWSER";
       return;
@@ -622,10 +660,9 @@
     button.textContent = "LOCATING…";
     $("#radar-status").textContent = "REQUESTING THIS DEVICE’S CURRENT LOCATION…";
     navigator.geolocation.getCurrentPosition((position) => {
-      const coordinates = [position.coords.latitude, position.coords.longitude];
-      radarMap.setView(coordinates, 7, { animate: true });
-      radarMarker.setLatLng(coordinates);
-      radarMap.invalidateSize();
+      radarCenter = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+      radarZoom = 7;
+      renderRadarMap();
       $("#radar-location-label").innerHTML = "<i></i> CURRENT LOCATION";
       $("#radar-map").setAttribute("aria-label", "Animated precipitation radar centered on your current location");
       $("#radar-status").textContent = "CENTERED ON YOUR CURRENT LOCATION · NOT SAVED";
@@ -823,6 +860,8 @@
 
   $("#weather-refresh").addEventListener("click", () => loadWeather(true));
   $("#radar-location").addEventListener("click", () => locateRadar(true));
+  $("#radar-zoom-in").addEventListener("click", () => changeRadarZoom(1));
+  $("#radar-zoom-out").addEventListener("click", () => changeRadarZoom(-1));
   $("#radar-play").addEventListener("click", () => setRadarPlaying(!radarTimer));
   $("#radar-frame").addEventListener("input", (event) => {
     setRadarPlaying(false);
@@ -830,6 +869,12 @@
   });
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible" && radarTimer) setRadarPlaying(false);
+  });
+  window.addEventListener("resize", () => {
+    clearTimeout(renderRadarMap.resizeTimer);
+    renderRadarMap.resizeTimer = setTimeout(() => {
+      if (radarInitialized) renderRadarMap();
+    }, 180);
   });
   $("#toast-undo").addEventListener("click", () => {
     const undo = pendingUndo;

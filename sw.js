@@ -1,5 +1,5 @@
-const CACHE = "alex-hq-v11";
-const APP = ["./", "./index.html", "./styles.css?v=10", "./app.js?v=7", "./manifest.webmanifest", "./icon.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
+const CACHE = "alex-hq-v12";
+const APP = ["./", "./index.html", "./styles.css?v=11", "./app.js?v=8", "./manifest.webmanifest", "./icon.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP)).then(() => self.skipWaiting()));
