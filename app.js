@@ -66,12 +66,24 @@
     armIdleLock();
   }
 
+  function setPasswordVisibility(visible) {
+    const input = $("#access-password");
+    const button = $("#password-toggle");
+    input.type = visible ? "text" : "password";
+    button.setAttribute("aria-pressed", String(visible));
+    button.setAttribute("aria-label", visible ? "Hide password" : "Show password");
+    $("#password-toggle-label").textContent = visible ? "HIDE" : "SHOW";
+  }
+
   function unlockApp() {
     document.body.classList.remove("locked");
     $("#access-gate").setAttribute("aria-hidden", "true");
     $(".app-frame").removeAttribute("aria-hidden");
     setSessionAccess(true);
     $("#access-form").reset();
+    setPasswordVisibility(false);
+    $("#caps-lock-warning").hidden = true;
+    $(".gate-panel").classList.remove("denied");
     $("#access-error").textContent = "";
     lastActivity = Date.now();
     armIdleLock();
@@ -84,6 +96,9 @@
     document.body.classList.add("locked");
     $("#access-gate").removeAttribute("aria-hidden");
     $(".app-frame").setAttribute("aria-hidden", "true");
+    setPasswordVisibility(false);
+    $("#caps-lock-warning").hidden = true;
+    $(".gate-panel").classList.remove("denied");
     $("#access-error").textContent = "";
     window.scrollTo({ top: 0 });
     requestAnimationFrame(() => $("#access-password").focus());
@@ -96,19 +111,22 @@
     event.preventDefault();
     const passwordInput = $("#access-password");
     const submitButton = event.currentTarget.querySelector("button[type='submit']");
+    const submitLabel = submitButton.querySelector("span");
     const error = $("#access-error");
     submitButton.disabled = true;
+    submitLabel.textContent = "CHECKING…";
     error.textContent = "VERIFYING ACCESS…";
     try {
       if (await hashText(passwordInput.value) === PASSWORD_HASH) {
         unlockApp();
         return;
       }
-      error.textContent = "PASSWORD NOT RECOGNIZED";
+      error.textContent = "PASSWORD DOESN’T MATCH · TRY AGAIN";
     } catch {
       error.textContent = "SECURE CHECK UNAVAILABLE";
     } finally {
       submitButton.disabled = false;
+      submitLabel.textContent = "ENTER HQ";
     }
     passwordInput.value = "";
     $(".gate-panel").classList.remove("denied");
@@ -116,6 +134,19 @@
       $(".gate-panel").classList.add("denied");
       passwordInput.focus();
     });
+  });
+
+  $("#password-toggle").addEventListener("click", () => {
+    setPasswordVisibility($("#access-password").type === "password");
+    $("#access-password").focus();
+  });
+
+  ["keydown", "keyup"].forEach((eventName) => $("#access-password").addEventListener(eventName, (event) => {
+    $("#caps-lock-warning").hidden = !event.getModifierState?.("CapsLock");
+  }));
+  $("#access-password").addEventListener("blur", () => { $("#caps-lock-warning").hidden = true; });
+  $("#access-password").addEventListener("input", () => {
+    if ($("#access-error").textContent !== "VERIFYING ACCESS…") $("#access-error").textContent = "";
   });
 
   [$("#lock-control"), $("#mobile-lock-control"), $("#settings-lock")].forEach((button) => button.addEventListener("click", lockApp));
@@ -858,12 +889,18 @@
     const hour = now.getHours();
     const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
     const clockParts = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).formatToParts(now);
+    const dateText = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric" }).format(now).toUpperCase();
+    const clockText = clockParts.filter((part) => part.type === "hour" || part.type === "minute" || part.type === "literal").map((part) => part.value).join("");
+    const periodText = clockParts.find((part) => part.type === "dayPeriod")?.value || "";
     $("#greeting").textContent = `${greeting}, Alex.`;
-    $("#date-label").textContent = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric" }).format(now).toUpperCase();
+    $("#date-label").textContent = dateText;
+    $("#gate-date").textContent = dateText;
     $("#day-number").textContent = String(now.getDate()).padStart(2, "0");
     $("#month-label").textContent = new Intl.DateTimeFormat("en-US", { month: "long" }).format(now).toUpperCase();
-    $("#live-clock").textContent = clockParts.filter((part) => part.type === "hour" || part.type === "minute" || part.type === "literal").map((part) => part.value).join("");
-    $("#clock-period").textContent = clockParts.find((part) => part.type === "dayPeriod")?.value || "";
+    $("#live-clock").textContent = clockText;
+    $("#gate-clock").textContent = clockText;
+    $("#clock-period").textContent = periodText;
+    $("#gate-period").textContent = periodText;
   }
 
   $$('[data-view-target]').forEach((button) => button.addEventListener("click", () => openView(button.dataset.viewTarget)));
