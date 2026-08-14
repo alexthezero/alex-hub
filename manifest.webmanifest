@@ -1,0 +1,18 @@
+{
+  "name": "Alex Hub",
+  "short_name": "Alex Hub",
+  "description": "Alex's personal everyday dashboard.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070a08",
+  "theme_color": "#090e0b",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
