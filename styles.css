@@ -498,7 +498,7 @@ main { padding: 52px 0 64px; }
   .gate-copy { font-size: 15px; margin: 14px 0 24px; }
   .gate-assurances { align-items: flex-start; flex-direction: column; gap: 9px; line-height: 1.45; margin-top: 23px; }
   .app-frame { padding: 0 14px; }
-  .app-header { -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); background: rgba(8,10,12,.92); height: calc(68px + env(safe-area-inset-top)); margin: 0 -14px; padding: env(safe-area-inset-top) 14px 0; position: sticky; top: 0; z-index: 35; }
+  .app-header { background: rgba(8,10,12,.98); height: calc(68px + env(safe-area-inset-top)); margin: 0 -14px; padding: env(safe-area-inset-top) 14px 0; position: sticky; top: 0; z-index: 35; }
   .brand-symbol { border-radius: 11px; height: 38px; width: 38px; }
   .brand-copy strong { font-size: 15px; }
   .brand-copy small, .clock-block, .local-badge { display: none; }
