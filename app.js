@@ -3,6 +3,8 @@
 
   const TASKS_KEY = "alexHub.tasks.v1";
   const NOTES_KEY = "alexHub.notes.v1";
+  const WEATHER_KEY = "alexHub.weather.v1";
+  const WEATHER_POINT = "29.5845,-81.2079";
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const starterTasks = [
     { id: id(), title: "Review this week’s priorities", category: "Personal", completed: false },
@@ -160,6 +162,83 @@
     if (show) setTimeout(() => $("#note-title").focus(), 0);
   }
 
+  function weatherSymbol(forecast = "", daytime = true) {
+    const text = forecast.toLowerCase();
+    if (text.includes("thunder")) return "ϟ";
+    if (text.includes("snow") || text.includes("sleet") || text.includes("ice")) return "✻";
+    if (text.includes("rain") || text.includes("shower") || text.includes("drizzle")) return "☂";
+    if (text.includes("fog") || text.includes("mist")) return "≋";
+    if (text.includes("partly") || text.includes("mostly sunny") || text.includes("mostly clear")) return daytime ? "◒" : "◐";
+    if (text.includes("cloud") || text.includes("overcast")) return "●";
+    return daytime ? "☀" : "☾";
+  }
+
+  function renderWeather(weather) {
+    const current = weather.current || {};
+    const periods = Array.isArray(weather.periods) ? weather.periods.slice(0, 4) : [];
+    const rain = current.probabilityOfPrecipitation?.value;
+    $("#weather-glyph").textContent = weatherSymbol(current.shortForecast, current.isDaytime);
+    $("#weather-temp").textContent = Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : "--°";
+    $("#weather-condition").textContent = current.shortForecast || "Forecast available";
+    $("#weather-rain").textContent = `${Number.isFinite(rain) ? Math.round(rain) : 0}%`;
+    $("#weather-wind").textContent = current.windSpeed || "CALM";
+    $("#forecast-strip").innerHTML = periods.length ? periods.map((period) => {
+      const periodRain = period.probabilityOfPrecipitation?.value;
+      const label = period.name === "This Afternoon" ? "Today" : period.name;
+      return `<article class="forecast-period">
+        <span aria-hidden="true">${weatherSymbol(period.shortForecast, period.isDaytime)}</span>
+        <div><strong>${esc(label)}</strong><small>${Number.isFinite(periodRain) ? `${Math.round(periodRain)}% RAIN` : esc(period.shortForecast || "FORECAST")}</small></div>
+        <b>${Number.isFinite(period.temperature) ? `${Math.round(period.temperature)}°` : "--"}</b>
+      </article>`;
+    }).join("") : '<p class="weather-error">The forecast is temporarily unavailable. Try again in a few minutes.</p>';
+    const updated = new Date(weather.fetchedAt || Date.now());
+    $("#weather-updated").textContent = `UPDATED ${new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(updated).toUpperCase()}`;
+  }
+
+  async function loadWeather() {
+    let cached;
+    try {
+      cached = JSON.parse(localStorage.getItem(WEATHER_KEY) || "null");
+      if (cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < 20 * 60 * 1000) {
+        renderWeather(cached);
+        return;
+      }
+      if (cached) renderWeather(cached);
+    } catch {
+      cached = null;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12_000);
+    try {
+      const options = { headers: { Accept: "application/geo+json" }, signal: controller.signal };
+      const pointResponse = await fetch(`https://api.weather.gov/points/${WEATHER_POINT}`, options);
+      if (!pointResponse.ok) throw new Error("Point forecast unavailable");
+      const point = await pointResponse.json();
+      const forecastUrl = point.properties?.forecast;
+      const hourlyUrl = point.properties?.forecastHourly;
+      if (!forecastUrl || !hourlyUrl) throw new Error("Forecast links unavailable");
+      const [forecastResponse, hourlyResponse] = await Promise.all([fetch(forecastUrl, options), fetch(hourlyUrl, options)]);
+      if (!forecastResponse.ok || !hourlyResponse.ok) throw new Error("Forecast unavailable");
+      const [forecast, hourly] = await Promise.all([forecastResponse.json(), hourlyResponse.json()]);
+      const weather = {
+        current: hourly.properties?.periods?.[0] || forecast.properties?.periods?.[0] || {},
+        periods: forecast.properties?.periods?.slice(0, 4) || [],
+        fetchedAt: new Date().toISOString(),
+      };
+      renderWeather(weather);
+      try { localStorage.setItem(WEATHER_KEY, JSON.stringify(weather)); } catch { /* weather can work without caching */ }
+    } catch {
+      if (!cached) {
+        $("#weather-condition").textContent = "Forecast unavailable";
+        $("#forecast-strip").innerHTML = '<p class="weather-error">The National Weather Service did not respond. The rest of Alex HQ is still available.</p>';
+        $("#weather-updated").textContent = "WEATHER OFFLINE";
+      }
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   function updateDateAndTime() {
     const now = new Date();
     const hour = now.getHours();
@@ -240,6 +319,7 @@
   setInterval(updateDateAndTime, 30_000);
   renderTasks();
   renderNotes();
+  loadWeather();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
