@@ -3,8 +3,7 @@
 
   const TASKS_KEY = "alexHub.tasks.v1";
   const NOTES_KEY = "alexHub.notes.v1";
-  const WEATHER_KEY = "alexHub.weather.v1";
-  const WEATHER_POINT = "29.5845,-81.2079";
+  const WEATHER_KEY = "alexHub.weather.v2";
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const starterTasks = [
     { id: id(), title: "Review this week’s priorities", category: "Personal", completed: false },
@@ -173,6 +172,20 @@
     return daytime ? "☀" : "☾";
   }
 
+  function weatherCodeLabel(code) {
+    if (code === 0) return "Clear";
+    if (code === 1) return "Mostly clear";
+    if (code === 2) return "Partly cloudy";
+    if (code === 3) return "Overcast";
+    if (code === 45 || code === 48) return "Foggy";
+    if ([51, 53, 55, 56, 57].includes(code)) return "Drizzle";
+    if ([61, 63, 65, 66, 67].includes(code)) return "Rain";
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return "Snow";
+    if ([80, 81, 82].includes(code)) return "Rain showers";
+    if ([95, 96, 99].includes(code)) return "Thunderstorms";
+    return "Current conditions";
+  }
+
   function renderWeather(weather) {
     const current = weather.current || {};
     const periods = Array.isArray(weather.periods) ? weather.periods.slice(0, 4) : [];
@@ -188,7 +201,7 @@
       return `<article class="forecast-period">
         <span aria-hidden="true">${weatherSymbol(period.shortForecast, period.isDaytime)}</span>
         <div><strong>${esc(label)}</strong><small>${Number.isFinite(periodRain) ? `${Math.round(periodRain)}% RAIN` : esc(period.shortForecast || "FORECAST")}</small></div>
-        <b>${Number.isFinite(period.temperature) ? `${Math.round(period.temperature)}°` : "--"}</b>
+        <b>${period.temperatureText ? esc(period.temperatureText) : Number.isFinite(period.temperature) ? `${Math.round(period.temperature)}°` : "--"}</b>
       </article>`;
     }).join("") : '<p class="weather-error">The forecast is temporarily unavailable. Try again in a few minutes.</p>';
     const updated = new Date(weather.fetchedAt || Date.now());
@@ -211,19 +224,43 @@
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12_000);
     try {
-      const options = { headers: { Accept: "application/geo+json" }, signal: controller.signal };
-      const pointResponse = await fetch(`https://api.weather.gov/points/${WEATHER_POINT}`, options);
-      if (!pointResponse.ok) throw new Error("Point forecast unavailable");
-      const point = await pointResponse.json();
-      const forecastUrl = point.properties?.forecast;
-      const hourlyUrl = point.properties?.forecastHourly;
-      if (!forecastUrl || !hourlyUrl) throw new Error("Forecast links unavailable");
-      const [forecastResponse, hourlyResponse] = await Promise.all([fetch(forecastUrl, options), fetch(hourlyUrl, options)]);
-      if (!forecastResponse.ok || !hourlyResponse.ok) throw new Error("Forecast unavailable");
-      const [forecast, hourly] = await Promise.all([forecastResponse.json(), hourlyResponse.json()]);
+      const params = new URLSearchParams({
+        latitude: "29.5845",
+        longitude: "-81.2079",
+        current: "temperature_2m,apparent_temperature,is_day,precipitation_probability,weather_code,wind_speed_10m",
+        daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+        temperature_unit: "fahrenheit",
+        wind_speed_unit: "mph",
+        precipitation_unit: "inch",
+        timezone: "America/New_York",
+        forecast_days: "4",
+      });
+      const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal: controller.signal });
+      if (!response.ok) throw new Error("Forecast unavailable");
+      const forecast = await response.json();
+      const currentCode = Number(forecast.current?.weather_code);
+      const currentLabel = weatherCodeLabel(currentCode);
       const weather = {
-        current: hourly.properties?.periods?.[0] || forecast.properties?.periods?.[0] || {},
-        periods: forecast.properties?.periods?.slice(0, 4) || [],
+        current: {
+          temperature: forecast.current?.temperature_2m,
+          shortForecast: currentLabel,
+          isDaytime: Boolean(forecast.current?.is_day),
+          probabilityOfPrecipitation: { value: forecast.current?.precipitation_probability },
+          windSpeed: Number.isFinite(forecast.current?.wind_speed_10m) ? `${Math.round(forecast.current.wind_speed_10m)} MPH` : "CALM",
+        },
+        periods: (forecast.daily?.time || []).slice(0, 4).map((date, index) => {
+          const code = Number(forecast.daily?.weather_code?.[index]);
+          const high = forecast.daily?.temperature_2m_max?.[index];
+          const low = forecast.daily?.temperature_2m_min?.[index];
+          const parsedDate = new Date(`${date}T12:00:00`);
+          return {
+            name: index === 0 ? "Today" : new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(parsedDate),
+            shortForecast: weatherCodeLabel(code),
+            isDaytime: true,
+            probabilityOfPrecipitation: { value: forecast.daily?.precipitation_probability_max?.[index] },
+            temperatureText: Number.isFinite(high) && Number.isFinite(low) ? `${Math.round(high)}°/${Math.round(low)}°` : "--",
+          };
+        }),
         fetchedAt: new Date().toISOString(),
       };
       renderWeather(weather);
@@ -231,7 +268,7 @@
     } catch {
       if (!cached) {
         $("#weather-condition").textContent = "Forecast unavailable";
-        $("#forecast-strip").innerHTML = '<p class="weather-error">The National Weather Service did not respond. The rest of Alex HQ is still available.</p>';
+        $("#forecast-strip").innerHTML = '<p class="weather-error">The weather feed did not respond. The rest of Alex HQ is still available.</p>';
         $("#weather-updated").textContent = "WEATHER OFFLINE";
       }
     } finally {
