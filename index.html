@@ -3,19 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.open-meteo.com; img-src 'self' data:; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
     <meta name="theme-color" content="#080a0c" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Alex HQ" />
     <meta name="description" content="Alex's private-on-device everyday command center." />
     <title>Alex HQ</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="./icon-180.png" sizes="180x180" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=7" />
-    <script src="./app.js?v=4" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=8" />
+    <script src="./app.js?v=5" defer></script>
   </head>
   <body class="locked">
-    <section class="access-gate" id="access-gate" aria-labelledby="access-title">
+    <section class="access-gate" id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
       <div class="gate-panel">
         <div class="gate-brand" aria-hidden="true">
           <span class="brand-symbol"><i></i><b>A</b></span>
@@ -49,10 +54,11 @@
         </button>
 
         <nav class="view-switcher" aria-label="Main navigation">
-          <button class="switch active" data-view-target="today"><span>01</span>Today</button>
+          <button class="switch active" data-view-target="today" aria-current="page"><span>01</span>Today</button>
           <button class="switch" data-view-target="tasks"><span>02</span>Tasks</button>
           <button class="switch" data-view-target="notes"><span>03</span>Notes</button>
           <button class="switch" data-view-target="projects"><span>04</span>Projects</button>
+          <button class="switch" data-view-target="settings"><span>05</span>Settings</button>
         </nav>
 
         <div class="header-status">
@@ -60,6 +66,7 @@
           <span class="local-badge"><i></i>LOCAL VAULT</span>
           <button class="lock-control" id="lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
         </div>
+        <button class="mobile-lock-control" id="mobile-lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
       </header>
 
       <main>
@@ -108,6 +115,7 @@
                     </div>
                   </div>
                   <div class="weather-meta">
+                    <span>FEELS <b id="weather-feels">--°</b></span>
                     <span>RAIN <b id="weather-rain">--%</b></span>
                     <span>WIND <b id="weather-wind">--</b></span>
                   </div>
@@ -115,7 +123,10 @@
                 <div class="forecast-strip" id="forecast-strip" aria-live="polite">
                   <div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div>
                 </div>
-                <div class="weather-footer"><span id="weather-updated">CONNECTING TO FORECAST…</span><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">FORECAST / OPEN-METEO ↗</a></div>
+                <div class="weather-footer">
+                  <span id="weather-updated">CONNECTING TO FORECAST…</span>
+                  <div class="weather-actions"><button id="weather-refresh" type="button">REFRESH</button><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">SOURCE ↗</a></div>
+                </div>
               </article>
 
               <article class="deck-panel task-deck">
@@ -131,17 +142,7 @@
                   <div><p class="micro-label">CURRENT BUILDS</p><h2>Projects in motion</h2></div>
                   <button class="arrow-link" data-view-target="projects">DETAILS <span>↗</span></button>
                 </div>
-                <div class="project-ribbon">
-                  <article class="project-unit ember">
-                    <div class="project-index">A1</div><div><span>HOME TECH</span><h3>Smart Mirror</h3><p>Radar, widgets & daily view</p></div><b>42%</b>
-                  </article>
-                  <article class="project-unit cyan">
-                    <div class="project-index">B2</div><div><span>WORKSHOP</span><h3>Print Lab</h3><p>Queue, parts & experiments</p></div><b>68%</b>
-                  </article>
-                  <article class="project-unit violet">
-                    <div class="project-index">C3</div><div><span>BUSINESS</span><h3>Next Venture</h3><p>Ideas worth testing</p></div><b>18%</b>
-                  </article>
-                </div>
+                <div class="project-ribbon" id="project-ribbon"></div>
               </article>
             </div>
 
@@ -174,7 +175,7 @@
           </div>
         </section>
 
-        <section class="view" id="view-tasks" aria-labelledby="tasks-title">
+        <section class="view" id="view-tasks" hidden aria-labelledby="tasks-title">
           <div class="page-shell">
             <div class="page-title-row">
               <div><p class="micro-label">TASK CONTROL</p><h2 id="tasks-title">Clear the queue.</h2><p>Capture it, finish it, move on.</p></div>
@@ -198,7 +199,7 @@
                     <button class="filter" data-task-filter="open">Open</button>
                     <button class="filter" data-task-filter="done">Done</button>
                   </div>
-                  <span id="task-count-label">0 ITEMS</span>
+                  <div class="task-list-tools"><span id="task-count-label">0 ITEMS</span><button id="clear-completed" type="button" hidden>CLEAR DONE</button></div>
                 </div>
                 <div class="task-list full-list" id="all-task-list"></div>
               </article>
@@ -206,7 +207,7 @@
           </div>
         </section>
 
-        <section class="view" id="view-notes" aria-labelledby="notes-title">
+        <section class="view" id="view-notes" hidden aria-labelledby="notes-title">
           <div class="page-shell">
             <div class="page-title-row">
               <div><p class="micro-label">THOUGHT VAULT</p><h2 id="notes-title">Keep the good stuff.</h2><p>Ideas, measurements, lists, and loose thoughts.</p></div>
@@ -214,17 +215,21 @@
             </div>
 
             <form class="note-composer" id="note-form" hidden>
-              <div class="composer-top"><span class="micro-label">NEW ENTRY</span><button type="button" id="close-note-form" aria-label="Close note form">×</button></div>
+              <div class="composer-top"><span class="micro-label" id="note-form-label">NEW ENTRY</span><button type="button" id="close-note-form" aria-label="Close note form">×</button></div>
               <label class="sr-only" for="note-title">Note title</label>
               <input id="note-title" maxlength="120" placeholder="Give it a title" required />
               <label class="sr-only" for="note-content">Note content</label>
               <textarea id="note-content" maxlength="10000" placeholder="Start writing…" rows="7"></textarea>
               <div class="composer-footer">
                 <fieldset class="tone-picker"><legend>COLOR</legend><button class="ember selected" type="button" data-note-color="ember" aria-label="Orange note"></button><button class="cyan" type="button" data-note-color="cyan" aria-label="Teal note"></button><button class="violet" type="button" data-note-color="violet" aria-label="Violet note"></button></fieldset>
-                <button class="solid-action" type="submit">SAVE TO VAULT</button>
+                <button class="solid-action" id="note-save-button" type="submit">SAVE TO VAULT</button>
               </div>
             </form>
 
+            <div class="notes-toolbar">
+              <label class="note-search" for="note-search"><span aria-hidden="true">⌕</span><input id="note-search" type="search" placeholder="Search your notes" autocomplete="off" /></label>
+              <span id="note-count-label">0 NOTES</span>
+            </div>
             <div class="notes-masonry" id="notes-grid"></div>
             <div class="empty-state" id="notes-empty">
               <span>03</span><h3>The vault is empty.</h3><p>Save the thought now. You can organize it later.</p><button class="outline-action" id="first-note-button"><span>+</span> Create first note</button>
@@ -232,29 +237,69 @@
           </div>
         </section>
 
-        <section class="view" id="view-projects" aria-labelledby="projects-title">
+        <section class="view" id="view-projects" hidden aria-labelledby="projects-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">PROJECT BAY</p><h2 id="projects-title">Build what matters.</h2><p>A visual home for the things you’re moving forward.</p></div>
-              <span class="project-count">03 ACTIVE</span>
+              <div><p class="micro-label">PROJECT BAY</p><h2 id="projects-title">Build what matters.</h2><p>Keep each progress slider honest as the work moves forward.</p></div>
+              <span class="project-count" id="project-count">03 ACTIVE</span>
             </div>
 
-            <div class="project-showcase">
-              <article class="project-card ember">
-                <header><span>PROJECT / A1</span><b>42%</b></header><div class="project-graphic mirror"><i></i><i></i><i></i></div><div><p>HOME TECH</p><h3>Smart Mirror</h3><span>Local radar, weather, calendar, and useful daily widgets.</span></div><footer><i style="--amount:42%"></i></footer>
+            <div class="project-showcase" id="project-showcase"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-settings" hidden aria-labelledby="settings-title">
+          <div class="page-shell">
+            <div class="page-title-row">
+              <div><p class="micro-label">SYSTEM CONTROL</p><h2 id="settings-title">Keep HQ dependable.</h2><p>Privacy controls, local backups, storage health, and installation.</p></div>
+              <span class="project-count">LOCAL FIRST</span>
+            </div>
+
+            <div class="settings-grid">
+              <article class="settings-card security-settings">
+                <div class="settings-card-head"><span class="settings-icon">01</span><div><p class="micro-label">PRIVACY</p><h3>Lock control</h3></div></div>
+                <p>The password screen is a privacy layer for casual access. Alex HQ automatically locks after 30 minutes without activity.</p>
+                <div class="setting-row"><span>AUTO-LOCK</span><strong>30 MINUTES</strong></div>
+                <button class="outline-action" id="settings-lock" type="button">LOCK NOW</button>
               </article>
-              <article class="project-card cyan">
-                <header><span>PROJECT / B2</span><b>68%</b></header><div class="project-graphic printer"><i></i><i></i><i></i></div><div><p>WORKSHOP</p><h3>Print Lab</h3><span>Parts, printer improvements, material tests, and the active queue.</span></div><footer><i style="--amount:68%"></i></footer>
+
+              <article class="settings-card data-settings">
+                <div class="settings-card-head"><span class="settings-icon">02</span><div><p class="micro-label">BACKUP</p><h3>Your local data</h3></div></div>
+                <p>Tasks, notes, and project progress live in this browser. Export a backup before clearing browser data or moving to another device.</p>
+                <div class="data-counters">
+                  <div><strong id="data-task-count">0</strong><span>TASKS</span></div>
+                  <div><strong id="data-note-count">0</strong><span>NOTES</span></div>
+                  <div><strong id="data-project-count">0</strong><span>PROJECTS</span></div>
+                </div>
+                <div class="settings-actions">
+                  <button class="solid-action" id="export-backup" type="button">EXPORT BACKUP</button>
+                  <button class="outline-action" id="import-backup-button" type="button">IMPORT BACKUP</button>
+                  <input id="import-backup" type="file" accept="application/json,.json" hidden />
+                </div>
+                <p class="settings-footnote" id="last-backup">NO BACKUP EXPORTED YET</p>
               </article>
-              <article class="project-card violet">
-                <header><span>PROJECT / C3</span><b>18%</b></header><div class="project-graphic venture"><i></i><i></i><i></i></div><div><p>BUSINESS</p><h3>Next Venture</h3><span>Practical ideas that can save time, make money, or both.</span></div><footer><i style="--amount:18%"></i></footer>
+
+              <article class="settings-card storage-settings">
+                <div class="settings-card-head"><span class="settings-icon">03</span><div><p class="micro-label">STORAGE</p><h3>Reduce cleanup risk</h3></div></div>
+                <p>Supported browsers can mark this site’s local storage as persistent, making automatic eviction less likely.</p>
+                <div class="setting-row"><span>STORAGE MODE</span><strong id="storage-status">CHECKING…</strong></div>
+                <button class="outline-action" id="protect-storage" type="button">REQUEST PERSISTENCE</button>
+              </article>
+
+              <article class="settings-card install-settings">
+                <div class="settings-card-head"><span class="settings-icon">04</span><div><p class="micro-label">APP MODE</p><h3>Add it to your phone</h3></div></div>
+                <p>On iPhone, open Alex HQ in Safari, tap Share, then choose <strong>Add to Home Screen</strong> for a full-screen app experience.</p>
+                <div class="install-path"><span>SAFARI</span><b>→</b><span>SHARE</span><b>→</b><span>ADD TO HOME SCREEN</span></div>
               </article>
             </div>
           </div>
         </section>
       </main>
 
-      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V2.0</b></footer>
+      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V2.5</b></footer>
+      <div class="action-toast" id="action-toast" hidden role="region" aria-live="polite" aria-label="Recent action">
+        <span id="toast-message"></span><div><button id="toast-undo" type="button">UNDO</button><button id="toast-dismiss" type="button" aria-label="Dismiss notification">×</button></div>
+      </div>
     </div>
   </body>
 </html>

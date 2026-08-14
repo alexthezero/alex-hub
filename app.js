@@ -3,14 +3,23 @@
 
   const TASKS_KEY = "alexHub.tasks.v1";
   const NOTES_KEY = "alexHub.notes.v1";
+  const PROJECTS_KEY = "alexHub.projects.v1";
   const WEATHER_KEY = "alexHub.weather.v2";
   const AUTH_KEY = "alexHQ.auth.v1";
+  const LAST_BACKUP_KEY = "alexHQ.lastBackup.v1";
   const PASSWORD_HASH = "16a0b62c9aeb7ec7da8e886b84d7dfa38f73e711e83d97a1ebc2ba358c834c50";
+  const IDLE_LOCK_MS = 30 * 60 * 1000;
+  const VIEWS = ["today", "tasks", "notes", "projects", "settings"];
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const starterTasks = [
     { id: id(), title: "Review this week’s priorities", category: "Personal", completed: false },
     { id: id(), title: "Check the 3D printer queue", category: "Workshop", completed: false },
     { id: id(), title: "Plan tomorrow before signing off", category: "Routine", completed: true },
+  ];
+  const starterProjects = [
+    { id: "smart-mirror", code: "A1", tone: "ember", graphic: "mirror", category: "HOME TECH", title: "Smart Mirror", summary: "Radar, widgets & daily view", description: "Local radar, weather, calendar, and useful daily widgets.", progress: 42 },
+    { id: "print-lab", code: "B2", tone: "cyan", graphic: "printer", category: "WORKSHOP", title: "Print Lab", summary: "Queue, parts & experiments", description: "Parts, printer improvements, material tests, and the active queue.", progress: 68 },
+    { id: "next-venture", code: "C3", tone: "violet", graphic: "venture", category: "BUSINESS", title: "Next Venture", summary: "Ideas worth testing", description: "Practical ideas that can save time, make money, or both.", progress: 18 },
   ];
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -42,6 +51,20 @@
     return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
   };
 
+  let idleTimer;
+  let lastActivity = Date.now();
+
+  function armIdleLock(delay = IDLE_LOCK_MS) {
+    clearTimeout(idleTimer);
+    if (!document.body.classList.contains("locked")) idleTimer = setTimeout(lockApp, Math.max(1000, delay));
+  }
+
+  function recordActivity() {
+    if (document.body.classList.contains("locked")) return;
+    lastActivity = Date.now();
+    armIdleLock();
+  }
+
   function unlockApp() {
     document.body.classList.remove("locked");
     $("#access-gate").setAttribute("aria-hidden", "true");
@@ -49,9 +72,12 @@
     setSessionAccess(true);
     $("#access-form").reset();
     $("#access-error").textContent = "";
+    lastActivity = Date.now();
+    armIdleLock();
   }
 
   function lockApp() {
+    clearTimeout(idleTimer);
     setSessionAccess(false);
     document.body.classList.add("locked");
     $("#access-gate").removeAttribute("aria-hidden");
@@ -90,12 +116,23 @@
     });
   });
 
-  $("#lock-control").addEventListener("click", lockApp);
+  [$("#lock-control"), $("#mobile-lock-control"), $("#settings-lock")].forEach((button) => button.addEventListener("click", lockApp));
+  ["pointerdown", "keydown", "touchstart"].forEach((eventName) => document.addEventListener(eventName, recordActivity, { passive: true }));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || document.body.classList.contains("locked")) return;
+    const elapsed = Date.now() - lastActivity;
+    if (elapsed >= IDLE_LOCK_MS) lockApp();
+    else armIdleLock(IDLE_LOCK_MS - elapsed);
+  });
 
   let tasks = read(TASKS_KEY, starterTasks);
   let notes = read(NOTES_KEY, []);
+  let projects = read(PROJECTS_KEY, starterProjects);
   let taskFilter = "all";
+  let noteQuery = "";
+  let editingNoteId = null;
   let selectedNoteColor = "ember";
+  let pendingUndo = null;
 
   function announce(message = "ALL CHANGES SAVED LOCALLY") {
     const status = $("#save-status");
@@ -114,10 +151,33 @@
     }
   }
 
-  function openView(view) {
-    $$(".view").forEach((panel) => panel.classList.toggle("active", panel.id === `view-${view}`));
-    $$(".switch").forEach((button) => button.classList.toggle("active", button.dataset.viewTarget === view));
+  function dismissToast() {
+    pendingUndo = null;
+    $("#action-toast").hidden = true;
+  }
+
+  function showUndo(message, undoAction) {
+    pendingUndo = undoAction;
+    $("#toast-message").textContent = message;
+    $("#action-toast").hidden = false;
+  }
+
+  function openView(view, updateHash = true) {
+    if (!VIEWS.includes(view)) return;
+    $$(".view").forEach((panel) => {
+      const active = panel.id === `view-${view}`;
+      panel.classList.toggle("active", active);
+      panel.hidden = !active;
+    });
+    $$(".switch").forEach((button) => {
+      const active = button.dataset.viewTarget === view;
+      button.classList.toggle("active", active);
+      if (active) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
     if (view === "notes") renderNotes();
+    if (view === "settings") renderSettings();
+    if (updateHash) history.replaceState(null, "", `#${view}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -158,6 +218,7 @@
 
     $("#task-total-stat").textContent = tasks.length;
     $("#task-count-label").textContent = `${visible.length} ${visible.length === 1 ? "ITEM" : "ITEMS"}`;
+    $("#clear-completed").hidden = completed === 0;
     $("#progress-fraction").textContent = `${completed} / ${tasks.length}`;
     $("#progress-percent").textContent = `${percent}%`;
     $("#progress-orbit").style.setProperty("--progress", `${percent * 3.6}deg`);
@@ -183,8 +244,26 @@
   }
 
   function deleteTask(taskId) {
-    tasks = tasks.filter((task) => String(task.id) !== taskId);
+    const index = tasks.findIndex((task) => String(task.id) === taskId);
+    if (index < 0) return;
+    const [removed] = tasks.splice(index, 1);
     saveTasks();
+    showUndo("Task deleted", () => {
+      tasks.splice(index, 0, removed);
+      saveTasks();
+    });
+  }
+
+  function clearCompletedTasks() {
+    const completed = tasks.filter((task) => task.completed);
+    if (!completed.length) return;
+    const previous = [...tasks];
+    tasks = tasks.filter((task) => !task.completed);
+    saveTasks();
+    showUndo(`${completed.length} completed ${completed.length === 1 ? "task" : "tasks"} cleared`, () => {
+      tasks = previous;
+      saveTasks();
+    });
   }
 
   function noteDate(note) {
@@ -207,11 +286,17 @@
   }
 
   function renderNotes() {
-    $("#notes-grid").innerHTML = notes.map((note, index) => `<article class="note-card ${esc(note.color || "ember")}">
-      <header><span>ENTRY / ${String(index + 1).padStart(2, "0")}</span><button data-delete-note="${esc(note.id)}" aria-label="Delete ${esc(note.title)}">×</button></header>
+    const query = noteQuery.trim().toLowerCase();
+    const visibleNotes = query ? notes.filter((note) => `${note.title} ${note.content}`.toLowerCase().includes(query)) : notes;
+    $("#notes-grid").innerHTML = visibleNotes.length ? visibleNotes.map((note) => {
+      const index = notes.findIndex((item) => String(item.id) === String(note.id));
+      return `<article class="note-card ${esc(note.color || "ember")}">
+      <header><span>ENTRY / ${String(index + 1).padStart(2, "0")}</span><div class="note-actions"><button data-edit-note="${esc(note.id)}" aria-label="Edit ${esc(note.title)}">EDIT</button><button data-delete-note="${esc(note.id)}" aria-label="Delete ${esc(note.title)}">×</button></div></header>
       <div><h3>${esc(note.title)}</h3><p>${esc(note.content || "No additional details.")}</p></div>
       <footer>${noteDate(note)}</footer>
-    </article>`).join("");
+    </article>`;
+    }).join("") : query ? '<p class="inline-empty note-no-results">No notes match that search.</p>' : "";
+    $("#note-count-label").textContent = query ? `${visibleNotes.length} OF ${notes.length}` : `${notes.length} ${notes.length === 1 ? "NOTE" : "NOTES"}`;
     $("#notes-empty").hidden = notes.length > 0 || !$("#note-form").hidden;
     renderLatestNote();
   }
@@ -221,12 +306,83 @@
     renderNotes();
   }
 
-  function showNoteForm(show = true) {
+  function setNoteColor(color = "ember") {
+    selectedNoteColor = ["ember", "cyan", "violet"].includes(color) ? color : "ember";
+    $$("[data-note-color]").forEach((button) => button.classList.toggle("selected", button.dataset.noteColor === selectedNoteColor));
+  }
+
+  function showNoteForm(show = true, noteId = null) {
     openView("notes");
     const form = $("#note-form");
     form.hidden = !show;
     $("#notes-empty").hidden = notes.length > 0 || show;
-    if (show) setTimeout(() => $("#note-title").focus(), 0);
+    if (!show) {
+      editingNoteId = null;
+      form.reset();
+      setNoteColor();
+      return;
+    }
+    const note = noteId ? notes.find((item) => String(item.id) === String(noteId)) : null;
+    editingNoteId = note ? String(note.id) : null;
+    form.reset();
+    $("#note-form-label").textContent = note ? "EDIT ENTRY" : "NEW ENTRY";
+    $("#note-save-button").textContent = note ? "UPDATE NOTE" : "SAVE TO VAULT";
+    $("#note-title").value = note?.title || "";
+    $("#note-content").value = note?.content || "";
+    setNoteColor(note?.color || "ember");
+    setTimeout(() => $("#note-title").focus(), 0);
+  }
+
+  function deleteNote(noteId) {
+    const index = notes.findIndex((note) => String(note.id) === String(noteId));
+    if (index < 0) return;
+    const [removed] = notes.splice(index, 1);
+    saveNotes();
+    showUndo("Note deleted", () => {
+      notes.splice(index, 0, removed);
+      saveNotes();
+    });
+  }
+
+  function projectProgress(value) {
+    return Math.min(100, Math.max(0, Math.round(Number(value) || 0)));
+  }
+
+  function renderProjects() {
+    $("#project-ribbon").innerHTML = projects.map((project) => {
+      const tone = ["ember", "cyan", "violet"].includes(project.tone) ? project.tone : "ember";
+      return `<article class="project-unit ${tone}">
+        <div class="project-index">${esc(project.code || "--")}</div><div><span>${esc(project.category || "PROJECT")}</span><h3>${esc(project.title || "Untitled project")}</h3><p>${esc(project.summary || project.description || "In progress")}</p></div><b data-project-value="${esc(project.id)}">${projectProgress(project.progress)}%</b>
+      </article>`;
+    }).join("");
+
+    $("#project-showcase").innerHTML = projects.map((project, index) => {
+      const tone = ["ember", "cyan", "violet"].includes(project.tone) ? project.tone : "ember";
+      const graphic = ["mirror", "printer", "venture"].includes(project.graphic) ? project.graphic : "venture";
+      const progress = projectProgress(project.progress);
+      const inputId = `project-progress-${String(project.id || index).replace(/[^a-zA-Z0-9_-]/g, "")}`;
+      return `<article class="project-card ${tone}">
+        <header><span>PROJECT / ${esc(project.code || String(index + 1).padStart(2, "0"))}</span><b data-project-value="${esc(project.id)}">${progress}%</b></header>
+        <div class="project-graphic ${graphic}" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div><p>${esc(project.category || "PROJECT")}</p><h3>${esc(project.title || "Untitled project")}</h3><span>${esc(project.description || project.summary || "Keep moving this forward.")}</span></div>
+        <div class="project-control"><label for="${esc(inputId)}">PROGRESS</label><input id="${esc(inputId)}" type="range" min="0" max="100" step="1" value="${progress}" data-project-progress="${esc(project.id)}" /><output data-project-value="${esc(project.id)}">${progress}%</output></div>
+        <footer><i data-project-bar="${esc(project.id)}" style="--amount:${progress}%"></i></footer>
+      </article>`;
+    }).join("");
+    $("#project-count").textContent = `${String(projects.length).padStart(2, "0")} ACTIVE`;
+  }
+
+  function updateProjectProgress(projectId, value) {
+    const progress = projectProgress(value);
+    projects = projects.map((project) => String(project.id) === String(projectId) ? { ...project, progress } : project);
+    $$(`[data-project-value="${CSS.escape(String(projectId))}"]`).forEach((element) => { element.textContent = `${progress}%`; });
+    $$(`[data-project-bar="${CSS.escape(String(projectId))}"]`).forEach((element) => element.style.setProperty("--amount", `${progress}%`));
+  }
+
+  function saveProjects() {
+    persist(PROJECTS_KEY, projects);
+    renderProjects();
+    renderSettings();
   }
 
   function weatherSymbol(forecast = "", daytime = true) {
@@ -261,6 +417,7 @@
     $("#weather-glyph").textContent = weatherSymbol(current.shortForecast, current.isDaytime);
     $("#weather-temp").textContent = Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : "--°";
     $("#weather-condition").textContent = current.shortForecast || "Forecast available";
+    $("#weather-feels").textContent = Number.isFinite(current.apparentTemperature) ? `${Math.round(current.apparentTemperature)}°` : "--°";
     $("#weather-rain").textContent = `${Number.isFinite(rain) ? Math.round(rain) : 0}%`;
     $("#weather-wind").textContent = current.windSpeed || "CALM";
     $("#forecast-strip").innerHTML = periods.length ? periods.map((period) => {
@@ -276,12 +433,17 @@
     $("#weather-updated").textContent = `UPDATED ${new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(updated).toUpperCase()}`;
   }
 
-  async function loadWeather() {
+  async function loadWeather(force = false) {
+    const refreshButton = $("#weather-refresh");
+    refreshButton.disabled = true;
+    refreshButton.textContent = "UPDATING…";
     let cached;
     try {
       cached = JSON.parse(localStorage.getItem(WEATHER_KEY) || "null");
-      if (cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < 20 * 60 * 1000) {
+      if (!force && cached?.fetchedAt && Date.now() - new Date(cached.fetchedAt).getTime() < 20 * 60 * 1000) {
         renderWeather(cached);
+        refreshButton.disabled = false;
+        refreshButton.textContent = "REFRESH";
         return;
       }
       if (cached) renderWeather(cached);
@@ -311,6 +473,7 @@
       const weather = {
         current: {
           temperature: forecast.current?.temperature_2m,
+          apparentTemperature: forecast.current?.apparent_temperature,
           shortForecast: currentLabel,
           isDaytime: Boolean(forecast.current?.is_day),
           probabilityOfPrecipitation: { value: forecast.current?.precipitation_probability },
@@ -341,7 +504,94 @@
       }
     } finally {
       clearTimeout(timer);
+      refreshButton.disabled = false;
+      refreshButton.textContent = "REFRESH";
     }
+  }
+
+  async function renderStorageStatus() {
+    const status = $("#storage-status");
+    const button = $("#protect-storage");
+    if (!navigator.storage?.persisted || !navigator.storage?.persist) {
+      status.textContent = "BROWSER MANAGED";
+      button.disabled = true;
+      button.textContent = "NOT SUPPORTED HERE";
+      return;
+    }
+    try {
+      const persisted = await navigator.storage.persisted();
+      status.textContent = persisted ? "PERSISTENT" : "BEST EFFORT";
+      button.disabled = persisted;
+      button.textContent = persisted ? "PERSISTENCE ACTIVE" : "REQUEST PERSISTENCE";
+    } catch {
+      status.textContent = "BROWSER MANAGED";
+      button.disabled = true;
+    }
+  }
+
+  function renderSettings() {
+    $("#data-task-count").textContent = tasks.length;
+    $("#data-note-count").textContent = notes.length;
+    $("#data-project-count").textContent = projects.length;
+    try {
+      const lastBackup = localStorage.getItem(LAST_BACKUP_KEY);
+      $("#last-backup").textContent = lastBackup ? `LAST EXPORTED ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(lastBackup)).toUpperCase()}` : "NO BACKUP EXPORTED YET";
+    } catch {
+      $("#last-backup").textContent = "BACKUP STATUS UNAVAILABLE";
+    }
+    renderStorageStatus();
+  }
+
+  function exportBackup() {
+    const exportedAt = new Date().toISOString();
+    const payload = { version: 1, app: "Alex HQ", exportedAt, tasks, notes, projects };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `alex-hq-backup-${exportedAt.slice(0, 10)}.json`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    try { localStorage.setItem(LAST_BACKUP_KEY, exportedAt); } catch { /* export still succeeded */ }
+    renderSettings();
+    announce("BACKUP EXPORTED");
+  }
+
+  async function importBackup(file) {
+    if (!file) return;
+    try {
+      if (file.size > 2_000_000) throw new Error("Backup file is too large");
+      const backup = JSON.parse(await file.text());
+      if (!Array.isArray(backup.tasks) || !Array.isArray(backup.notes) || !Array.isArray(backup.projects)) throw new Error("This is not an Alex HQ backup");
+      if (!confirm(`Replace the data on this device with ${backup.tasks.length} tasks, ${backup.notes.length} notes, and ${backup.projects.length} projects?`)) return;
+      tasks = backup.tasks.map((task) => ({ id: String(task.id || id()), title: String(task.title || "Untitled task").slice(0, 240), category: String(task.category || "Inbox").slice(0, 40), completed: Boolean(task.completed) }));
+      notes = backup.notes.map((note) => ({ id: String(note.id || id()), title: String(note.title || "Untitled note").slice(0, 120), content: String(note.content || "").slice(0, 10000), color: ["ember", "cyan", "violet"].includes(note.color) ? note.color : "ember", updatedAt: note.updatedAt || new Date().toISOString() }));
+      projects = backup.projects.length ? backup.projects.map((project, index) => ({ ...starterProjects[index % starterProjects.length], ...project, id: String(project.id || id()), progress: projectProgress(project.progress) })) : [...starterProjects];
+      localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+      localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+      localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+      renderTasks();
+      renderNotes();
+      renderProjects();
+      renderSettings();
+      announce("BACKUP RESTORED");
+    } catch (error) {
+      announce(error?.message || "BACKUP COULD NOT BE IMPORTED");
+    } finally {
+      $("#import-backup").value = "";
+    }
+  }
+
+  async function requestStoragePersistence() {
+    try {
+      const granted = await navigator.storage.persist();
+      announce(granted ? "PERSISTENT STORAGE ACTIVE" : "BROWSER KEPT STANDARD STORAGE");
+    } catch {
+      announce("PERSISTENT STORAGE UNAVAILABLE");
+    }
+    renderStorageStatus();
   }
 
   function updateDateAndTime() {
@@ -379,14 +629,15 @@
   document.addEventListener("click", (event) => {
     const deleteTaskButton = event.target.closest?.("[data-delete-task]");
     const deleteNoteButton = event.target.closest?.("[data-delete-note]");
+    const editNoteButton = event.target.closest?.("[data-edit-note]");
     const openNotesButton = event.target.closest?.("[data-open-notes]");
     if (deleteTaskButton) deleteTask(deleteTaskButton.dataset.deleteTask);
-    if (deleteNoteButton) {
-      notes = notes.filter((note) => String(note.id) !== deleteNoteButton.dataset.deleteNote);
-      saveNotes();
-    }
+    if (deleteNoteButton) deleteNote(deleteNoteButton.dataset.deleteNote);
+    if (editNoteButton) showNoteForm(true, editNoteButton.dataset.editNote);
     if (openNotesButton) openView("notes");
   });
+
+  $("#clear-completed").addEventListener("click", clearCompletedTasks);
 
   $$("[data-task-filter]").forEach((button) => button.addEventListener("click", () => {
     taskFilter = button.dataset.taskFilter;
@@ -397,34 +648,72 @@
   [$("#header-note-button"), $("#scratch-add"), $("#new-note-button"), $("#first-note-button")].forEach((button) => button.addEventListener("click", () => showNoteForm(true)));
   $("#close-note-form").addEventListener("click", () => showNoteForm(false));
 
-  $$("[data-note-color]").forEach((button) => button.addEventListener("click", () => {
-    selectedNoteColor = button.dataset.noteColor;
-    $$("[data-note-color]").forEach((item) => item.classList.toggle("selected", item === button));
-  }));
+  $$("[data-note-color]").forEach((button) => button.addEventListener("click", () => setNoteColor(button.dataset.noteColor)));
 
   $("#note-form").addEventListener("submit", (event) => {
     event.preventDefault();
     const title = $("#note-title").value.trim();
     if (!title) return;
-    notes.unshift({
+    const nextNote = {
       id: id(),
       title: title.slice(0, 120),
       content: $("#note-content").value.trim().slice(0, 10000),
       color: selectedNoteColor,
       updatedAt: new Date().toISOString(),
-    });
+    };
+    if (editingNoteId) {
+      const existing = notes.find((note) => String(note.id) === editingNoteId);
+      nextNote.id = existing?.id || editingNoteId;
+      notes = [nextNote, ...notes.filter((note) => String(note.id) !== editingNoteId)];
+    } else notes.unshift(nextNote);
     event.currentTarget.reset();
-    selectedNoteColor = "ember";
-    $$("[data-note-color]").forEach((button) => button.classList.toggle("selected", button.dataset.noteColor === "ember"));
+    editingNoteId = null;
+    setNoteColor();
+    $("#note-form-label").textContent = "NEW ENTRY";
+    $("#note-save-button").textContent = "SAVE TO VAULT";
     event.currentTarget.hidden = true;
     saveNotes();
   });
+
+  $("#note-search").addEventListener("input", (event) => {
+    noteQuery = event.currentTarget.value;
+    renderNotes();
+  });
+
+  document.addEventListener("input", (event) => {
+    const range = event.target.closest?.("[data-project-progress]");
+    if (range) updateProjectProgress(range.dataset.projectProgress, range.value);
+  });
+
+  document.addEventListener("change", (event) => {
+    const range = event.target.closest?.("[data-project-progress]");
+    if (range) saveProjects();
+  });
+
+  $("#weather-refresh").addEventListener("click", () => loadWeather(true));
+  $("#toast-undo").addEventListener("click", () => {
+    const undo = pendingUndo;
+    dismissToast();
+    if (undo) {
+      undo();
+      announce("CHANGE UNDONE");
+    }
+  });
+  $("#toast-dismiss").addEventListener("click", dismissToast);
+  $("#export-backup").addEventListener("click", exportBackup);
+  $("#import-backup-button").addEventListener("click", () => $("#import-backup").click());
+  $("#import-backup").addEventListener("change", (event) => importBackup(event.currentTarget.files?.[0]));
+  $("#protect-storage").addEventListener("click", requestStoragePersistence);
+  window.addEventListener("hashchange", () => openView(VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "today", false));
 
   updateDateAndTime();
   setInterval(updateDateAndTime, 30_000);
   renderTasks();
   renderNotes();
+  renderProjects();
+  renderSettings();
   loadWeather();
+  openView(VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "today", false);
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
