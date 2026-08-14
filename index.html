@@ -4,53 +4,61 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.open-meteo.com https://api.rainviewer.com; img-src 'self' data: https://tile.openstreetmap.org https://tilecache.rainviewer.com; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
-    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="theme-color" content="#080a0c" />
     <meta name="color-scheme" content="dark" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Alex HQ" />
-    <meta name="description" content="Alex's private everyday dashboard for tasks, notes, projects, and weather." />
+    <meta name="description" content="Alex's private-on-device everyday command center." />
     <title>Alex HQ</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="./icon-180.png" sizes="180x180" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=17" />
-    <script src="./app.js?v=12" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=16" />
+    <script src="./app.js?v=11" defer></script>
   </head>
   <body class="locked">
     <section class="access-gate" id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title" aria-describedby="gate-description">
       <div class="gate-shell">
-        <div class="gate-panel">
+        <div class="gate-welcome">
           <div class="gate-brand" aria-hidden="true">
-            <span class="brand-symbol"><b>A</b></span>
-            <span class="brand-copy"><strong>Alex</strong><small>Personal dashboard</small></span>
+            <span class="brand-symbol"><i></i><b>A</b></span>
+            <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL DAILY OS</small></span>
           </div>
           <div class="gate-briefing">
-            <div class="gate-meta">
-              <p class="gate-date" id="gate-date">Loading today…</p>
-              <p class="gate-time"><strong id="gate-clock">--:--</strong><small id="gate-period">--</small></p>
-            </div>
-            <h1 id="access-title">Welcome back, Alex.</h1>
-            <p class="gate-tagline" id="gate-description">Enter your password to open your personal dashboard.</p>
+            <p class="micro-label">PRIVATE DASHBOARD <b>/</b> PALM COAST</p>
+            <p class="gate-date" id="gate-date">LOADING TODAY…</p>
+            <p class="gate-time"><strong id="gate-clock">--:--</strong><small id="gate-period">--</small></p>
+            <h1 id="access-title">Welcome back,<br /><span>Alex.</span></h1>
+            <p class="gate-tagline">Your day, on your terms.</p>
           </div>
+          <div class="gate-local-status"><i></i><span><strong>LOCAL-FIRST</strong><small>YOUR DATA STAYS ON THIS DEVICE</small></span></div>
+        </div>
+
+        <div class="gate-panel">
+          <div class="gate-panel-top"><span>01</span><b>PRIVATE ACCESS</b></div>
+          <div class="gate-rule"><span></span><i></i></div>
+          <p class="micro-label">WELCOME TO YOUR HQ</p>
+          <h2>Open your private<br />workspace.</h2>
+          <p class="gate-copy" id="gate-description">Your password blocks casual access. Tasks and notes stay inside this browser.</p>
           <form class="access-form" id="access-form">
-            <label for="access-password">Password</label>
+            <label for="access-password">PASSWORD</label>
             <div class="gate-password-field">
               <span class="gate-key-icon" aria-hidden="true"></span>
               <input id="access-password" type="password" autocomplete="current-password" autocapitalize="none" enterkeyhint="go" spellcheck="false" placeholder="Enter your password" required />
-              <button class="password-toggle" id="password-toggle" type="button" aria-label="Show password" aria-pressed="false"><span id="password-toggle-label">Show</span></button>
+              <button class="password-toggle" id="password-toggle" type="button" aria-label="Show password" aria-pressed="false"><span id="password-toggle-label">SHOW</span></button>
             </div>
             <div class="gate-feedback">
               <p class="gate-error" id="access-error" role="alert" aria-live="polite"></p>
-              <p class="caps-lock-warning" id="caps-lock-warning" hidden>Caps Lock is on</p>
+              <p class="caps-lock-warning" id="caps-lock-warning" hidden>CAPS LOCK IS ON</p>
             </div>
-            <button class="gate-submit" type="submit"><span>Open dashboard</span><b>→</b></button>
+            <button class="gate-submit" type="submit"><span>OPEN WORKSPACE</span><b>→</b></button>
           </form>
           <div class="gate-assurances">
-            <span><i></i> Your data stays on this device</span>
-            <span>Locks after 30 minutes</span>
+            <span><i></i> SESSION LOCKED</span>
+            <span>AUTO-LOCK · 30 MIN</span>
           </div>
         </div>
       </div>
@@ -63,56 +71,68 @@
     <div class="app-frame">
       <header class="app-header">
         <button class="brand-lockup" data-view-target="today" aria-label="Open dashboard">
-          <span class="brand-symbol"><b>A</b></span>
-          <span class="brand-copy"><strong>Alex</strong><small>Personal dashboard</small></span>
+          <span class="brand-symbol"><i></i><b>A</b></span>
+          <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL DAILY OS</small></span>
         </button>
 
         <div class="header-status">
           <div class="clock-block"><strong id="live-clock">--:--</strong><small id="clock-period">--</small></div>
-          <span class="local-badge"><i></i>Private</span>
-          <button class="lock-control" id="lock-control" type="button" aria-label="Lock Alex HQ">Lock</button>
+          <span class="local-badge"><i></i>ON DEVICE</span>
+          <button class="lock-control" id="lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
         </div>
-        <button class="mobile-lock-control" id="mobile-lock-control" type="button" aria-label="Lock Alex HQ">Lock</button>
+        <button class="mobile-lock-control" id="mobile-lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
       </header>
 
       <nav class="view-switcher" aria-label="Main navigation">
-        <button class="switch active" data-view-target="today" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4Z"/><path d="M9 20v-6h6v6"/></svg></span><span class="nav-label">Today</span></button>
-        <button class="switch" data-view-target="tasks"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.2 1.2L7 4.8M3.5 12l1.2 1.2L7 10.8M3.5 18l1.2 1.2L7 16.8"/></svg></span><span class="nav-label">Tasks</span></button>
-        <button class="switch" data-view-target="notes"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5Z"/><path d="M15 3v5h4M8 12h8M8 16h6"/></svg></span><span class="nav-label">Notes</span></button>
-        <button class="switch" data-view-target="projects"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="2"/><rect x="14" y="4" width="7" height="7" rx="2"/><rect x="3" y="15" width="7" height="6" rx="2"/><rect x="14" y="15" width="7" height="6" rx="2"/></svg></span><span class="nav-label">Projects</span></button>
-        <button class="switch" data-view-target="settings"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></span><span class="nav-label">Settings</span></button>
+        <button class="switch active" data-view-target="today" aria-current="page"><span>01</span>Today</button>
+        <button class="switch" data-view-target="tasks"><span>02</span>Tasks</button>
+        <button class="switch" data-view-target="notes"><span>03</span>Notes</button>
+        <button class="switch" data-view-target="projects"><span>04</span>Projects</button>
+        <button class="switch" data-view-target="settings"><span>05</span>Settings</button>
+        <div class="nav-status"><i></i><span><strong>Private workspace</strong><small>Stored on this device</small></span></div>
       </nav>
 
       <main>
         <div class="briefing-head">
           <div>
-            <p class="micro-label"><span id="date-label"></span><b>·</b> Palm Coast</p>
+            <p class="micro-label"><span id="date-label"></span><b>/</b> PALM COAST</p>
             <h1 id="greeting">Good morning, Alex.</h1>
-            <p class="briefing-copy">Here’s what’s happening today.</p>
+            <p class="briefing-copy">Your day, organized around what matters.</p>
           </div>
-          <button class="outline-action" id="header-note-button"><span>+</span> New note</button>
+          <button class="outline-action" id="header-note-button"><span>+</span> Quick note</button>
         </div>
 
         <section class="view active" id="view-today" aria-labelledby="greeting">
           <div class="today-layout">
             <article class="mission-card">
               <div class="mission-topline">
-                <div>
-                  <p class="micro-label">Today’s focus</p>
-                  <h2>What matters most?</h2>
+                <span class="status-code">TODAY’S FOCUS</span>
+                <span class="signal"><i></i>READY</span>
+              </div>
+              <div class="mission-content">
+                <div class="mission-date">
+                  <p class="mission-number" id="day-number">--</p>
+                  <p class="mission-month" id="month-label">---</p>
                 </div>
-                <div class="mission-date" aria-label="Today’s date">
-                  <strong class="mission-number" id="day-number">--</strong>
-                  <span class="mission-month" id="month-label">---</span>
+                <div class="mission-message">
+                  <h2>Decide what wins today.</h2>
+                  <p>Choose the next move, finish it, then take the next one.</p>
                 </div>
               </div>
-              <p class="mission-message">Start with one clear next step. You can handle the rest after that.</p>
               <form class="command-input" id="today-task-form">
                 <label class="sr-only" for="today-task-input">Add a task</label>
                 <span aria-hidden="true">+</span>
-                <input id="today-task-input" maxlength="240" placeholder="Add something you want to get done" autocomplete="off" />
-                <button type="submit">Add task</button>
+                <input id="today-task-input" maxlength="240" placeholder="What needs your attention?" autocomplete="off" />
+                <button type="submit">ADD TASK</button>
               </form>
+            </article>
+
+            <article class="progress-module deck-panel">
+              <div class="module-top"><p class="micro-label">DAILY PROGRESS</p><span id="progress-fraction">0 / 0</span></div>
+              <div class="progress-display">
+                <div class="progress-orbit" id="progress-orbit"><strong id="progress-percent">0%</strong><small>DONE</small></div>
+                <div class="progress-copy"><strong id="remaining-count">No tasks queued</strong><p id="progress-message">Your runway is clear.</p></div>
+              </div>
             </article>
 
             <article class="weather-deck deck-panel" aria-labelledby="weather-title">
@@ -120,49 +140,40 @@
                 <div class="weather-current">
                   <span class="weather-glyph" id="weather-glyph" aria-hidden="true">•</span>
                   <div>
-                    <p class="micro-label"><span id="weather-location-label">Palm Coast</span></p>
+                    <p class="micro-label"><span id="weather-location-label">PALM COAST</span> · LIVE WEATHER</p>
                     <h2 id="weather-title"><span id="weather-temp">--°</span><small id="weather-condition">Loading forecast…</small></h2>
                   </div>
                 </div>
-                <button class="weather-radar-action" id="weather-radar" type="button"><span aria-hidden="true">◉</span> Radar</button>
-              </div>
-              <div class="weather-meta">
-                <span>Feels like <b id="weather-feels">--°</b></span>
-                <span>Rain <b id="weather-rain">--%</b></span>
-                <span>Wind <b id="weather-wind">--</b></span>
+                <div class="weather-meta">
+                  <span>FEELS <b id="weather-feels">--°</b></span>
+                  <span>RAIN <b id="weather-rain">--%</b></span>
+                  <span>WIND <b id="weather-wind">--</b></span>
+                </div>
               </div>
               <div class="forecast-strip" id="forecast-strip" aria-live="polite">
                 <div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div><div class="forecast-loading"></div>
               </div>
               <div class="weather-footer">
-                <span id="weather-updated">Connecting to forecast…</span>
-                <div class="weather-actions"><button id="weather-refresh" type="button">Refresh</button><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Weather source ↗</a></div>
-              </div>
-            </article>
-
-            <article class="deck-panel task-deck">
-              <div class="panel-heading">
-                <div><p class="micro-label">Tasks</p><h2>Today’s list</h2></div>
-                <button class="arrow-link" data-view-target="tasks">See all <span>→</span></button>
-              </div>
-              <div class="task-list compact-list" id="today-task-list"></div>
-            </article>
-
-            <article class="progress-module deck-panel">
-              <div class="module-top"><p class="micro-label">Today’s progress</p><span id="progress-fraction">0 / 0</span></div>
-              <div class="progress-display">
-                <div class="progress-orbit" id="progress-orbit"><strong id="progress-percent">0%</strong><small>done</small></div>
-                <div class="progress-copy"><strong id="remaining-count">No tasks yet</strong><p id="progress-message">Your day is wide open.</p></div>
+                <span id="weather-updated">CONNECTING TO FORECAST…</span>
+                <div class="weather-actions"><button class="weather-radar-action" id="weather-radar" type="button"><span aria-hidden="true">◉</span> RADAR</button><button id="weather-refresh" type="button">REFRESH</button><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">SOURCE ↗</a></div>
               </div>
             </article>
 
             <article class="scratch-module deck-panel">
-              <div class="module-top"><p class="micro-label">Latest note</p><button id="scratch-add" aria-label="Create a note">+</button></div>
+              <div class="module-top"><p class="micro-label">LATEST NOTE</p><button id="scratch-add" aria-label="Create a note">+</button></div>
               <div id="latest-note"></div>
             </article>
 
+            <article class="deck-panel task-deck">
+              <div class="panel-heading">
+                <div><p class="micro-label">ACTIVE QUEUE</p><h2>Today’s lineup</h2></div>
+                <button class="arrow-link" data-view-target="tasks">VIEW ALL <span>↗</span></button>
+              </div>
+              <div class="task-list compact-list" id="today-task-list"></div>
+            </article>
+
             <article class="link-module deck-panel">
-              <div class="module-top"><p class="micro-label">Quick links</p><span>4 saved</span></div>
+              <div class="module-top"><p class="micro-label">QUICK LINKS</p><span>04 LINKS</span></div>
               <div class="launch-grid">
                 <a href="https://github.com/alexthezero" target="_blank" rel="noreferrer"><span>GH</span><strong>GitHub</strong><b>↗</b></a>
                 <a href="https://ironnestco.etsy.com" target="_blank" rel="noreferrer"><span>IN</span><strong>IronNest</strong><b>↗</b></a>
@@ -173,30 +184,30 @@
 
             <article class="deck-panel project-deck">
               <div class="panel-heading">
-                <div><p class="micro-label">Projects</p><h2>What’s in motion</h2></div>
-                <button class="arrow-link" data-view-target="projects">See all <span>→</span></button>
+                <div><p class="micro-label">CURRENT BUILDS</p><h2>Projects in motion</h2></div>
+                <button class="arrow-link" data-view-target="projects">VIEW ALL <span>↗</span></button>
               </div>
               <div class="project-ribbon" id="project-ribbon"></div>
             </article>
 
-            <div class="privacy-line"><i></i><span><strong>Saved on this device</strong>Your tasks, notes, and project updates stay in this browser.</span></div>
+            <div class="privacy-line"><i></i><span><strong>PRIVATE ON THIS DEVICE</strong>Your entries never leave this browser.</span></div>
           </div>
         </section>
 
         <section class="view" id="view-tasks" hidden aria-labelledby="tasks-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">Tasks</p><h2 id="tasks-title">Everything on your list.</h2><p>Add something, finish it, or clear it out.</p></div>
-              <div class="page-stat"><strong id="task-total-stat">0</strong><span>tasks</span></div>
+              <div><p class="micro-label">TASK CONTROL</p><h2 id="tasks-title">Clear the queue.</h2><p>Capture it, finish it, move on.</p></div>
+              <div class="page-stat"><strong id="task-total-stat">0</strong><span>TOTAL TASKS</span></div>
             </div>
 
             <div class="task-workspace">
               <article class="task-entry-card">
-                <p class="micro-label">Add a task</p>
+                <p class="micro-label">NEW TASK</p>
                 <form class="large-command" id="all-task-form">
                   <label class="sr-only" for="all-task-input">Add a task</label>
                   <input id="all-task-input" maxlength="240" placeholder="What needs your attention?" autocomplete="off" />
-                  <button type="submit">Add task <span>→</span></button>
+                  <button type="submit">ADD TO QUEUE <span>→</span></button>
                 </form>
               </article>
 
@@ -207,7 +218,7 @@
                     <button class="filter" data-task-filter="open">Open</button>
                     <button class="filter" data-task-filter="done">Done</button>
                   </div>
-                  <div class="task-list-tools"><span id="task-count-label">0 items</span><button id="clear-completed" type="button" hidden>Clear completed</button></div>
+                  <div class="task-list-tools"><span id="task-count-label">0 ITEMS</span><button id="clear-completed" type="button" hidden>CLEAR DONE</button></div>
                 </div>
                 <div class="task-list full-list" id="all-task-list"></div>
               </article>
@@ -218,29 +229,29 @@
         <section class="view" id="view-notes" hidden aria-labelledby="notes-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">Notes</p><h2 id="notes-title">Keep it somewhere safe.</h2><p>Ideas, measurements, lists, and anything worth remembering.</p></div>
-              <button class="solid-action" id="new-note-button">+ New note</button>
+              <div><p class="micro-label">THOUGHT VAULT</p><h2 id="notes-title">Keep the good stuff.</h2><p>Ideas, measurements, lists, and loose thoughts.</p></div>
+              <button class="solid-action" id="new-note-button">+ NEW NOTE</button>
             </div>
 
             <form class="note-composer" id="note-form" hidden>
-              <div class="composer-top"><span class="micro-label" id="note-form-label">New note</span><button type="button" id="close-note-form" aria-label="Close note form">×</button></div>
+              <div class="composer-top"><span class="micro-label" id="note-form-label">NEW ENTRY</span><button type="button" id="close-note-form" aria-label="Close note form">×</button></div>
               <label class="sr-only" for="note-title">Note title</label>
               <input id="note-title" maxlength="120" placeholder="Give it a title" required />
               <label class="sr-only" for="note-content">Note content</label>
               <textarea id="note-content" maxlength="10000" placeholder="Start writing…" rows="7"></textarea>
               <div class="composer-footer">
-                <fieldset class="tone-picker"><legend>Color</legend><button class="ember selected" type="button" data-note-color="ember" aria-label="Orange note"></button><button class="cyan" type="button" data-note-color="cyan" aria-label="Teal note"></button><button class="violet" type="button" data-note-color="violet" aria-label="Violet note"></button></fieldset>
-                <button class="solid-action" id="note-save-button" type="submit">Save note</button>
+                <fieldset class="tone-picker"><legend>COLOR</legend><button class="ember selected" type="button" data-note-color="ember" aria-label="Orange note"></button><button class="cyan" type="button" data-note-color="cyan" aria-label="Teal note"></button><button class="violet" type="button" data-note-color="violet" aria-label="Violet note"></button></fieldset>
+                <button class="solid-action" id="note-save-button" type="submit">SAVE TO VAULT</button>
               </div>
             </form>
 
             <div class="notes-toolbar">
               <label class="note-search" for="note-search"><span aria-hidden="true">⌕</span><input id="note-search" type="search" placeholder="Search your notes" autocomplete="off" /></label>
-              <span id="note-count-label">0 notes</span>
+              <span id="note-count-label">0 NOTES</span>
             </div>
             <div class="notes-masonry" id="notes-grid"></div>
             <div class="empty-state" id="notes-empty">
-              <span aria-hidden="true">✦</span><h3>No notes yet.</h3><p>Save the thought now. You can organize it later.</p><button class="outline-action" id="first-note-button"><span>+</span> Create your first note</button>
+              <span>03</span><h3>The vault is empty.</h3><p>Save the thought now. You can organize it later.</p><button class="outline-action" id="first-note-button"><span>+</span> Create first note</button>
             </div>
           </div>
         </section>
@@ -248,8 +259,8 @@
         <section class="view" id="view-projects" hidden aria-labelledby="projects-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">Projects</p><h2 id="projects-title">Keep things moving.</h2><p>See what you’re building and update progress as it changes.</p></div>
-              <span class="project-count" id="project-count">3 active</span>
+              <div><p class="micro-label">PROJECT BAY</p><h2 id="projects-title">Build what matters.</h2><p>Keep each progress slider honest as the work moves forward.</p></div>
+              <span class="project-count" id="project-count">03 ACTIVE</span>
             </div>
 
             <div class="project-showcase" id="project-showcase"></div>
@@ -259,52 +270,52 @@
         <section class="view" id="view-settings" hidden aria-labelledby="settings-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">Settings</p><h2 id="settings-title">Make it work for you.</h2><p>Manage privacy, backups, storage, and app installation.</p></div>
-              <span class="project-count">On-device</span>
+              <div><p class="micro-label">SYSTEM CONTROL</p><h2 id="settings-title">Keep HQ dependable.</h2><p>Privacy controls, local backups, storage health, and installation.</p></div>
+              <span class="project-count">LOCAL FIRST</span>
             </div>
 
             <div class="settings-grid">
               <article class="settings-card security-settings">
-                <div class="settings-card-head"><span class="settings-icon">⌁</span><div><p class="micro-label">Privacy</p><h3>Lock screen</h3></div></div>
+                <div class="settings-card-head"><span class="settings-icon">01</span><div><p class="micro-label">PRIVACY</p><h3>Lock control</h3></div></div>
                 <p>The password screen is a privacy layer for casual access. Alex HQ automatically locks after 30 minutes without activity.</p>
-                <div class="setting-row"><span>Auto-lock</span><strong>30 minutes</strong></div>
-                <button class="outline-action" id="settings-lock" type="button">Lock now</button>
+                <div class="setting-row"><span>AUTO-LOCK</span><strong>30 MINUTES</strong></div>
+                <button class="outline-action" id="settings-lock" type="button">LOCK NOW</button>
               </article>
 
               <article class="settings-card data-settings">
-                <div class="settings-card-head"><span class="settings-icon">↓</span><div><p class="micro-label">Backup</p><h3>Your saved data</h3></div></div>
+                <div class="settings-card-head"><span class="settings-icon">02</span><div><p class="micro-label">BACKUP</p><h3>Your local data</h3></div></div>
                 <p>Tasks, notes, and project progress live in this browser. Export a backup before clearing browser data or moving to another device.</p>
                 <div class="data-counters">
-                  <div><strong id="data-task-count">0</strong><span>Tasks</span></div>
-                  <div><strong id="data-note-count">0</strong><span>Notes</span></div>
-                  <div><strong id="data-project-count">0</strong><span>Projects</span></div>
+                  <div><strong id="data-task-count">0</strong><span>TASKS</span></div>
+                  <div><strong id="data-note-count">0</strong><span>NOTES</span></div>
+                  <div><strong id="data-project-count">0</strong><span>PROJECTS</span></div>
                 </div>
                 <div class="settings-actions">
-                  <button class="solid-action" id="export-backup" type="button">Export backup</button>
-                  <button class="outline-action" id="import-backup-button" type="button">Import backup</button>
+                  <button class="solid-action" id="export-backup" type="button">EXPORT BACKUP</button>
+                  <button class="outline-action" id="import-backup-button" type="button">IMPORT BACKUP</button>
                   <input id="import-backup" type="file" accept="application/json,.json" hidden />
                 </div>
-                <p class="settings-footnote" id="last-backup">No backup exported yet</p>
+                <p class="settings-footnote" id="last-backup">NO BACKUP EXPORTED YET</p>
               </article>
 
               <article class="settings-card storage-settings">
-                <div class="settings-card-head"><span class="settings-icon">◇</span><div><p class="micro-label">Storage</p><h3>Protect browser data</h3></div></div>
+                <div class="settings-card-head"><span class="settings-icon">03</span><div><p class="micro-label">STORAGE</p><h3>Reduce cleanup risk</h3></div></div>
                 <p>Supported browsers can mark this site’s local storage as persistent, making automatic eviction less likely.</p>
-                <div class="setting-row"><span>Storage mode</span><strong id="storage-status">Checking…</strong></div>
-                <button class="outline-action" id="protect-storage" type="button">Protect storage</button>
+                <div class="setting-row"><span>STORAGE MODE</span><strong id="storage-status">CHECKING…</strong></div>
+                <button class="outline-action" id="protect-storage" type="button">REQUEST PERSISTENCE</button>
               </article>
 
               <article class="settings-card install-settings">
-                <div class="settings-card-head"><span class="settings-icon">+</span><div><p class="micro-label">App</p><h3>Add it to your phone</h3></div></div>
+                <div class="settings-card-head"><span class="settings-icon">04</span><div><p class="micro-label">APP MODE</p><h3>Add it to your phone</h3></div></div>
                 <p>On iPhone, open Alex HQ in Safari, tap Share, then choose <strong>Add to Home Screen</strong> for a full-screen app experience.</p>
-                <div class="install-path"><span>Safari</span><b>→</b><span>Share</span><b>→</b><span>Add to Home Screen</span></div>
+                <div class="install-path"><span>SAFARI</span><b>→</b><span>SHARE</span><b>→</b><span>ADD TO HOME SCREEN</span></div>
               </article>
             </div>
           </div>
         </section>
       </main>
 
-      <footer class="app-footer"><span>Alex</span><p id="save-status" role="status">Everything is saved on this device</p><b>V4.0</b></footer>
+      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V3.0.0</b></footer>
 
       <section class="radar-modal" id="radar-modal" hidden>
         <div class="radar-backdrop" data-radar-close aria-hidden="true"></div>
@@ -312,13 +323,13 @@
           <button class="radar-close" id="radar-close" type="button" aria-label="Close weather radar">×</button>
           <div class="radar-heading">
             <div>
-              <p class="micro-label">Past 70 minutes</p>
-              <h2 id="radar-title">Weather radar</h2>
-              <p class="radar-description" id="radar-description">See recent precipitation around Palm Coast or use your current location.</p>
+              <p class="micro-label">LIVE PRECIPITATION / PAST 70 MINUTES</p>
+              <h2 id="radar-title">Radar around you.</h2>
+              <p class="radar-description" id="radar-description">Open a local view when you need it, without crowding your daily dashboard.</p>
             </div>
             <div class="radar-heading-actions">
-              <span class="radar-location-label" id="radar-location-label"><i></i> Palm Coast</span>
-              <button id="radar-location" type="button">Use my location</button>
+              <span class="radar-location-label" id="radar-location-label"><i></i> PALM COAST FALLBACK</span>
+              <button id="radar-location" type="button">USE MY LOCATION</button>
             </div>
           </div>
           <div class="radar-map-shell">
@@ -331,14 +342,14 @@
             <div class="radar-state" id="radar-state" role="status">CONNECTING TO RADAR…</div>
           </div>
           <div class="radar-timeline">
-            <button id="radar-play" type="button" disabled aria-label="Play radar animation">Play</button>
+            <button id="radar-play" type="button" disabled aria-label="Play radar animation">PLAY</button>
             <label class="sr-only" for="radar-frame">Radar time</label>
             <input id="radar-frame" type="range" min="0" max="0" value="0" disabled />
-            <strong id="radar-time">Latest</strong>
+            <strong id="radar-time">LATEST</strong>
           </div>
           <div class="radar-footer">
-            <span id="radar-status">Location is only used while this page is open</span>
-            <span><a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RainViewer ↗</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap ↗</a></span>
+            <span id="radar-status">USE MY LOCATION FOR THE LOCAL VIEW · NOT SAVED</span>
+            <span><a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RADAR: RAINVIEWER ↗</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">MAP: OSM ↗</a></span>
           </div>
         </div>
       </section>
