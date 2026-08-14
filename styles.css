@@ -34,7 +34,7 @@ body.locked { overflow: hidden; }
 body.locked > .app-frame,
 body.locked > .noise,
 body.locked > .glow { visibility: hidden; }
-.access-gate { align-items: center; background: radial-gradient(circle at 82% 18%,rgba(255,116,72,.14),transparent 28%),radial-gradient(circle at 12% 88%,rgba(85,217,202,.08),transparent 28%),#080a0c; display: grid; inset: 0; justify-items: center; overflow: auto; padding: max(22px,env(safe-area-inset-top)) 20px max(22px,env(safe-area-inset-bottom)); position: fixed; z-index: 100; }
+.access-gate { align-items: center; background: radial-gradient(circle at 82% 18%,rgba(255,116,72,.14),transparent 28%),radial-gradient(circle at 12% 88%,rgba(85,217,202,.08),transparent 28%),#080a0c; display: grid; inset: 0; justify-items: center; overflow: hidden auto; padding: max(22px,env(safe-area-inset-top)) 20px max(22px,env(safe-area-inset-bottom)); position: fixed; z-index: 100; }
 body:not(.locked) .access-gate { display: none; }
 .access-gate::before { background-image: linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px); background-size: 44px 44px; content: ""; inset: 0; mask-image: linear-gradient(to bottom,black,transparent 80%); pointer-events: none; position: absolute; }
 .access-gate::after { border: 1px solid rgba(255,116,72,.12); border-radius: 50%; content: ""; height: min(70vw,760px); pointer-events: none; position: absolute; right: min(-35vw,-220px); top: min(-35vw,-260px); width: min(70vw,760px); }

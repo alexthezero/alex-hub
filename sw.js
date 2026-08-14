@@ -1,4 +1,4 @@
-const CACHE = "alex-hq-v5";
+const CACHE = "alex-hq-v6";
 const APP = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {
