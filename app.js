@@ -74,6 +74,10 @@
     $("#access-error").textContent = "";
     lastActivity = Date.now();
     armIdleLock();
+    setTimeout(async () => {
+      await initRadar();
+      if (!radarLocateRequested) locateRadar();
+    }, 0);
   }
 
   function lockApp() {
@@ -133,6 +137,15 @@
   let editingNoteId = null;
   let selectedNoteColor = "ember";
   let pendingUndo = null;
+  let radarMap = null;
+  let radarLayer = null;
+  let radarMarker = null;
+  let radarFrames = [];
+  let radarFrameIndex = 0;
+  let radarTimer = null;
+  let radarHost = "";
+  let radarInitialized = false;
+  let radarLocateRequested = false;
 
   function announce(message = "ALL CHANGES SAVED LOCALLY") {
     const status = $("#save-status");
@@ -177,6 +190,8 @@
     });
     if (view === "notes") renderNotes();
     if (view === "settings") renderSettings();
+    if (view === "today" && radarMap) requestAnimationFrame(() => radarMap.invalidateSize());
+    if (view !== "today" && radarTimer) setRadarPlaying(false);
     if (updateHash) history.replaceState(null, "", `#${view}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -514,6 +529,117 @@
     }
   }
 
+  function radarTimeLabel(timestamp) {
+    return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(timestamp * 1000)).toUpperCase();
+  }
+
+  function renderRadarFrame(index) {
+    if (!radarMap || !radarFrames.length || !radarHost) return;
+    radarFrameIndex = Math.min(radarFrames.length - 1, Math.max(0, Number(index) || 0));
+    const frame = radarFrames[radarFrameIndex];
+    if (radarLayer) radarMap.removeLayer(radarLayer);
+    radarLayer = L.tileLayer(`${radarHost}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
+      className: "radar-overlay-tiles",
+      maxNativeZoom: 7,
+      maxZoom: 7,
+      opacity: 0.78,
+      tileSize: 256,
+      zIndex: 4,
+    }).addTo(radarMap);
+    $("#radar-frame").value = radarFrameIndex;
+    $("#radar-time").textContent = radarFrameIndex === radarFrames.length - 1 ? `LATEST · ${radarTimeLabel(frame.time)}` : radarTimeLabel(frame.time);
+  }
+
+  function setRadarPlaying(playing) {
+    clearInterval(radarTimer);
+    radarTimer = null;
+    const button = $("#radar-play");
+    if (!playing || radarFrames.length < 2) {
+      button.textContent = "PLAY";
+      button.setAttribute("aria-label", "Play radar animation");
+      return;
+    }
+    button.textContent = "PAUSE";
+    button.setAttribute("aria-label", "Pause radar animation");
+    radarTimer = setInterval(() => renderRadarFrame((radarFrameIndex + 1) % radarFrames.length), 1100);
+  }
+
+  async function initRadar() {
+    if (radarInitialized) {
+      requestAnimationFrame(() => radarMap?.invalidateSize());
+      return;
+    }
+    radarInitialized = true;
+    const state = $("#radar-state");
+    if (!globalThis.L) {
+      state.textContent = "RADAR MAP COULD NOT LOAD";
+      $("#radar-status").textContent = "MAP LIBRARY UNAVAILABLE · TRY REFRESHING";
+      return;
+    }
+
+    const fallback = [29.5845, -81.2079];
+    radarMap = L.map("radar-map", { attributionControl: true, maxZoom: 7, minZoom: 4, zoomControl: true }).setView(fallback, 7);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap",
+      className: "radar-base-tiles",
+      maxNativeZoom: 19,
+      maxZoom: 19,
+      zIndex: 1,
+    }).addTo(radarMap);
+    radarMarker = L.circleMarker(fallback, { color: "#ffffff", fillColor: "#ff7448", fillOpacity: 1, radius: 6, weight: 2 }).addTo(radarMap);
+
+    try {
+      const response = await fetch("https://api.rainviewer.com/public/weather-maps.json", { cache: "no-store" });
+      if (!response.ok) throw new Error("Radar feed unavailable");
+      const data = await response.json();
+      const host = new URL(data.host || "");
+      if (host.protocol !== "https:" || host.hostname !== "tilecache.rainviewer.com") throw new Error("Unexpected radar host");
+      radarHost = host.origin;
+      radarFrames = Array.isArray(data.radar?.past) ? data.radar.past.slice(-8) : [];
+      if (!radarFrames.length) throw new Error("No radar frames available");
+      radarFrameIndex = radarFrames.length - 1;
+      $("#radar-frame").max = radarFrames.length - 1;
+      $("#radar-frame").disabled = false;
+      $("#radar-play").disabled = false;
+      renderRadarFrame(radarFrameIndex);
+      state.textContent = "";
+    } catch {
+      state.textContent = "LIVE RADAR IS TEMPORARILY UNAVAILABLE";
+      $("#radar-status").textContent = "BASE MAP AVAILABLE · RADAR FEED OFFLINE";
+    }
+  }
+
+  function locateRadar(force = false) {
+    if (!navigator.geolocation || !radarMap) {
+      $("#radar-location-label").innerHTML = "<i></i> PALM COAST FALLBACK";
+      $("#radar-status").textContent = "LOCATION IS NOT AVAILABLE IN THIS BROWSER";
+      return;
+    }
+    if (radarLocateRequested && !force) return;
+    radarLocateRequested = true;
+    const button = $("#radar-location");
+    button.disabled = true;
+    button.textContent = "LOCATING…";
+    $("#radar-status").textContent = "REQUESTING THIS DEVICE’S CURRENT LOCATION…";
+    navigator.geolocation.getCurrentPosition((position) => {
+      const coordinates = [position.coords.latitude, position.coords.longitude];
+      radarMap.setView(coordinates, 7, { animate: true });
+      radarMarker.setLatLng(coordinates);
+      radarMap.invalidateSize();
+      $("#radar-location-label").innerHTML = "<i></i> CURRENT LOCATION";
+      $("#radar-map").setAttribute("aria-label", "Animated precipitation radar centered on your current location");
+      $("#radar-status").textContent = "CENTERED ON YOUR CURRENT LOCATION · NOT SAVED";
+      button.disabled = false;
+      button.textContent = "UPDATE LOCATION";
+    }, (error) => {
+      const message = error.code === 1 ? "LOCATION PERMISSION OFF" : "LOCATION UNAVAILABLE";
+      $("#radar-location-label").innerHTML = `<i></i> ${message}`;
+      $("#radar-status").textContent = "SHOWING PALM COAST · TAP TO TRY LOCATION AGAIN";
+      button.disabled = false;
+      button.textContent = "TRY LOCATION";
+    }, { enableHighAccuracy: true, maximumAge: 0, timeout: 12000 });
+  }
+
   async function renderStorageStatus() {
     const status = $("#storage-status");
     const button = $("#protect-storage");
@@ -696,6 +822,15 @@
   });
 
   $("#weather-refresh").addEventListener("click", () => loadWeather(true));
+  $("#radar-location").addEventListener("click", () => locateRadar(true));
+  $("#radar-play").addEventListener("click", () => setRadarPlaying(!radarTimer));
+  $("#radar-frame").addEventListener("input", (event) => {
+    setRadarPlaying(false);
+    renderRadarFrame(event.currentTarget.value);
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" && radarTimer) setRadarPlaying(false);
+  });
   $("#toast-undo").addEventListener("click", () => {
     const undo = pendingUndo;
     dismissToast();
