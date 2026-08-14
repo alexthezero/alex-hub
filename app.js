@@ -4,6 +4,8 @@
   const TASKS_KEY = "alexHub.tasks.v1";
   const NOTES_KEY = "alexHub.notes.v1";
   const WEATHER_KEY = "alexHub.weather.v2";
+  const AUTH_KEY = "alexHQ.auth.v1";
+  const PASSWORD_HASH = "16a0b62c9aeb7ec7da8e886b84d7dfa38f73e711e83d97a1ebc2ba358c834c50";
   const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const starterTasks = [
     { id: id(), title: "Review this week’s priorities", category: "Personal", completed: false },
@@ -23,6 +25,72 @@
       return fallback;
     }
   };
+
+  const getSessionAccess = () => {
+    try { return sessionStorage.getItem(AUTH_KEY) === "unlocked"; } catch { return false; }
+  };
+
+  const setSessionAccess = (unlocked) => {
+    try {
+      if (unlocked) sessionStorage.setItem(AUTH_KEY, "unlocked");
+      else sessionStorage.removeItem(AUTH_KEY);
+    } catch { /* the gate still works when session storage is unavailable */ }
+  };
+
+  const hashText = async (value) => {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  };
+
+  function unlockApp() {
+    document.body.classList.remove("locked");
+    $("#access-gate").setAttribute("aria-hidden", "true");
+    $(".app-frame").removeAttribute("aria-hidden");
+    setSessionAccess(true);
+    $("#access-form").reset();
+    $("#access-error").textContent = "";
+  }
+
+  function lockApp() {
+    setSessionAccess(false);
+    document.body.classList.add("locked");
+    $("#access-gate").removeAttribute("aria-hidden");
+    $(".app-frame").setAttribute("aria-hidden", "true");
+    $("#access-error").textContent = "";
+    window.scrollTo({ top: 0 });
+    requestAnimationFrame(() => $("#access-password").focus());
+  }
+
+  if (getSessionAccess()) unlockApp();
+  else lockApp();
+
+  $("#access-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const passwordInput = $("#access-password");
+    const submitButton = event.currentTarget.querySelector("button[type='submit']");
+    const error = $("#access-error");
+    submitButton.disabled = true;
+    error.textContent = "VERIFYING ACCESS…";
+    try {
+      if (await hashText(passwordInput.value) === PASSWORD_HASH) {
+        unlockApp();
+        return;
+      }
+      error.textContent = "PASSWORD NOT RECOGNIZED";
+    } catch {
+      error.textContent = "SECURE CHECK UNAVAILABLE";
+    } finally {
+      submitButton.disabled = false;
+    }
+    passwordInput.value = "";
+    $(".gate-panel").classList.remove("denied");
+    requestAnimationFrame(() => {
+      $(".gate-panel").classList.add("denied");
+      passwordInput.focus();
+    });
+  });
+
+  $("#lock-control").addEventListener("click", lockApp);
 
   let tasks = read(TASKS_KEY, starterTasks);
   let notes = read(NOTES_KEY, []);

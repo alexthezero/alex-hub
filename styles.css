@@ -30,6 +30,40 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 ::selection { background: var(--ember); color: #160b07; }
 .sr-only { clip: rect(0,0,0,0); clip-path: inset(50%); height: 1px; overflow: hidden; position: absolute; white-space: nowrap; width: 1px; }
 
+body.locked { overflow: hidden; }
+body.locked > .app-frame,
+body.locked > .noise,
+body.locked > .glow { visibility: hidden; }
+.access-gate { align-items: center; background: radial-gradient(circle at 82% 18%,rgba(255,116,72,.14),transparent 28%),radial-gradient(circle at 12% 88%,rgba(85,217,202,.08),transparent 28%),#080a0c; display: grid; inset: 0; justify-items: center; overflow: auto; padding: max(22px,env(safe-area-inset-top)) 20px max(22px,env(safe-area-inset-bottom)); position: fixed; z-index: 100; }
+body:not(.locked) .access-gate { display: none; }
+.access-gate::before { background-image: linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px); background-size: 44px 44px; content: ""; inset: 0; mask-image: linear-gradient(to bottom,black,transparent 80%); pointer-events: none; position: absolute; }
+.access-gate::after { border: 1px solid rgba(255,116,72,.12); border-radius: 50%; content: ""; height: min(70vw,760px); pointer-events: none; position: absolute; right: min(-35vw,-220px); top: min(-35vw,-260px); width: min(70vw,760px); }
+.gate-panel { background: linear-gradient(145deg,rgba(21,24,27,.97),rgba(10,12,14,.98)); border: 1px solid #332b29; border-radius: 28px; box-shadow: 0 34px 100px rgba(0,0,0,.5); max-width: 570px; overflow: hidden; padding: clamp(28px,5vw,52px); position: relative; width: 100%; z-index: 1; }
+.gate-panel::after { background: var(--ember); bottom: 0; content: ""; height: 3px; left: 0; position: absolute; width: 100%; }
+.gate-brand { align-items: center; display: flex; gap: 13px; }
+.gate-rule { align-items: center; display: flex; gap: 14px; margin: 30px 0 36px; }
+.gate-rule span { background: linear-gradient(90deg,var(--ember),rgba(255,116,72,.05)); height: 1px; width: 84px; }
+.gate-rule b { color: #5d6469; font-family: var(--mono); font-size: 7px; letter-spacing: .17em; }
+.gate-panel > .micro-label { color: #70787d; }
+.gate-panel > .micro-label b { color: var(--ember); }
+.gate-panel h1 { font-size: clamp(40px,7vw,65px); letter-spacing: -.058em; line-height: .93; margin: 17px 0 0; }
+.gate-copy { color: var(--muted); font-size: 12px; margin: 18px 0 28px; }
+.access-form > label { color: #646c71; display: block; font-family: var(--mono); font-size: 7px; font-weight: 800; letter-spacing: .16em; margin: 0 0 9px 2px; }
+.gate-input-row { background: #080a0c; border: 1px solid #30363a; border-radius: 14px; display: grid; gap: 8px; grid-template-columns: 1fr auto; padding: 6px; transition: border-color .2s,box-shadow .2s; }
+.gate-input-row:focus-within { border-color: rgba(255,116,72,.72); box-shadow: 0 0 0 3px rgba(255,116,72,.08); }
+.gate-input-row input { background: transparent; border: 0; color: white; min-width: 0; outline: none; padding: 13px 12px; }
+.gate-input-row input::placeholder { color: #4f575d; }
+.gate-input-row button { background: var(--ember); border: 0; border-radius: 9px; color: #1b0c07; cursor: pointer; font-family: var(--mono); font-size: 8px; font-weight: 900; letter-spacing: .09em; min-width: 118px; padding: 0 15px; }
+.gate-input-row button:hover { background: #ff8b65; }
+.gate-input-row button:disabled { cursor: wait; opacity: .65; }
+.gate-input-row button span { font-size: 14px; margin-left: 7px; }
+.gate-error { color: #ff8964; font-family: var(--mono); font-size: 8px; height: 13px; letter-spacing: .05em; margin: 10px 2px 0; }
+.gate-panel.denied { animation: denied .28s ease; }
+@keyframes denied { 0%,100% { transform: translateX(0); } 30% { transform: translateX(-7px); } 70% { transform: translateX(7px); } }
+.gate-foot { align-items: center; color: #555d62; display: flex; font-family: var(--mono); font-size: 6px; gap: 8px; letter-spacing: .1em; margin: 21px 0 0; }
+.gate-foot i { background: var(--cyan); border-radius: 50%; box-shadow: 0 0 9px var(--cyan); height: 5px; width: 5px; }
+.gate-foot span { color: #343b40; }
+
 .noise { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E"); inset: 0; opacity: .025; pointer-events: none; position: fixed; z-index: 50; }
 .glow { border-radius: 50%; filter: blur(120px); opacity: .14; pointer-events: none; position: fixed; }
 .glow-one { background: var(--ember); height: 420px; right: -180px; top: -180px; width: 420px; }
@@ -60,6 +94,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .clock-block small { color: var(--faint); font-family: var(--mono); font-size: 7px; }
 .local-badge { align-items: center; border: 1px solid var(--line); border-radius: 999px; color: #6f787e; display: flex; font-family: var(--mono); font-size: 7px; gap: 7px; letter-spacing: .08em; padding: 8px 10px; }
 .local-badge i, .signal i, .privacy-line > i { background: var(--cyan); border-radius: 50%; box-shadow: 0 0 10px var(--cyan); height: 5px; width: 5px; }
+.lock-control { background: transparent; border: 0; color: #5f676c; cursor: pointer; font-family: var(--mono); font-size: 7px; letter-spacing: .12em; padding: 8px 2px; }
+.lock-control:hover { color: var(--ember); }
 
 main { padding: 52px 0 64px; }
 .briefing-head { align-items: flex-end; display: flex; justify-content: space-between; margin: 0 auto 34px; max-width: 1400px; }
@@ -300,6 +336,13 @@ main { padding: 52px 0 64px; }
 }
 
 @media (max-width: 760px) {
+  .access-gate { align-items: center; padding-left: 14px; padding-right: 14px; }
+  .gate-panel { border-radius: 23px; padding: 26px 21px 28px; }
+  .gate-rule { margin: 25px 0 30px; }
+  .gate-panel h1 { font-size: clamp(39px,12vw,52px); }
+  .gate-input-row { grid-template-columns: 1fr; }
+  .gate-input-row button { min-height: 48px; }
+  .gate-foot { align-items: flex-start; line-height: 1.5; }
   .app-frame { padding: 0 14px; }
   .app-header { height: 68px; }
   .brand-symbol { border-radius: 11px; height: 38px; width: 38px; }

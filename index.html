@@ -11,10 +11,32 @@
     <title>Alex HQ</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=3" />
-    <script src="./app.js?v=3" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=4" />
+    <script src="./app.js?v=4" defer></script>
   </head>
-  <body>
+  <body class="locked">
+    <section class="access-gate" id="access-gate" aria-labelledby="access-title">
+      <div class="gate-panel">
+        <div class="gate-brand" aria-hidden="true">
+          <span class="brand-symbol"><i></i><b>A</b></span>
+          <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL COMMAND CENTER</small></span>
+        </div>
+        <div class="gate-rule"><span></span><b>SECURE ENTRY</b></div>
+        <p class="micro-label">PRIVATE ACCESS <b>/</b> AUTHORIZATION REQUIRED</p>
+        <h1 id="access-title">Enter the<br />command center.</h1>
+        <p class="gate-copy">Use your password to continue.</p>
+        <form class="access-form" id="access-form">
+          <label for="access-password">ACCESS KEY</label>
+          <div class="gate-input-row">
+            <input id="access-password" type="password" autocomplete="current-password" placeholder="Enter password" required />
+            <button type="submit">UNLOCK <span>→</span></button>
+          </div>
+          <p class="gate-error" id="access-error" role="alert" aria-live="polite"></p>
+        </form>
+        <p class="gate-foot"><i></i> SESSION LOCKED <span>/</span> DEVICE DATA STAYS LOCAL</p>
+      </div>
+    </section>
+
     <div class="noise" aria-hidden="true"></div>
     <div class="glow glow-one" aria-hidden="true"></div>
     <div class="glow glow-two" aria-hidden="true"></div>
@@ -36,6 +58,7 @@
         <div class="header-status">
           <div class="clock-block"><strong id="live-clock">--:--</strong><small id="clock-period">--</small></div>
           <span class="local-badge"><i></i>LOCAL VAULT</span>
+          <button class="lock-control" id="lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
         </div>
       </header>
 
