@@ -18,9 +18,9 @@
     { id: id(), title: "Plan tomorrow before signing off", category: "Routine", completed: true },
   ];
   const starterProjects = [
-    { id: "smart-mirror", code: "A1", tone: "ember", graphic: "mirror", category: "HOME TECH", title: "Smart Mirror", summary: "Radar, widgets & daily view", description: "Local radar, weather, calendar, and useful daily widgets.", progress: 42 },
-    { id: "print-lab", code: "B2", tone: "cyan", graphic: "printer", category: "WORKSHOP", title: "Print Lab", summary: "Queue, parts & experiments", description: "Parts, printer improvements, material tests, and the active queue.", progress: 68 },
-    { id: "next-venture", code: "C3", tone: "violet", graphic: "venture", category: "BUSINESS", title: "Next Venture", summary: "Ideas worth testing", description: "Practical ideas that can save time, make money, or both.", progress: 18 },
+    { id: "smart-mirror", code: "A1", tone: "ember", graphic: "mirror", category: "Home tech", title: "Smart Mirror", summary: "Radar, widgets & daily view", description: "Local radar, weather, calendar, and useful daily widgets.", progress: 42 },
+    { id: "print-lab", code: "B2", tone: "cyan", graphic: "printer", category: "Workshop", title: "Print Lab", summary: "Queue, parts & experiments", description: "Parts, printer improvements, material tests, and the active queue.", progress: 68 },
+    { id: "next-venture", code: "C3", tone: "violet", graphic: "venture", category: "Business", title: "Next Venture", summary: "Ideas worth testing", description: "Practical ideas that can save time, make money, or both.", progress: 18 },
   ];
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -72,7 +72,7 @@
     input.type = visible ? "text" : "password";
     button.setAttribute("aria-pressed", String(visible));
     button.setAttribute("aria-label", visible ? "Hide password" : "Show password");
-    $("#password-toggle-label").textContent = visible ? "HIDE" : "SHOW";
+    $("#password-toggle-label").textContent = visible ? "Hide" : "Show";
   }
 
   function unlockApp() {
@@ -114,19 +114,19 @@
     const submitLabel = submitButton.querySelector("span");
     const error = $("#access-error");
     submitButton.disabled = true;
-    submitLabel.textContent = "CHECKING…";
-    error.textContent = "VERIFYING ACCESS…";
+    submitLabel.textContent = "Checking…";
+    error.textContent = "Verifying access…";
     try {
       if (await hashText(passwordInput.value) === PASSWORD_HASH) {
         unlockApp();
         return;
       }
-      error.textContent = "PASSWORD DOESN’T MATCH · TRY AGAIN";
+      error.textContent = "That password doesn’t match. Try again.";
     } catch {
-      error.textContent = "SECURE CHECK UNAVAILABLE";
+      error.textContent = "Password check is unavailable right now.";
     } finally {
       submitButton.disabled = false;
-      submitLabel.textContent = "OPEN WORKSPACE";
+      submitLabel.textContent = "Open dashboard";
     }
     passwordInput.value = "";
     $(".gate-panel").classList.remove("denied");
@@ -146,7 +146,7 @@
   }));
   $("#access-password").addEventListener("blur", () => { $("#caps-lock-warning").hidden = true; });
   $("#access-password").addEventListener("input", () => {
-    if ($("#access-error").textContent !== "VERIFYING ACCESS…") $("#access-error").textContent = "";
+    if ($("#access-error").textContent !== "Verifying access…") $("#access-error").textContent = "";
   });
 
   [$("#lock-control"), $("#mobile-lock-control"), $("#settings-lock")].forEach((button) => button.addEventListener("click", lockApp));
@@ -179,7 +179,7 @@
   let radarLocateRequested = false;
   let radarLastFocus = null;
 
-  function announce(message = "ALL CHANGES SAVED LOCALLY") {
+  function announce(message = "Everything is saved on this device") {
     const status = $("#save-status");
     status.textContent = message;
     status.classList.add("flash");
@@ -192,7 +192,7 @@
       localStorage.setItem(key, JSON.stringify(value));
       announce();
     } catch {
-      announce("THIS BROWSER COULD NOT SAVE");
+      announce("This browser could not save your changes");
     }
   }
 
@@ -237,7 +237,7 @@
         <span class="task-check" aria-hidden="true">✓</span>
         <span class="task-copy"><strong>${title}</strong><small>${category}</small></span>
       </label>
-      <span class="task-status">${task.completed ? "DONE" : "OPEN"}</span>
+      <span class="task-status">${task.completed ? "Done" : "Open"}</span>
       ${removable ? `<button class="delete-task" data-delete-task="${taskId}" aria-label="Delete ${title}">×</button>` : ""}
     </article>`;
   }
@@ -263,13 +263,13 @@
       : `<p class="inline-empty">No ${taskFilter === "all" ? "" : `${taskFilter} `}tasks here.</p>`;
 
     $("#task-total-stat").textContent = tasks.length;
-    $("#task-count-label").textContent = `${visible.length} ${visible.length === 1 ? "ITEM" : "ITEMS"}`;
+    $("#task-count-label").textContent = `${visible.length} ${visible.length === 1 ? "item" : "items"}`;
     $("#clear-completed").hidden = completed === 0;
     $("#progress-fraction").textContent = `${completed} / ${tasks.length}`;
     $("#progress-percent").textContent = `${percent}%`;
     $("#progress-orbit").style.setProperty("--progress", `${percent * 3.6}deg`);
-    $("#remaining-count").textContent = tasks.length === 0 ? "No tasks queued" : remaining === 0 ? "Queue complete" : `${remaining} ${remaining === 1 ? "task" : "tasks"} remaining`;
-    $("#progress-message").textContent = tasks.length === 0 ? "Your runway is clear." : remaining === 0 ? "You handled everything." : percent >= 50 ? "Past halfway. Keep moving." : "Momentum starts with one.";
+    $("#remaining-count").textContent = tasks.length === 0 ? "No tasks yet" : remaining === 0 ? "Everything is done" : `${remaining} ${remaining === 1 ? "task" : "tasks"} left`;
+    $("#progress-message").textContent = tasks.length === 0 ? "Your day is wide open." : remaining === 0 ? "Nice work—you finished the list." : percent >= 50 ? "You’re more than halfway there." : "One task is enough to get moving.";
   }
 
   function saveTasks() {
@@ -327,7 +327,7 @@
     $("#latest-note").innerHTML = `<div class="latest-note-card ${esc(latest.color || "ember")}">
       <h3>${esc(latest.title)}</h3>
       <p>${esc(latest.content || "No additional details.")}</p>
-      <button data-open-notes>OPEN VAULT →</button>
+      <button data-open-notes>Open note →</button>
     </div>`;
   }
 
@@ -337,12 +337,12 @@
     $("#notes-grid").innerHTML = visibleNotes.length ? visibleNotes.map((note) => {
       const index = notes.findIndex((item) => String(item.id) === String(note.id));
       return `<article class="note-card ${esc(note.color || "ember")}">
-      <header><span>ENTRY / ${String(index + 1).padStart(2, "0")}</span><div class="note-actions"><button data-edit-note="${esc(note.id)}" aria-label="Edit ${esc(note.title)}">EDIT</button><button data-delete-note="${esc(note.id)}" aria-label="Delete ${esc(note.title)}">×</button></div></header>
+      <header><span>Note ${String(index + 1).padStart(2, "0")}</span><div class="note-actions"><button data-edit-note="${esc(note.id)}" aria-label="Edit ${esc(note.title)}">Edit</button><button data-delete-note="${esc(note.id)}" aria-label="Delete ${esc(note.title)}">×</button></div></header>
       <div><h3>${esc(note.title)}</h3><p>${esc(note.content || "No additional details.")}</p></div>
       <footer>${noteDate(note)}</footer>
     </article>`;
     }).join("") : query ? '<p class="inline-empty note-no-results">No notes match that search.</p>' : "";
-    $("#note-count-label").textContent = query ? `${visibleNotes.length} OF ${notes.length}` : `${notes.length} ${notes.length === 1 ? "NOTE" : "NOTES"}`;
+    $("#note-count-label").textContent = query ? `${visibleNotes.length} of ${notes.length}` : `${notes.length} ${notes.length === 1 ? "note" : "notes"}`;
     $("#notes-empty").hidden = notes.length > 0 || !$("#note-form").hidden;
     renderLatestNote();
   }
@@ -371,8 +371,8 @@
     const note = noteId ? notes.find((item) => String(item.id) === String(noteId)) : null;
     editingNoteId = note ? String(note.id) : null;
     form.reset();
-    $("#note-form-label").textContent = note ? "EDIT ENTRY" : "NEW ENTRY";
-    $("#note-save-button").textContent = note ? "UPDATE NOTE" : "SAVE TO VAULT";
+    $("#note-form-label").textContent = note ? "Edit note" : "New note";
+    $("#note-save-button").textContent = note ? "Update note" : "Save note";
     $("#note-title").value = note?.title || "";
     $("#note-content").value = note?.content || "";
     setNoteColor(note?.color || "ember");
@@ -398,7 +398,7 @@
     $("#project-ribbon").innerHTML = projects.map((project) => {
       const tone = ["ember", "cyan", "violet"].includes(project.tone) ? project.tone : "ember";
       return `<article class="project-unit ${tone}">
-        <div class="project-index">${esc(project.code || "--")}</div><div><span>${esc(project.category || "PROJECT")}</span><h3>${esc(project.title || "Untitled project")}</h3><p>${esc(project.summary || project.description || "In progress")}</p></div><b data-project-value="${esc(project.id)}">${projectProgress(project.progress)}%</b>
+        <div class="project-index">${esc(project.code || "--")}</div><div><span>${esc(project.category || "Project")}</span><h3>${esc(project.title || "Untitled project")}</h3><p>${esc(project.summary || project.description || "In progress")}</p></div><b data-project-value="${esc(project.id)}">${projectProgress(project.progress)}%</b>
       </article>`;
     }).join("");
 
@@ -408,14 +408,14 @@
       const progress = projectProgress(project.progress);
       const inputId = `project-progress-${String(project.id || index).replace(/[^a-zA-Z0-9_-]/g, "")}`;
       return `<article class="project-card ${tone}">
-        <header><span>PROJECT / ${esc(project.code || String(index + 1).padStart(2, "0"))}</span><b data-project-value="${esc(project.id)}">${progress}%</b></header>
+        <header><span>Project ${esc(project.code || String(index + 1).padStart(2, "0"))}</span><b data-project-value="${esc(project.id)}">${progress}%</b></header>
         <div class="project-graphic ${graphic}" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div><p>${esc(project.category || "PROJECT")}</p><h3>${esc(project.title || "Untitled project")}</h3><span>${esc(project.description || project.summary || "Keep moving this forward.")}</span></div>
-        <div class="project-control"><label for="${esc(inputId)}">PROGRESS</label><input id="${esc(inputId)}" type="range" min="0" max="100" step="1" value="${progress}" data-project-progress="${esc(project.id)}" /><output data-project-value="${esc(project.id)}">${progress}%</output></div>
+        <div><p>${esc(project.category || "Project")}</p><h3>${esc(project.title || "Untitled project")}</h3><span>${esc(project.description || project.summary || "Keep moving this forward.")}</span></div>
+        <div class="project-control"><label for="${esc(inputId)}">Progress</label><input id="${esc(inputId)}" type="range" min="0" max="100" step="1" value="${progress}" data-project-progress="${esc(project.id)}" /><output data-project-value="${esc(project.id)}">${progress}%</output></div>
         <footer><i data-project-bar="${esc(project.id)}" style="--amount:${progress}%"></i></footer>
       </article>`;
     }).join("");
-    $("#project-count").textContent = `${String(projects.length).padStart(2, "0")} ACTIVE`;
+    $("#project-count").textContent = `${projects.length} active`;
   }
 
   function updateProjectProgress(projectId, value) {
@@ -464,7 +464,7 @@
     const current = weather.current || {};
     const periods = Array.isArray(weather.periods) ? weather.periods.slice(0, 4) : [];
     const rain = current.probabilityOfPrecipitation?.value;
-    $("#weather-location-label").textContent = weather.location?.label || weatherCenter.label;
+    $("#weather-location-label").textContent = (weather.location?.label || weatherCenter.label) === "CURRENT LOCATION" ? "Current location" : "Palm Coast";
     $("#weather-glyph").innerHTML = weatherIcon(current.shortForecast, current.isDaytime);
     $("#weather-temp").textContent = Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : "--°";
     $("#weather-condition").textContent = current.shortForecast || "Forecast available";
@@ -477,12 +477,12 @@
       const label = period.name === "This Afternoon" ? "Today" : period.name;
       return `<article class="forecast-period">
         <span aria-hidden="true">${weatherIcon(period.shortForecast, period.isDaytime)}</span>
-        <div><strong>${esc(label)}</strong><small>${Number.isFinite(periodRain) ? `${Math.round(periodRain)}% RAIN` : esc(period.shortForecast || "FORECAST")}</small></div>
+        <div><strong>${esc(label)}</strong><small>${Number.isFinite(periodRain) ? `${Math.round(periodRain)}% rain` : esc(period.shortForecast || "Forecast")}</small></div>
         <b>${period.temperatureText ? esc(period.temperatureText) : Number.isFinite(period.temperature) ? `${Math.round(period.temperature)}°` : "--"}</b>
       </article>`;
     }).join("") : '<p class="weather-error">The forecast is temporarily unavailable. Try again in a few minutes.</p>';
     const updated = new Date(weather.fetchedAt || Date.now());
-    $("#weather-updated").textContent = `UPDATED ${new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(updated).toUpperCase()}`;
+    $("#weather-updated").textContent = `Updated ${new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(updated)}`;
   }
 
   async function loadWeather(force = false) {
@@ -490,7 +490,7 @@
     const requestId = ++weatherRequestId;
     const requestedLocation = { ...weatherCenter };
     refreshButton.disabled = true;
-    refreshButton.textContent = "UPDATING…";
+    refreshButton.textContent = "Updating…";
     let cached;
     try {
       cached = requestedLocation.label === "CURRENT LOCATION"
@@ -505,7 +505,7 @@
         renderWeather(cached);
         if (requestId === weatherRequestId) {
           refreshButton.disabled = false;
-          refreshButton.textContent = "REFRESH";
+          refreshButton.textContent = "Refresh";
         }
         return;
       }
@@ -568,19 +568,19 @@
       if (!cached) {
         $("#weather-condition").textContent = "Forecast unavailable";
         $("#forecast-strip").innerHTML = '<p class="weather-error">The weather feed did not respond. The rest of Alex HQ is still available.</p>';
-        $("#weather-updated").textContent = "WEATHER OFFLINE";
+        $("#weather-updated").textContent = "Weather is offline";
       }
     } finally {
       clearTimeout(timer);
       if (requestId === weatherRequestId) {
         refreshButton.disabled = false;
-        refreshButton.textContent = "REFRESH";
+        refreshButton.textContent = "Refresh";
       }
     }
   }
 
   function radarTimeLabel(timestamp) {
-    return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(timestamp * 1000)).toUpperCase();
+    return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(timestamp * 1000));
   }
 
   function radarTileLayout() {
@@ -646,7 +646,7 @@
     const frame = radarFrames[radarFrameIndex];
     fillRadarTiles($("#radar-overlay-layer"), (tile) => `${radarHost}${frame.path}/256/${radarZoom}/${tile.x}/${tile.y}/2/1_1.png`);
     $("#radar-frame").value = radarFrameIndex;
-    $("#radar-time").textContent = radarFrameIndex === radarFrames.length - 1 ? `LATEST · ${radarTimeLabel(frame.time)}` : radarTimeLabel(frame.time);
+    $("#radar-time").textContent = radarFrameIndex === radarFrames.length - 1 ? `Latest · ${radarTimeLabel(frame.time)}` : radarTimeLabel(frame.time);
   }
 
   function changeRadarZoom(amount) {
@@ -659,11 +659,11 @@
     radarTimer = null;
     const button = $("#radar-play");
     if (!playing || radarFrames.length < 2) {
-      button.textContent = "PLAY";
+      button.textContent = "Play";
       button.setAttribute("aria-label", "Play radar animation");
       return;
     }
-    button.textContent = "PAUSE";
+    button.textContent = "Pause";
     button.setAttribute("aria-label", "Pause radar animation");
     radarTimer = setInterval(() => renderRadarFrame((radarFrameIndex + 1) % radarFrames.length), 1100);
   }
@@ -693,8 +693,8 @@
       renderRadarFrame(radarFrameIndex);
       state.textContent = "";
     } catch {
-      state.textContent = "LIVE RADAR IS TEMPORARILY UNAVAILABLE";
-      $("#radar-status").textContent = "BASE MAP AVAILABLE · RADAR FEED OFFLINE";
+      state.textContent = "Live radar is temporarily unavailable";
+      $("#radar-status").textContent = "The base map is available, but the radar feed is offline";
     }
   }
 
@@ -710,9 +710,9 @@
       const permission = await navigator.permissions.query({ name: "geolocation" });
       if (permission.state === "granted") locateRadar();
       else if (permission.state === "denied") {
-        $("#radar-location-label").innerHTML = "<i></i> LOCATION PERMISSION OFF";
-        $("#radar-status").textContent = "SHOWING PALM COAST · ENABLE LOCATION IN BROWSER SETTINGS";
-        $("#radar-location").textContent = "TRY LOCATION";
+        $("#radar-location-label").innerHTML = "<i></i> Location permission is off";
+        $("#radar-status").textContent = "Showing Palm Coast. Enable location in browser settings to change it.";
+        $("#radar-location").textContent = "Try location";
       }
     } catch { /* location stays opt-in when permission state is unavailable */ }
   }
@@ -768,34 +768,34 @@
 
   function locateRadar(force = false) {
     if (!navigator.geolocation || !radarInitialized) {
-      $("#radar-location-label").innerHTML = "<i></i> PALM COAST FALLBACK";
-      $("#radar-status").textContent = "LOCATION IS NOT AVAILABLE IN THIS BROWSER";
+      $("#radar-location-label").innerHTML = "<i></i> Palm Coast";
+      $("#radar-status").textContent = "Location is not available in this browser";
       return;
     }
     if (radarLocateRequested && !force) return;
     radarLocateRequested = true;
     const button = $("#radar-location");
     button.disabled = true;
-    button.textContent = "LOCATING…";
-    $("#radar-status").textContent = "REQUESTING THIS DEVICE’S CURRENT LOCATION…";
+    button.textContent = "Locating…";
+    $("#radar-status").textContent = "Requesting this device’s current location…";
     navigator.geolocation.getCurrentPosition((position) => {
       radarCenter = { latitude: position.coords.latitude, longitude: position.coords.longitude };
       weatherCenter = { latitude: position.coords.latitude, longitude: position.coords.longitude, label: "CURRENT LOCATION" };
       radarZoom = 7;
       renderRadarMap();
-      $("#radar-location-label").innerHTML = "<i></i> CURRENT LOCATION";
-      $("#weather-location-label").textContent = weatherCenter.label;
+      $("#radar-location-label").innerHTML = "<i></i> Current location";
+      $("#weather-location-label").textContent = "Current location";
       $("#radar-map").setAttribute("aria-label", "Animated precipitation radar centered on your current location");
-      $("#radar-status").textContent = "CENTERED ON YOUR CURRENT LOCATION · NOT SAVED";
+      $("#radar-status").textContent = "Centered on your current location. It is not saved.";
       button.disabled = false;
-      button.textContent = "UPDATE LOCATION";
+      button.textContent = "Update location";
       loadWeather(true);
     }, (error) => {
-      const message = error.code === 1 ? "LOCATION PERMISSION OFF" : "LOCATION UNAVAILABLE";
+      const message = error.code === 1 ? "Location permission is off" : "Location unavailable";
       $("#radar-location-label").innerHTML = `<i></i> ${message}`;
-      $("#radar-status").textContent = "SHOWING PALM COAST · TAP TO TRY LOCATION AGAIN";
+      $("#radar-status").textContent = "Showing Palm Coast. Tap to try your location again.";
       button.disabled = false;
-      button.textContent = "TRY LOCATION";
+      button.textContent = "Try location";
     }, { enableHighAccuracy: false, maximumAge: 300000, timeout: 12000 });
   }
 
@@ -803,18 +803,18 @@
     const status = $("#storage-status");
     const button = $("#protect-storage");
     if (!navigator.storage?.persisted || !navigator.storage?.persist) {
-      status.textContent = "BROWSER MANAGED";
+      status.textContent = "Browser managed";
       button.disabled = true;
-      button.textContent = "NOT SUPPORTED HERE";
+      button.textContent = "Not supported here";
       return;
     }
     try {
       const persisted = await navigator.storage.persisted();
-      status.textContent = persisted ? "PERSISTENT" : "BEST EFFORT";
+      status.textContent = persisted ? "Protected" : "Standard";
       button.disabled = persisted;
-      button.textContent = persisted ? "PERSISTENCE ACTIVE" : "REQUEST PERSISTENCE";
+      button.textContent = persisted ? "Storage protected" : "Protect storage";
     } catch {
-      status.textContent = "BROWSER MANAGED";
+      status.textContent = "Browser managed";
       button.disabled = true;
     }
   }
@@ -825,9 +825,9 @@
     $("#data-project-count").textContent = projects.length;
     try {
       const lastBackup = localStorage.getItem(LAST_BACKUP_KEY);
-      $("#last-backup").textContent = lastBackup ? `LAST EXPORTED ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(lastBackup)).toUpperCase()}` : "NO BACKUP EXPORTED YET";
+      $("#last-backup").textContent = lastBackup ? `Last exported ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(lastBackup))}` : "No backup exported yet";
     } catch {
-      $("#last-backup").textContent = "BACKUP STATUS UNAVAILABLE";
+      $("#last-backup").textContent = "Backup status unavailable";
     }
     renderStorageStatus();
   }
@@ -846,7 +846,7 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     try { localStorage.setItem(LAST_BACKUP_KEY, exportedAt); } catch { /* export still succeeded */ }
     renderSettings();
-    announce("BACKUP EXPORTED");
+    announce("Backup exported");
   }
 
   async function importBackup(file) {
@@ -866,9 +866,9 @@
       renderNotes();
       renderProjects();
       renderSettings();
-      announce("BACKUP RESTORED");
+      announce("Backup restored");
     } catch (error) {
-      announce(error?.message || "BACKUP COULD NOT BE IMPORTED");
+      announce(error?.message || "Backup could not be imported");
     } finally {
       $("#import-backup").value = "";
     }
@@ -877,9 +877,9 @@
   async function requestStoragePersistence() {
     try {
       const granted = await navigator.storage.persist();
-      announce(granted ? "PERSISTENT STORAGE ACTIVE" : "BROWSER KEPT STANDARD STORAGE");
+      announce(granted ? "Storage protection is active" : "The browser kept standard storage");
     } catch {
-      announce("PERSISTENT STORAGE UNAVAILABLE");
+      announce("Storage protection is unavailable");
     }
     renderStorageStatus();
   }
@@ -889,14 +889,14 @@
     const hour = now.getHours();
     const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
     const clockParts = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).formatToParts(now);
-    const dateText = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric" }).format(now).toUpperCase();
+    const dateText = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric" }).format(now);
     const clockText = clockParts.filter((part) => part.type === "hour" || part.type === "minute" || part.type === "literal").map((part) => part.value).join("");
     const periodText = clockParts.find((part) => part.type === "dayPeriod")?.value || "";
     $("#greeting").textContent = `${greeting}, Alex.`;
     $("#date-label").textContent = dateText;
     $("#gate-date").textContent = dateText;
     $("#day-number").textContent = String(now.getDate()).padStart(2, "0");
-    $("#month-label").textContent = new Intl.DateTimeFormat("en-US", { month: "long" }).format(now).toUpperCase();
+    $("#month-label").textContent = new Intl.DateTimeFormat("en-US", { month: "long" }).format(now);
     $("#live-clock").textContent = clockText;
     $("#gate-clock").textContent = clockText;
     $("#clock-period").textContent = periodText;
@@ -965,8 +965,8 @@
     event.currentTarget.reset();
     editingNoteId = null;
     setNoteColor();
-    $("#note-form-label").textContent = "NEW ENTRY";
-    $("#note-save-button").textContent = "SAVE TO VAULT";
+    $("#note-form-label").textContent = "New note";
+    $("#note-save-button").textContent = "Save note";
     event.currentTarget.hidden = true;
     saveNotes();
   });
@@ -1013,7 +1013,7 @@
     dismissToast();
     if (undo) {
       undo();
-      announce("CHANGE UNDONE");
+      announce("Change undone");
     }
   });
   $("#toast-dismiss").addEventListener("click", dismissToast);
