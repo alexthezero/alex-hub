@@ -1,12 +1,12 @@
 {
-  "name": "Alex Hub",
-  "short_name": "Alex Hub",
-  "description": "Alex's personal everyday dashboard.",
+  "name": "Alex HQ",
+  "short_name": "Alex HQ",
+  "description": "Alex's private-on-device everyday command center.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#070a08",
-  "theme_color": "#090e0b",
+  "background_color": "#080a0c",
+  "theme_color": "#080a0c",
   "icons": [
     {
       "src": "./icon.svg",

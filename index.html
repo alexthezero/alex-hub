@@ -3,133 +3,215 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#090e0b" />
+    <meta name="theme-color" content="#080a0c" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Alex Hub" />
-    <meta name="description" content="Alex's personal everyday dashboard." />
-    <title>Alex Hub</title>
+    <meta name="apple-mobile-web-app-title" content="Alex HQ" />
+    <meta name="description" content="Alex's private-on-device everyday command center." />
+    <title>Alex HQ</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="stylesheet" href="./styles.css" />
     <script src="./app.js" defer></script>
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <button class="brand" data-view-target="today" aria-label="Open today dashboard">
-          <span class="brand-mark">A</span>
-          <span><strong>Alex Hub</strong><small>Personal workspace</small></span>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="glow glow-one" aria-hidden="true"></div>
+    <div class="glow glow-two" aria-hidden="true"></div>
+
+    <div class="app-frame">
+      <header class="app-header">
+        <button class="brand-lockup" data-view-target="today" aria-label="Open dashboard">
+          <span class="brand-symbol"><i></i><b>A</b></span>
+          <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL COMMAND CENTER</small></span>
         </button>
 
-        <nav class="nav-list" aria-label="Main navigation">
-          <button class="nav-item active" data-view-target="today"><span aria-hidden="true">⌂</span>Today</button>
-          <button class="nav-item" data-view-target="tasks"><span aria-hidden="true">✓</span>Tasks</button>
-          <button class="nav-item" data-view-target="notes"><span aria-hidden="true">✎</span>Notes</button>
-          <button class="nav-item" data-view-target="projects"><span aria-hidden="true">◇</span>Projects</button>
+        <nav class="view-switcher" aria-label="Main navigation">
+          <button class="switch active" data-view-target="today"><span>01</span>Today</button>
+          <button class="switch" data-view-target="tasks"><span>02</span>Tasks</button>
+          <button class="switch" data-view-target="notes"><span>03</span>Notes</button>
+          <button class="switch" data-view-target="projects"><span>04</span>Projects</button>
         </nav>
 
-        <div class="privacy-card">
-          <span aria-hidden="true">●</span>
-          <div><strong>Private on this device</strong><p>Your tasks and notes stay inside this browser.</p></div>
+        <div class="header-status">
+          <div class="clock-block"><strong id="live-clock">--:--</strong><small id="clock-period">--</small></div>
+          <span class="local-badge"><i></i>LOCAL VAULT</span>
         </div>
+      </header>
 
-        <div class="profile-mini">
-          <span>A</span>
-          <div><strong>Alex C.</strong><small>Owner</small></div>
+      <main>
+        <div class="briefing-head">
+          <div>
+            <p class="micro-label"><span id="date-label"></span><b>/</b> PALM COAST</p>
+            <h1 id="greeting">Good morning, Alex.</h1>
+            <p class="briefing-copy">Everything important. Nothing noisy.</p>
+          </div>
+          <button class="outline-action" id="header-note-button"><span>+</span> Quick note</button>
         </div>
-      </aside>
-
-      <main class="main" id="top">
-        <header class="topbar">
-          <div><p class="date-line" id="date-label"></p><h1 id="greeting">Welcome back, Alex.</h1><p class="subhead">Here’s your day at a glance.</p></div>
-          <span class="save-status" id="save-status" role="status">Saved on this device</span>
-        </header>
 
         <section class="view active" id="view-today" aria-labelledby="greeting">
-          <div class="dashboard-grid">
-            <article class="focus-card panel">
-              <div class="section-heading"><div><span class="eyebrow">TODAY</span><h2>Make today count.</h2></div><span class="day-badge" id="day-badge"></span></div>
-              <p class="focus-copy">One clear priority beats a dozen half-finished plans. Capture what matters, then get moving.</p>
-              <form class="capture-row" id="today-task-form">
-                <label class="sr-only" for="today-task-input">Add a task</label>
-                <input id="today-task-input" maxlength="240" placeholder="What needs to get done?" autocomplete="off" />
-                <button type="submit">Add task</button>
-              </form>
-            </article>
+          <div class="today-layout">
+            <div class="main-deck">
+              <article class="mission-card">
+                <div class="mission-topline">
+                  <span class="status-code">DAILY MISSION</span>
+                  <span class="signal"><i></i>READY</span>
+                </div>
+                <div class="mission-content">
+                  <div>
+                    <p class="mission-number" id="day-number">--</p>
+                    <p class="mission-month" id="month-label">---</p>
+                  </div>
+                  <div class="mission-message">
+                    <h2>Decide what wins today.</h2>
+                    <p>Capture the next move. Finish it. Then take the next one.</p>
+                  </div>
+                </div>
+                <form class="command-input" id="today-task-form">
+                  <label class="sr-only" for="today-task-input">Add a task</label>
+                  <span aria-hidden="true">→</span>
+                  <input id="today-task-input" maxlength="240" placeholder="Enter your next move…" autocomplete="off" />
+                  <button type="submit">QUEUE TASK</button>
+                </form>
+              </article>
 
-            <article class="progress-card panel">
-              <span class="eyebrow">DAILY PROGRESS</span>
-              <div class="progress-center"><div class="progress-ring" id="progress-ring"><span id="progress-label">0/0</span></div><p id="progress-copy">Add a task to start your day.</p></div>
-            </article>
+              <article class="deck-panel task-deck">
+                <div class="panel-heading">
+                  <div><p class="micro-label">ACTIVE QUEUE</p><h2>Today’s lineup</h2></div>
+                  <button class="arrow-link" data-view-target="tasks">OPEN ALL <span>↗</span></button>
+                </div>
+                <div class="task-list compact-list" id="today-task-list"></div>
+              </article>
 
-            <article class="tasks-card panel">
-              <div class="section-heading compact"><div><span class="eyebrow">UP NEXT</span><h2>Tasks</h2></div><button class="text-button" data-view-target="tasks">View all →</button></div>
-              <div class="task-list" id="today-task-list"></div>
-            </article>
+              <article class="deck-panel project-deck">
+                <div class="panel-heading">
+                  <div><p class="micro-label">CURRENT BUILDS</p><h2>Projects in motion</h2></div>
+                  <button class="arrow-link" data-view-target="projects">DETAILS <span>↗</span></button>
+                </div>
+                <div class="project-ribbon">
+                  <article class="project-unit ember">
+                    <div class="project-index">A1</div><div><span>HOME TECH</span><h3>Smart Mirror</h3><p>Radar, widgets & daily view</p></div><b>42%</b>
+                  </article>
+                  <article class="project-unit cyan">
+                    <div class="project-index">B2</div><div><span>WORKSHOP</span><h3>Print Lab</h3><p>Queue, parts & experiments</p></div><b>68%</b>
+                  </article>
+                  <article class="project-unit violet">
+                    <div class="project-index">C3</div><div><span>BUSINESS</span><h3>Next Venture</h3><p>Ideas worth testing</p></div><b>18%</b>
+                  </article>
+                </div>
+              </article>
+            </div>
 
-            <article class="links-card panel">
-              <div class="section-heading compact"><div><span class="eyebrow">BOOKMARKS</span><h2>Quick links</h2></div></div>
-              <div class="link-grid">
-                <a href="https://github.com/alexthezero" target="_blank" rel="noreferrer"><span>GH</span><strong>GitHub</strong><b>↗</b></a>
-                <a href="https://ironnestco.etsy.com" target="_blank" rel="noreferrer"><span>IN</span><strong>IronNest Etsy</strong><b>↗</b></a>
-                <a href="https://chatgpt.com" target="_blank" rel="noreferrer"><span>AI</span><strong>ChatGPT</strong><b>↗</b></a>
-                <a href="https://www.weather.gov/" target="_blank" rel="noreferrer"><span>WX</span><strong>Weather</strong><b>↗</b></a>
-              </div>
-            </article>
+            <aside class="side-deck">
+              <article class="progress-module deck-panel">
+                <div class="module-top"><p class="micro-label">DAILY OUTPUT</p><span id="progress-fraction">0 / 0</span></div>
+                <div class="progress-display">
+                  <div class="progress-orbit" id="progress-orbit"><strong id="progress-percent">0%</strong><small>COMPLETE</small></div>
+                  <div class="progress-copy"><strong id="remaining-count">No tasks queued</strong><p id="progress-message">Your runway is clear.</p></div>
+                </div>
+              </article>
 
-            <article class="projects-card panel">
-              <div class="section-heading compact"><div><span class="eyebrow">IN THE WORKS</span><h2>Active projects</h2></div><button class="text-button" data-view-target="projects">See projects →</button></div>
-              <div class="project-grid">
-                <article class="project-tile green"><span>BUILD</span><h3>Smart Mirror</h3><p>Weather radar + daily widgets</p></article>
-                <article class="project-tile orange"><span>WORKSHOP</span><h3>3D Printing</h3><p>Print queue, ideas, and supplies</p></article>
-                <article class="project-tile blue"><span>NEXT UP</span><h3>Business Ideas</h3><p>Apps and income experiments</p></article>
-              </div>
-            </article>
+              <article class="scratch-module deck-panel">
+                <div class="module-top"><p class="micro-label">LATEST NOTE</p><button id="scratch-add" aria-label="Create a note">+</button></div>
+                <div id="latest-note"></div>
+              </article>
+
+              <article class="link-module deck-panel">
+                <div class="module-top"><p class="micro-label">QUICK LAUNCH</p><span>04 LINKS</span></div>
+                <div class="launch-grid">
+                  <a href="https://github.com/alexthezero" target="_blank" rel="noreferrer"><span>GH</span><strong>GitHub</strong><b>↗</b></a>
+                  <a href="https://ironnestco.etsy.com" target="_blank" rel="noreferrer"><span>IN</span><strong>IronNest</strong><b>↗</b></a>
+                  <a href="https://chatgpt.com" target="_blank" rel="noreferrer"><span>AI</span><strong>ChatGPT</strong><b>↗</b></a>
+                  <a href="https://www.weather.gov/" target="_blank" rel="noreferrer"><span>WX</span><strong>Weather</strong><b>↗</b></a>
+                </div>
+              </article>
+
+              <div class="privacy-line"><i></i><span><strong>PRIVATE ON THIS DEVICE</strong>Your entries never leave this browser.</span></div>
+            </aside>
           </div>
         </section>
 
         <section class="view" id="view-tasks" aria-labelledby="tasks-title">
-          <article class="page-panel panel">
-            <div class="section-heading"><div><span class="eyebrow">GET IT DONE</span><h2 id="tasks-title">All tasks</h2></div><span class="count-pill" id="task-count">0 total</span></div>
-            <form class="capture-row page-capture" id="all-task-form">
-              <label class="sr-only" for="all-task-input">Add a task</label>
-              <input id="all-task-input" maxlength="240" placeholder="Add a task to your inbox" autocomplete="off" />
-              <button type="submit">Add task</button>
-            </form>
-            <div class="task-list wide" id="all-task-list"></div>
-          </article>
+          <div class="page-shell">
+            <div class="page-title-row">
+              <div><p class="micro-label">TASK CONTROL</p><h2 id="tasks-title">Clear the queue.</h2><p>Capture it, finish it, move on.</p></div>
+              <div class="page-stat"><strong id="task-total-stat">0</strong><span>TOTAL TASKS</span></div>
+            </div>
+
+            <div class="task-workspace">
+              <article class="task-entry-card">
+                <p class="micro-label">NEW TASK</p>
+                <form class="large-command" id="all-task-form">
+                  <label class="sr-only" for="all-task-input">Add a task</label>
+                  <input id="all-task-input" maxlength="240" placeholder="What needs your attention?" autocomplete="off" />
+                  <button type="submit">ADD TO QUEUE <span>→</span></button>
+                </form>
+              </article>
+
+              <article class="deck-panel full-task-panel">
+                <div class="filter-row">
+                  <div class="task-filters" role="group" aria-label="Filter tasks">
+                    <button class="filter active" data-task-filter="all">All</button>
+                    <button class="filter" data-task-filter="open">Open</button>
+                    <button class="filter" data-task-filter="done">Done</button>
+                  </div>
+                  <span id="task-count-label">0 ITEMS</span>
+                </div>
+                <div class="task-list full-list" id="all-task-list"></div>
+              </article>
+            </div>
+          </div>
         </section>
 
         <section class="view" id="view-notes" aria-labelledby="notes-title">
-          <article class="page-panel panel notes-page">
-            <div class="section-heading"><div><span class="eyebrow">PERSONAL NOTES</span><h2 id="notes-title">A clear place for loose thoughts.</h2></div><button class="primary-button" id="toggle-note-form">+ New note</button></div>
-            <form class="note-form" id="note-form" hidden>
+          <div class="page-shell">
+            <div class="page-title-row">
+              <div><p class="micro-label">THOUGHT VAULT</p><h2 id="notes-title">Keep the good stuff.</h2><p>Ideas, measurements, lists, and loose thoughts.</p></div>
+              <button class="solid-action" id="new-note-button">+ NEW NOTE</button>
+            </div>
+
+            <form class="note-composer" id="note-form" hidden>
+              <div class="composer-top"><span class="micro-label">NEW ENTRY</span><button type="button" id="close-note-form" aria-label="Close note form">×</button></div>
               <label class="sr-only" for="note-title">Note title</label>
-              <input id="note-title" maxlength="120" placeholder="Note title" required />
+              <input id="note-title" maxlength="120" placeholder="Give it a title" required />
               <label class="sr-only" for="note-content">Note content</label>
-              <textarea id="note-content" maxlength="10000" placeholder="Write anything you don’t want to forget…" rows="5"></textarea>
-              <div class="note-form-footer">
-                <fieldset class="color-picker"><legend class="sr-only">Note color</legend><button class="sage selected" type="button" data-note-color="sage" aria-label="Sage note"></button><button class="sand" type="button" data-note-color="sand" aria-label="Sand note"></button><button class="blue" type="button" data-note-color="blue" aria-label="Blue note"></button></fieldset>
-                <button class="primary-button" type="submit">Save note</button>
+              <textarea id="note-content" maxlength="10000" placeholder="Start writing…" rows="7"></textarea>
+              <div class="composer-footer">
+                <fieldset class="tone-picker"><legend>COLOR</legend><button class="ember selected" type="button" data-note-color="ember" aria-label="Orange note"></button><button class="cyan" type="button" data-note-color="cyan" aria-label="Teal note"></button><button class="violet" type="button" data-note-color="violet" aria-label="Violet note"></button></fieldset>
+                <button class="solid-action" type="submit">SAVE TO VAULT</button>
               </div>
             </form>
-            <div class="notes-grid" id="notes-grid"></div>
-            <div class="notes-empty" id="notes-empty"><span class="empty-icon">✎</span><h3>Your notes will live here.</h3><p>Use this for shopping lists, measurements, project ideas, or anything else worth remembering.</p><button class="primary-button" id="first-note-button">Create your first note</button></div>
-          </article>
+
+            <div class="notes-masonry" id="notes-grid"></div>
+            <div class="empty-state" id="notes-empty">
+              <span>03</span><h3>The vault is empty.</h3><p>Save the thought now. You can organize it later.</p><button class="outline-action" id="first-note-button"><span>+</span> Create first note</button>
+            </div>
+          </div>
         </section>
 
         <section class="view" id="view-projects" aria-labelledby="projects-title">
-          <article class="page-panel panel">
-            <div class="section-heading"><div><span class="eyebrow">IDEAS INTO ACTION</span><h2 id="projects-title">Your projects</h2></div></div>
-            <div class="project-grid expanded">
-              <article class="project-tile green"><span>BUILD</span><h3>Smart Mirror</h3><p>Weather radar + daily widgets</p></article>
-              <article class="project-tile orange"><span>WORKSHOP</span><h3>3D Printing</h3><p>Print queue, ideas, and supplies</p></article>
-              <article class="project-tile blue"><span>NEXT UP</span><h3>Business Ideas</h3><p>Apps and income experiments</p></article>
+          <div class="page-shell">
+            <div class="page-title-row">
+              <div><p class="micro-label">PROJECT BAY</p><h2 id="projects-title">Build what matters.</h2><p>A visual home for the things you’re moving forward.</p></div>
+              <span class="project-count">03 ACTIVE</span>
             </div>
-          </article>
+
+            <div class="project-showcase">
+              <article class="project-card ember">
+                <header><span>PROJECT / A1</span><b>42%</b></header><div class="project-graphic mirror"><i></i><i></i><i></i></div><div><p>HOME TECH</p><h3>Smart Mirror</h3><span>Local radar, weather, calendar, and useful daily widgets.</span></div><footer><i style="--amount:42%"></i></footer>
+              </article>
+              <article class="project-card cyan">
+                <header><span>PROJECT / B2</span><b>68%</b></header><div class="project-graphic printer"><i></i><i></i><i></i></div><div><p>WORKSHOP</p><h3>Print Lab</h3><span>Parts, printer improvements, material tests, and the active queue.</span></div><footer><i style="--amount:68%"></i></footer>
+              </article>
+              <article class="project-card violet">
+                <header><span>PROJECT / C3</span><b>18%</b></header><div class="project-graphic venture"><i></i><i></i><i></i></div><div><p>BUSINESS</p><h3>Next Venture</h3><span>Practical ideas that can save time, make money, or both.</span></div><footer><i style="--amount:18%"></i></footer>
+              </article>
+            </div>
+          </div>
         </section>
       </main>
+
+      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V2.0</b></footer>
     </div>
   </body>
 </html>
