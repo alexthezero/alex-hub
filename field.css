@@ -1421,3 +1421,233 @@ textarea::placeholder {
     display: none;
   }
 }
+
+/* ======================================================================
+   V6.1 — MOBILE CONTROL-SURFACE CALIBRATION
+   Keep the command hierarchy intact on short phone viewports while
+   reserving clear space for the fixed navigation and the software keyboard.
+   ====================================================================== */
+
+@media (max-width: 760px) {
+  html {
+    scroll-padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+
+  .app-frame {
+    padding-inline: 12px;
+  }
+
+  .app-header {
+    height: calc(62px + env(safe-area-inset-top));
+    margin-inline: -12px;
+    padding: env(safe-area-inset-top) 12px 0;
+  }
+
+  .app-header .brand-symbol {
+    height: 36px;
+    width: 34px;
+  }
+
+  .app-header .brand-symbol b {
+    font-size: 16px;
+  }
+
+  .app-header .brand-copy strong {
+    font-size: 13px;
+  }
+
+  .mobile-lock-control {
+    min-height: 40px;
+    padding-inline: 12px;
+  }
+
+  .app-frame > main {
+    padding-bottom: calc(136px + env(safe-area-inset-bottom));
+    padding-top: 20px;
+  }
+
+  .briefing-head {
+    margin-bottom: 14px;
+  }
+
+  .briefing-head h1 {
+    font-size: clamp(39px, 10.7vw, 46px);
+    line-height: 0.95;
+    margin-top: 10px;
+  }
+
+  .briefing-copy {
+    font-size: 11.5px;
+    line-height: 1.45;
+    margin-top: 10px;
+  }
+
+  .micro-label,
+  .status-code {
+    font-size: 10.5px;
+    letter-spacing: 0.085em;
+  }
+
+  .ops-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 12px;
+    min-height: 34px;
+  }
+
+  .ops-strip span {
+    border-top: 0 !important;
+    min-height: 34px;
+    padding-inline: 10px;
+  }
+
+  .ops-strip span:nth-child(n + 3) {
+    display: none;
+  }
+
+  .mission-card {
+    padding: 17px 16px 15px;
+  }
+
+  .mission-card::before {
+    right: 17px;
+    top: 18px;
+    width: 52px;
+  }
+
+  .mission-card::after {
+    height: 28px;
+    right: 17px;
+    top: 18px;
+  }
+
+  .mission-topline {
+    min-height: 16px;
+  }
+
+  .signal {
+    font-size: 9.5px;
+    gap: 7px;
+  }
+
+  .mission-content {
+    align-items: start;
+    display: grid;
+    gap: 15px;
+    grid-template-columns: 68px minmax(0, 1fr);
+    padding: 20px 0 18px;
+  }
+
+  .mission-date {
+    border-bottom: 0;
+    border-right: 1px solid var(--line-strong);
+    display: block;
+    min-width: 0;
+    padding: 0 14px 0 0;
+  }
+
+  .mission-number {
+    font-size: 50px;
+    line-height: 0.82;
+  }
+
+  .mission-month {
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    margin: 10px 0 0 2px;
+  }
+
+  .mission-message {
+    min-width: 0;
+    padding: 0;
+  }
+
+  .mission-message h2 {
+    font-size: clamp(22px, 6.2vw, 25px);
+    line-height: 1.07;
+  }
+
+  .mission-message p {
+    font-size: 13.5px;
+    line-height: 1.45;
+    margin-top: 7px;
+  }
+
+  .command-input {
+    gap: 6px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-height: 54px;
+    padding: 5px;
+    scroll-margin-bottom: calc(106px + env(safe-area-inset-bottom));
+  }
+
+  .command-input > span {
+    font-size: 18px;
+    padding-left: 7px;
+  }
+
+  .command-input input {
+    font-size: 14px;
+    min-height: 42px;
+  }
+
+  .command-input button {
+    grid-column: auto;
+    min-height: 44px;
+    padding-inline: 12px;
+    white-space: nowrap;
+    width: auto;
+  }
+
+  .view-switcher {
+    bottom: max(7px, env(safe-area-inset-bottom));
+    height: 68px;
+    max-height: 68px;
+    padding: 5px;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    width: calc(100% - 16px);
+  }
+
+  .switch {
+    font-size: 9.5px;
+    min-height: 56px;
+    padding-inline: 2px;
+  }
+
+  .switch span {
+    font-size: 8.5px;
+  }
+}
+
+@media (max-width: 390px) {
+  .briefing-head h1 {
+    font-size: 39px;
+  }
+
+  .command-input button {
+    font-size: 9.5px;
+    padding-inline: 9px;
+  }
+
+  .mission-content {
+    gap: 13px;
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .mission-date {
+    padding-right: 12px;
+  }
+
+  .mission-number {
+    font-size: 47px;
+  }
+}
+
+@supports selector(body:has(input:focus)) {
+  @media (max-width: 1100px) {
+    body:has(input:focus, textarea:focus) .view-switcher {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, calc(100% + 28px));
+    }
+  }
+}
