@@ -1033,6 +1033,11 @@
   openView(VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "today", false);
 
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+    window.addEventListener("load", async () => {
+      try {
+        const registration = await navigator.serviceWorker.register("./sw.js?v=24", { updateViaCache: "none" });
+        registration.update().catch(() => {});
+      } catch {}
+    });
   }
 })();

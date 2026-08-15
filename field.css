@@ -1463,6 +1463,8 @@ textarea::placeholder {
 
   .app-frame > main {
     padding-bottom: calc(136px + env(safe-area-inset-bottom));
+    padding-left: 0;
+    padding-right: 0;
     padding-top: 20px;
   }
 
