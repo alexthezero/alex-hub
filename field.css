@@ -1,17 +1,25 @@
 @font-face {
   font-display: swap;
-  font-family: "IBM Plex Sans Condensed";
+  font-family: "Chakra Petch";
   font-style: normal;
   font-weight: 400;
-  src: url("./assets/fonts/IBMPlexSansCondensed-Regular.woff2") format("woff2");
+  src: url("./assets/fonts/ChakraPetch-Regular.woff2") format("woff2");
 }
 
 @font-face {
   font-display: swap;
-  font-family: "IBM Plex Sans Condensed";
+  font-family: "Chakra Petch";
   font-style: normal;
-  font-weight: 600 900;
-  src: url("./assets/fonts/IBMPlexSansCondensed-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  src: url("./assets/fonts/ChakraPetch-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./assets/fonts/ChakraPetch-Bold.woff2") format("woff2");
 }
 
 @font-face {
@@ -56,8 +64,8 @@
   --xl: 4px;
   --lg: 3px;
   --md: 2px;
-  --sans: "IBM Plex Sans Condensed", "Avenir Next Condensed", "Arial Narrow", "Segoe UI", sans-serif;
-  --display: "IBM Plex Sans Condensed", "Avenir Next Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --sans: "Chakra Petch", "Arial Narrow", "Segoe UI", sans-serif;
+  --display: "Chakra Petch", "Arial Narrow", "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 }
 
@@ -1456,9 +1464,9 @@ textarea::placeholder {
 }
 
 /* ======================================================================
-   V6.4 — PUBLIC-SAFETY WORKSTATION TYPOGRAPHY
-   Self-hosted IBM Plex Condensed handles readable UI hierarchy while Plex
-   Mono is reserved for status, navigation, data, and command entry.
+   V6.5 — PUBLIC-SAFETY WORKSTATION TYPOGRAPHY
+   Chakra Petch supplies the squared technical silhouette for headings and
+   interface copy. Plex Mono remains reserved for data and command surfaces.
    ====================================================================== */
 
 .gate-briefing h1,
@@ -1482,9 +1490,9 @@ textarea::placeholder {
 
 .gate-briefing h1,
 .briefing-head h1 {
-  font-weight: 600;
-  letter-spacing: -0.012em;
-  line-height: 0.94;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
   text-transform: none;
 }
 
@@ -1494,7 +1502,7 @@ textarea::placeholder {
 .page-title-row h2,
 .radar-heading h2 {
   font-weight: 600;
-  letter-spacing: -0.006em;
+  letter-spacing: -0.018em;
   text-transform: none;
 }
 
