@@ -1,19 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="panel" x1="64" y1="46" x2="448" y2="466" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#132124"/>
-      <stop offset="1" stop-color="#070c0e"/>
+      <stop stop-color="#171d18"/>
+      <stop offset="1" stop-color="#090c0a"/>
     </linearGradient>
     <clipPath id="shield"><path d="M64 46h384v350L256 466 64 396Z"/></clipPath>
   </defs>
-  <rect width="512" height="512" fill="#05090a"/>
-  <path d="M64 46h384v350L256 466 64 396Z" fill="url(#panel)" stroke="#4e9eff" stroke-width="8"/>
-  <g clip-path="url(#shield)" stroke="#54c8c6" stroke-opacity=".12" stroke-width="2">
-    <path d="M64 128h384M64 210h384M64 292h384M64 374h384"/>
-    <path d="M142 46v380M220 46v410M298 46v410M376 46v380"/>
+  <rect width="512" height="512" fill="#090b0a"/>
+  <path d="M64 46h384v350L256 466 64 396Z" fill="url(#panel)" stroke="#91aa94" stroke-width="8"/>
+  <g clip-path="url(#shield)" fill="none" stroke="#c1d2c3" stroke-opacity=".14" stroke-width="3">
+    <path d="M103 111h92M317 111h92"/>
+    <path d="M103 369h58M351 369h58"/>
   </g>
-  <path d="M112 96h76M324 96h76" stroke="#73d49a" stroke-width="8"/>
-  <circle cx="256" cy="245" r="118" fill="none" stroke="#54c8c6" stroke-opacity=".28" stroke-width="4"/>
-  <path d="M144 356 226 145h60l82 211h-62l-15-48h-72l-16 48Zm94-101h35l-17-57Z" fill="#e7ede8"/>
-  <path d="M112 397h288" stroke="#4e9eff" stroke-width="18" stroke-dasharray="46 12"/>
+  <path d="M112 92h76M324 92h76" stroke="#77b58a" stroke-width="8"/>
+  <path d="M144 356 226 145h60l82 211h-62l-15-48h-72l-16 48Zm94-101h35l-17-57Z" fill="#edf0eb"/>
+  <path d="M112 397h288" stroke="#91aa94" stroke-width="16"/>
+  <circle cx="400" cy="397" r="8" fill="#cf796c"/>
 </svg>

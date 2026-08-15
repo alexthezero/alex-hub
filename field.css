@@ -1,0 +1,1419 @@
+/* ======================================================================
+   ALEX HQ V6 — GRAPHITE FIELD HARDWARE
+   A restrained police MDT / military field-terminal visual system.
+   Color is functional: sage = active/available, red = destructive/error.
+   ====================================================================== */
+
+:root {
+  --canvas: #090b0a;
+  --surface: #101310;
+  --raised: #151a16;
+  --soft: #1a201b;
+  --line: rgba(214, 222, 211, 0.14);
+  --line-strong: rgba(219, 227, 216, 0.26);
+  --text: #edf0eb;
+  --muted: #adb6ad;
+  --faint: #7f8a81;
+  --ember: #91aa94;
+  --ember-bright: #c1d2c3;
+  --cyan: #aeb8af;
+  --violet: #b28690;
+  --green: #77b58a;
+  --red: #cf796c;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  --xl: 4px;
+  --lg: 3px;
+  --md: 2px;
+  --sans: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+html {
+  background: var(--canvas);
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 52% -18%, rgba(145, 170, 148, 0.045), transparent 43rem),
+    linear-gradient(180deg, #0b0e0c 0%, #090b0a 46%, #070908 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--sans);
+}
+
+body::after {
+  display: none !important;
+}
+
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+  opacity: 0.025;
+}
+
+.glow {
+  display: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ember-bright);
+  outline-offset: 3px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #727b73;
+}
+
+/* Access terminal ------------------------------------------------------ */
+
+.access-gate {
+  background:
+    radial-gradient(ellipse at 18% 15%, rgba(145, 170, 148, 0.055), transparent 34rem),
+    linear-gradient(135deg, #0b0e0c 0%, #080a09 62%, #070807 100%);
+}
+
+.gate-shell {
+  gap: clamp(48px, 8vw, 124px);
+  grid-template-columns: minmax(0, 1.14fr) minmax(390px, 0.72fr);
+  max-width: 1240px;
+}
+
+.gate-welcome {
+  border-left: 1px solid rgba(145, 170, 148, 0.38);
+  min-height: min(720px, calc(100dvh - 64px));
+  padding: 14px 0 14px 28px;
+  position: relative;
+}
+
+.gate-welcome::before,
+.gate-welcome::after {
+  background: var(--ember);
+  content: "";
+  height: 1px;
+  left: -1px;
+  position: absolute;
+  width: 28px;
+}
+
+.gate-welcome::before { top: 0; }
+.gate-welcome::after { bottom: 0; }
+
+.gate-brand,
+.brand-lockup {
+  gap: 14px;
+}
+
+.brand-symbol {
+  background: #0d110e;
+  border: 1px solid rgba(193, 210, 195, 0.44);
+  border-radius: 0;
+  box-shadow: inset 0 0 0 3px #090c0a;
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%);
+  height: 50px;
+  width: 46px;
+}
+
+.brand-symbol::after {
+  background: var(--ember);
+  bottom: 8px;
+  height: 2px;
+  left: 9px;
+  right: 9px;
+}
+
+.brand-symbol i {
+  border: 1px solid rgba(193, 210, 195, 0.19);
+  border-radius: 0;
+  height: 29px;
+  transform: rotate(45deg);
+  width: 29px;
+}
+
+.brand-symbol b {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.brand-copy strong {
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: 0.12em;
+}
+
+.brand-copy strong span,
+.micro-label b {
+  color: var(--ember);
+}
+
+.brand-copy small {
+  color: #8d978f;
+  font-size: 10.5px;
+  letter-spacing: 0.15em;
+}
+
+.gate-classification {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  color: var(--faint);
+  display: flex;
+  font: 700 10.5px var(--mono);
+  justify-content: space-between;
+  letter-spacing: 0.1em;
+  margin-top: 34px;
+  padding: 10px 0;
+  width: min(580px, 100%);
+}
+
+.gate-briefing {
+  padding: 58px 0;
+}
+
+.micro-label,
+.status-code {
+  color: #b6beb6;
+  font-size: 12px;
+  font-weight: 760;
+  letter-spacing: 0.12em;
+}
+
+.gate-date {
+  font-size: 13px;
+}
+
+.gate-time {
+  margin: 12px 0 32px;
+}
+
+.gate-time strong {
+  font-family: var(--mono);
+  font-size: clamp(42px, 6.4vw, 74px);
+  font-weight: 650;
+  letter-spacing: -0.08em;
+}
+
+.gate-time small,
+.gate-briefing h1 span {
+  color: var(--ember-bright);
+}
+
+.gate-briefing h1 {
+  font-size: clamp(52px, 6.5vw, 84px);
+  font-weight: 720;
+  letter-spacing: -0.065em;
+  line-height: 0.91;
+}
+
+.gate-tagline {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.025em;
+  margin-top: 25px;
+}
+
+.gate-local-status > i,
+.nav-status > i,
+.local-badge i,
+.signal i,
+.privacy-line > i,
+.radar-location-label i {
+  background: var(--green);
+  border-radius: 0;
+  box-shadow: none;
+  height: 7px;
+  transform: rotate(45deg);
+  width: 7px;
+}
+
+.gate-local-status strong,
+.nav-status strong {
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.gate-local-status small,
+.nav-status small {
+  font-size: 10px;
+}
+
+.gate-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 34%), #0e120f;
+  border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--ember);
+  border-radius: 2px;
+  box-shadow: var(--shadow), inset 0 0 0 4px rgba(0, 0, 0, 0.18);
+  padding: clamp(31px, 4vw, 48px);
+}
+
+.gate-panel::before {
+  background: var(--ember);
+  height: 2px;
+  opacity: 1;
+  width: 72px;
+}
+
+.gate-panel::after {
+  border-bottom: 1px solid rgba(193, 210, 195, 0.42);
+  border-right: 1px solid rgba(193, 210, 195, 0.42);
+  bottom: 10px;
+  content: "";
+  height: 22px;
+  position: absolute;
+  right: 10px;
+  width: 22px;
+}
+
+.gate-panel-top {
+  background: #141a15;
+  border: 1px solid var(--line);
+  margin: -8px -8px 0;
+  padding: 11px 12px;
+}
+
+.gate-panel-top span {
+  color: var(--ember-bright);
+}
+
+.gate-panel-top b {
+  font-size: 11px;
+}
+
+.gate-rule {
+  margin: 20px 0 30px;
+}
+
+.gate-rule i {
+  background: var(--ember);
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+.gate-panel h2 {
+  font-size: clamp(34px, 4vw, 50px);
+  font-weight: 720;
+  letter-spacing: -0.045em;
+}
+
+.gate-copy {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.gate-password-field {
+  background: #070907;
+  border-color: var(--line-strong);
+  border-radius: 1px;
+  min-height: 64px;
+}
+
+.gate-password-field:focus-within {
+  border-color: var(--ember);
+  box-shadow: 0 0 0 2px rgba(145, 170, 148, 0.14), inset 3px 0 var(--ember);
+}
+
+.gate-key-icon {
+  border-color: var(--ember);
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+.gate-key-icon::after {
+  background: var(--ember);
+  transform: rotate(-45deg);
+  transform-origin: left center;
+}
+
+.password-toggle {
+  border-radius: 1px;
+  color: var(--muted);
+  min-height: 44px;
+}
+
+.password-toggle:hover {
+  background: var(--soft);
+}
+
+.gate-error,
+.caps-lock-warning {
+  color: var(--red);
+}
+
+.gate-submit,
+.solid-action,
+.command-input button,
+.large-command button {
+  background: var(--ember);
+  border: 1px solid var(--ember-bright);
+  border-radius: 1px;
+  color: #090d0a;
+  text-shadow: none;
+}
+
+.gate-submit:hover,
+.solid-action:hover,
+.command-input button:hover,
+.large-command button:hover {
+  background: var(--ember-bright);
+}
+
+.gate-assurances {
+  color: #8b958d;
+  font-size: 10px;
+}
+
+.gate-assurances i {
+  background: var(--green);
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+/* Command shell ------------------------------------------------------- */
+
+.app-frame {
+  grid-template-columns: 242px minmax(0, 1fr);
+  max-width: 1640px;
+}
+
+.app-header {
+  background: rgba(9, 12, 10, 0.97);
+  border-bottom-color: var(--line-strong);
+  height: 84px;
+}
+
+.app-header::after {
+  background: var(--ember);
+  bottom: -1px;
+  content: "";
+  height: 2px;
+  left: 0;
+  position: absolute;
+  width: 86px;
+}
+
+.app-header .brand-symbol {
+  border-radius: 0;
+  height: 45px;
+  width: 42px;
+}
+
+.app-header .brand-symbol b {
+  font-size: 18px;
+}
+
+.header-status {
+  gap: 14px;
+}
+
+.clock-block {
+  border-left: 1px solid var(--line-strong);
+  padding-left: 16px;
+}
+
+.clock-block strong {
+  font-family: var(--mono);
+  font-size: 19px;
+}
+
+.local-badge {
+  background: rgba(119, 181, 138, 0.06);
+  border-color: rgba(119, 181, 138, 0.28);
+  border-radius: 1px;
+  color: #afc7b5;
+  min-height: 38px;
+}
+
+.lock-control,
+.mobile-lock-control {
+  border: 1px solid rgba(207, 121, 108, 0.34);
+  border-radius: 1px;
+  color: #d99a91;
+  min-height: 44px;
+}
+
+.lock-control:hover,
+.mobile-lock-control:hover {
+  background: rgba(207, 121, 108, 0.1);
+  border-color: var(--red);
+}
+
+.view-switcher {
+  border-right: 1px solid var(--line);
+  gap: 6px;
+  min-height: calc(100dvh - 84px);
+  padding: 34px 24px 34px 0;
+  top: 84px;
+}
+
+.view-switcher::before {
+  color: var(--faint);
+  content: "NAV // PRIMARY";
+  font: 700 10.5px var(--mono);
+  letter-spacing: 0.13em;
+  margin: 0 0 11px 12px;
+}
+
+.switch {
+  border-radius: 1px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  min-height: 54px;
+  padding: 0 13px;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.switch::after {
+  background: transparent;
+  content: "";
+  height: 100%;
+  left: -1px;
+  position: absolute;
+  top: 0;
+  width: 3px;
+}
+
+.switch:hover {
+  background: rgba(145, 170, 148, 0.055);
+}
+
+.switch.active {
+  background: #171d18;
+  border-color: rgba(145, 170, 148, 0.29);
+}
+
+.switch.active::after {
+  background: var(--ember);
+}
+
+.switch.active span {
+  color: var(--ember-bright);
+}
+
+.switch span {
+  font-size: 11px;
+}
+
+.nav-status {
+  padding-top: 24px;
+}
+
+.app-frame > main {
+  padding: 44px 0 84px clamp(30px, 3.8vw, 58px);
+}
+
+.briefing-head {
+  margin-bottom: 22px;
+}
+
+.briefing-head h1 {
+  font-size: clamp(46px, 5vw, 68px);
+  font-weight: 720;
+  letter-spacing: -0.055em;
+  margin-top: 14px;
+}
+
+.briefing-copy {
+  color: #99a39a;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  margin-top: 14px;
+  text-transform: uppercase;
+}
+
+.ops-strip {
+  align-items: center;
+  background: #0e120f;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ember);
+  color: #929d94;
+  display: grid;
+  font: 700 10.5px var(--mono);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  letter-spacing: 0.07em;
+  margin-bottom: 18px;
+  min-height: 40px;
+}
+
+.ops-strip span {
+  align-items: center;
+  border-right: 1px solid var(--line);
+  display: flex;
+  gap: 9px;
+  height: 100%;
+  padding: 0 13px;
+}
+
+.ops-strip span:last-child {
+  border-right: 0;
+}
+
+.ops-strip i {
+  background: var(--green);
+  box-shadow: none;
+  height: 6px;
+  transform: rotate(45deg);
+  width: 6px;
+}
+
+.outline-action,
+.arrow-link,
+.weather-actions button,
+.weather-actions a {
+  border-radius: 1px;
+  font-size: 11px;
+}
+
+.outline-action:hover,
+.weather-actions button:hover,
+.weather-actions a:hover {
+  background: rgba(145, 170, 148, 0.08);
+  border-color: rgba(193, 210, 195, 0.55);
+}
+
+.deck-panel,
+.settings-card,
+.task-entry-card,
+.note-composer {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 44%), var(--surface);
+  border-color: var(--line);
+  border-radius: 2px;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025), 0 12px 34px rgba(0, 0, 0, 0.12);
+  position: relative;
+}
+
+.deck-panel::after,
+.settings-card::after,
+.task-entry-card::after,
+.note-composer::after {
+  border-bottom: 1px solid rgba(193, 210, 195, 0.24);
+  border-right: 1px solid rgba(193, 210, 195, 0.24);
+  bottom: 7px;
+  content: "";
+  height: 12px;
+  pointer-events: none;
+  position: absolute;
+  right: 7px;
+  width: 12px;
+}
+
+/* Overview modules ---------------------------------------------------- */
+
+.today-layout {
+  gap: 14px;
+  grid-template-areas:
+    "mission progress"
+    "weather scratch"
+    "tasks links"
+    "projects projects"
+    "privacy privacy";
+  grid-template-columns: minmax(0, 1.52fr) minmax(330px, 0.8fr);
+}
+
+.mission-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 45%), #111612;
+  border-color: rgba(145, 170, 148, 0.34);
+  border-radius: 2px;
+  box-shadow: inset 3px 0 var(--ember), 0 20px 54px rgba(0, 0, 0, 0.17);
+  min-height: 360px;
+  padding: clamp(26px, 3vw, 36px);
+}
+
+.mission-card::before {
+  background: rgba(193, 210, 195, 0.23);
+  border: 0;
+  border-radius: 0;
+  height: 1px;
+  right: 24px;
+  top: 25px;
+  transform: none;
+  width: 82px;
+}
+
+.mission-card::after {
+  background: rgba(193, 210, 195, 0.23);
+  border: 0;
+  border-radius: 0;
+  height: 42px;
+  right: 24px;
+  top: 25px;
+  transform: none;
+  width: 1px;
+}
+
+.status-code,
+.mission-month {
+  color: var(--ember-bright);
+}
+
+.signal {
+  font-size: 11px;
+}
+
+.mission-date {
+  border-color: var(--line-strong);
+}
+
+.mission-number {
+  font-family: var(--mono);
+  font-size: clamp(70px, 7.5vw, 104px);
+  font-weight: 620;
+}
+
+.mission-message h2,
+.panel-heading h2 {
+  font-weight: 720;
+  letter-spacing: -0.035em;
+}
+
+.mission-message p {
+  font-size: 16px;
+}
+
+.command-input {
+  background: #070907;
+  border-color: var(--line-strong);
+  border-radius: 1px;
+}
+
+.command-input:focus-within {
+  border-color: var(--ember);
+  box-shadow: inset 3px 0 var(--ember);
+}
+
+.command-input button {
+  min-height: 52px;
+}
+
+.progress-module {
+  min-height: 250px;
+}
+
+.progress-orbit {
+  background: conic-gradient(var(--ember) var(--progress), #252b26 0);
+  border: 1px solid rgba(145, 170, 148, 0.31);
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.progress-orbit::after {
+  background: #0d110e;
+  border: 1px solid var(--line);
+}
+
+.progress-orbit strong {
+  font-family: var(--mono);
+}
+
+.weather-deck {
+  background: linear-gradient(180deg, rgba(145, 170, 148, 0.035), transparent 32%), #101410;
+  border-top: 2px solid rgba(145, 170, 148, 0.52);
+}
+
+.weather-glyph {
+  background: #171d18;
+  border-color: rgba(145, 170, 148, 0.35);
+  border-radius: 1px;
+  color: var(--ember-bright);
+}
+
+.weather-current h2 > span {
+  font-family: var(--mono);
+  font-weight: 620;
+}
+
+.weather-meta > span,
+.forecast-period,
+.launch-grid a,
+.project-unit,
+.task-item {
+  background: #0b0e0c !important;
+  border-radius: 1px !important;
+}
+
+.weather-meta > span {
+  color: #8f9991;
+  font-size: 10.5px;
+}
+
+.forecast-period > span {
+  background: #1a201b;
+  border-radius: 1px;
+  color: var(--ember-bright);
+}
+
+.forecast-loading {
+  background: #181d19;
+  border-radius: 1px;
+}
+
+.weather-actions button,
+.weather-actions a {
+  border-color: var(--line-strong);
+  min-height: 44px;
+}
+
+.weather-actions .weather-radar-action {
+  background: rgba(145, 170, 148, 0.08);
+  border-color: rgba(145, 170, 148, 0.4);
+  color: var(--ember-bright);
+}
+
+.module-top {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+
+.module-top > button,
+.task-check,
+.launch-grid a > span,
+.project-index,
+.project-graphic {
+  border-radius: 1px !important;
+}
+
+.scratch-module,
+.link-module {
+  min-height: 220px;
+}
+
+.latest-note-card {
+  border-left-color: var(--ember);
+  padding-left: 16px;
+}
+
+.latest-note-card.cyan,
+.latest-note-card.sage {
+  border-left-color: var(--cyan);
+}
+
+.latest-note-card.violet,
+.latest-note-card.blue {
+  border-left-color: var(--violet);
+}
+
+.task-deck,
+.project-deck {
+  border-top: 2px solid rgba(145, 170, 148, 0.34);
+}
+
+.panel-heading {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 17px;
+}
+
+.task-check {
+  border-color: #566158;
+}
+
+.task-item label:hover .task-check {
+  border-color: var(--ember);
+}
+
+.task-item.done .task-check {
+  background: var(--green);
+  border-color: var(--green);
+  color: #071009;
+}
+
+.task-item.done .task-status {
+  color: var(--green);
+}
+
+.delete-task:hover {
+  background: rgba(207, 121, 108, 0.12);
+  color: var(--red);
+}
+
+.launch-grid a > span {
+  color: var(--ember-bright);
+}
+
+.project-unit.ember { border-top-color: var(--ember); }
+.project-unit.cyan { border-top-color: var(--cyan); }
+.project-unit.violet { border-top-color: var(--violet); }
+
+.privacy-line {
+  border-radius: 1px;
+}
+
+.privacy-line strong {
+  color: #b4c8b8;
+}
+
+/* Secondary terminal views ------------------------------------------- */
+
+.page-title-row {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+}
+
+.page-title-row h2 {
+  font-weight: 720;
+  letter-spacing: -0.04em;
+}
+
+.page-title-row > div > p:last-child {
+  color: var(--muted);
+}
+
+.page-stat,
+.project-count,
+.task-entry-card,
+.full-task-panel,
+.settings-card,
+.note-card,
+.project-card {
+  border-radius: 2px !important;
+}
+
+.large-command input,
+.note-search,
+.note-composer > input,
+.note-composer > textarea,
+.setting-row,
+.data-counters > div,
+.install-path span,
+.task-filters {
+  background: #0a0d0b;
+  border-radius: 1px;
+}
+
+.large-command input:focus,
+.note-composer > input:focus,
+.note-composer > textarea:focus {
+  border-color: var(--ember);
+  box-shadow: 0 0 0 3px rgba(145, 170, 148, 0.1);
+}
+
+.large-command button,
+.filter,
+.note-actions button {
+  border-radius: 1px !important;
+}
+
+.filter.active {
+  background: #1b221c !important;
+  border: 1px solid rgba(145, 170, 148, 0.34) !important;
+  color: var(--ember-bright) !important;
+}
+
+.tone-picker button {
+  border-radius: 1px;
+}
+
+.tone-picker .ember { background: var(--ember); }
+.tone-picker .cyan { background: var(--cyan); }
+.tone-picker .violet { background: var(--violet); }
+
+.note-card,
+.project-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent), #101410;
+}
+
+.note-card { border-top-color: var(--ember); }
+.note-card.cyan { border-top-color: var(--cyan); }
+.note-card.violet { border-top-color: var(--violet); }
+
+.project-card.ember {
+  --pa: var(--ember);
+  --pt: rgba(145, 170, 148, 0.12);
+}
+
+.project-card.cyan {
+  --pa: var(--cyan);
+  --pt: rgba(174, 184, 175, 0.1);
+}
+
+.project-card.violet {
+  --pa: var(--violet);
+  --pt: rgba(178, 134, 144, 0.1);
+}
+
+.project-graphic {
+  background: linear-gradient(120deg, var(--pt), transparent), #0b0e0c;
+}
+
+.settings-icon {
+  border: 1px solid var(--line);
+  border-radius: 1px;
+  color: var(--ember-bright);
+}
+
+/* Radar scope --------------------------------------------------------- */
+
+.radar-backdrop {
+  background: rgba(2, 3, 2, 0.9);
+}
+
+.radar-dialog {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 30%), #0d110e;
+  border-color: var(--line-strong);
+  border-radius: 2px;
+  box-shadow: 0 30px 120px rgba(0, 0, 0, 0.78), inset 0 0 0 4px rgba(0, 0, 0, 0.22);
+}
+
+.radar-dialog::before {
+  background: var(--ember);
+  content: "";
+  height: 2px;
+  left: 0;
+  position: absolute;
+  right: auto;
+  top: 0;
+  width: 112px;
+}
+
+.radar-close,
+.radar-heading-actions button,
+.radar-timeline button,
+.radar-zoom-controls button {
+  border-radius: 1px;
+  min-height: 44px;
+}
+
+.radar-map-shell {
+  border-color: rgba(145, 170, 148, 0.3);
+  border-radius: 1px;
+}
+
+.radar-map {
+  background-color: #0b0e0c;
+  background-image: none;
+}
+
+.radar-base-layer {
+  filter: grayscale(1) brightness(0.48) contrast(1.35);
+}
+
+.radar-center-marker {
+  border-color: var(--ember-bright);
+}
+
+.radar-center-marker::before,
+.radar-center-marker::after,
+.radar-center-marker i {
+  background: var(--ember-bright);
+}
+
+.radar-timeline input {
+  accent-color: var(--ember);
+}
+
+.app-footer {
+  border-top-color: var(--line);
+  font-size: 10px;
+}
+
+.app-footer span {
+  color: #8c978e;
+}
+
+.app-footer b {
+  color: var(--ember-bright);
+}
+
+.action-toast {
+  background: #141915;
+  border-color: var(--line-strong);
+  border-radius: 1px;
+}
+
+/* Responsive control surfaces ---------------------------------------- */
+
+@media (max-width: 1280px) {
+  .today-layout {
+    grid-template-columns: minmax(0, 1.3fr) minmax(310px, 0.8fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .app-frame {
+    max-width: 940px;
+  }
+
+  .app-header {
+    height: 78px;
+  }
+
+  .view-switcher {
+    align-self: auto;
+    background: rgba(13, 17, 14, 0.985);
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    box-shadow: 0 18px 70px rgba(0, 0, 0, 0.68);
+    display: grid;
+    flex-direction: row;
+    height: 76px;
+    max-height: 76px;
+    min-height: 0;
+    overflow: hidden;
+    padding: 5px;
+    position: fixed;
+    top: auto;
+  }
+
+  .view-switcher::before {
+    display: none;
+  }
+
+  .switch {
+    border-radius: 1px;
+    font-size: 11.5px;
+    letter-spacing: 0.01em;
+    min-height: 64px;
+    padding: 5px 3px;
+  }
+
+  .switch::after {
+    height: 3px;
+    left: 16%;
+    top: auto;
+    width: 68%;
+  }
+
+  .switch.active {
+    background: #1b221c;
+    border-color: rgba(145, 170, 148, 0.28);
+  }
+
+  .today-layout {
+    grid-template-areas: "mission" "progress" "weather" "tasks" "scratch" "projects" "links" "privacy";
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background:
+      radial-gradient(ellipse at 52% -12%, rgba(145, 170, 148, 0.04), transparent 27rem),
+      linear-gradient(180deg, #0b0e0c 0%, #080a09 100%);
+  }
+
+  .app-frame {
+    padding: 0 14px;
+  }
+
+  .app-header {
+    background: rgba(9, 12, 10, 0.985);
+    height: calc(70px + env(safe-area-inset-top));
+  }
+
+  .app-header::after {
+    width: 72px;
+  }
+
+  .app-header .brand-symbol {
+    height: 40px;
+    width: 37px;
+  }
+
+  .mobile-lock-control {
+    display: block;
+    font-size: 11px;
+    min-height: 44px;
+    padding: 0 13px;
+  }
+
+  .app-frame > main {
+    padding-top: 30px;
+  }
+
+  .briefing-head {
+    margin-bottom: 18px;
+  }
+
+  .briefing-head h1 {
+    font-size: clamp(42px, 11.5vw, 56px);
+  }
+
+  .briefing-copy {
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  .micro-label,
+  .status-code {
+    font-size: 11.5px;
+    letter-spacing: 0.095em;
+  }
+
+  .ops-strip {
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 14px;
+  }
+
+  .ops-strip span {
+    min-height: 38px;
+  }
+
+  .ops-strip span:nth-child(2) {
+    border-right: 0;
+  }
+
+  .ops-strip span:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+
+  .mission-card {
+    min-height: 0;
+    padding: 24px 20px 20px;
+  }
+
+  .mission-content {
+    padding: 34px 0 28px;
+  }
+
+  .mission-message h2 {
+    font-size: 28px;
+  }
+
+  .mission-message p {
+    font-size: 16px;
+  }
+
+  .command-input {
+    padding: 8px;
+  }
+
+  .command-input button {
+    min-height: 52px;
+  }
+
+  .progress-module,
+  .scratch-module,
+  .link-module,
+  .weather-deck,
+  .task-deck,
+  .project-deck {
+    padding: 22px 20px;
+  }
+
+  .panel-heading h2 {
+    font-size: 27px;
+  }
+
+  .weather-meta > span {
+    font-size: 10.5px;
+  }
+
+  .forecast-period strong {
+    font-size: 14px;
+  }
+
+  .forecast-period small,
+  .weather-footer > span {
+    font-size: 10px;
+  }
+
+  .page-title-row h2 {
+    font-size: 40px;
+  }
+
+  .page-title-row > div > p:last-child {
+    font-size: 16px;
+  }
+
+  .task-entry-card,
+  .full-task-panel,
+  .settings-card {
+    padding: 22px 20px;
+  }
+
+  .note-card,
+  .project-card {
+    padding: 21px;
+  }
+
+  .radar-dialog {
+    border-radius: 2px 2px 0 0;
+  }
+
+  .radar-heading h2 {
+    font-size: 38px;
+  }
+
+  .app-footer {
+    font-size: 9px;
+  }
+
+  .action-toast {
+    border-radius: 1px;
+  }
+}
+
+@media (max-width: 520px) {
+  .access-gate {
+    padding: max(16px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
+  }
+
+  .gate-shell {
+    display: block;
+  }
+
+  .gate-welcome {
+    border-left: 0;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .gate-welcome::before,
+  .gate-welcome::after {
+    display: none;
+  }
+
+  .gate-brand {
+    margin-bottom: 20px;
+  }
+
+  .gate-classification {
+    font-size: 9.5px;
+    margin: 0 0 24px;
+    padding: 8px 0;
+  }
+
+  .gate-briefing {
+    padding: 0;
+  }
+
+  .gate-briefing .micro-label {
+    font-size: 11px;
+  }
+
+  .gate-briefing h1 {
+    font-size: clamp(45px, 13vw, 56px);
+  }
+
+  .gate-tagline {
+    font-size: 13px;
+    margin: 16px 0 24px;
+  }
+
+  .gate-panel {
+    border-radius: 2px;
+    padding: 24px 19px;
+  }
+
+  .gate-panel h2 {
+    font-size: 32px;
+  }
+
+  .gate-panel-top,
+  .gate-rule,
+  .gate-panel > .micro-label {
+    display: none;
+  }
+
+  .gate-copy {
+    font-size: 14.5px;
+  }
+
+  .gate-assurances {
+    font-size: 9.5px;
+  }
+
+  .view-switcher {
+    border-radius: 2px;
+    height: 74px;
+    max-height: 74px;
+    min-height: 0;
+    width: calc(100% - 18px);
+  }
+
+  .switch {
+    font-size: 10.5px;
+    min-height: 62px;
+  }
+
+  .switch span {
+    font-size: 9.5px;
+  }
+
+  .mission-content {
+    display: block;
+  }
+
+  .mission-date {
+    border-bottom: 1px solid var(--line-strong);
+    border-right: 0;
+    padding-bottom: 20px;
+  }
+
+  .mission-message {
+    padding-top: 21px;
+  }
+
+  .mission-number {
+    font-size: 61px;
+  }
+
+  .weather-current h2 {
+    gap: 5px;
+  }
+
+  .weather-actions {
+    grid-template-columns: 1.25fr 1fr 1fr;
+  }
+
+  .weather-actions button,
+  .weather-actions a {
+    font-size: 10px;
+  }
+
+  .progress-copy strong {
+    font-size: 18px;
+  }
+
+  .launch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ops-strip {
+    font-size: 9.5px;
+  }
+}
+
+@media (max-width: 390px) {
+  .ops-strip span {
+    padding: 0 9px;
+  }
+
+  .briefing-head h1 {
+    font-size: 41px;
+  }
+
+  .micro-label,
+  .status-code {
+    font-size: 10.5px;
+  }
+
+  .weather-actions a {
+    display: none;
+  }
+
+  .weather-actions {
+    grid-template-columns: 1.2fr 1fr;
+  }
+
+  .gate-classification span:last-child {
+    display: none;
+  }
+
+  .gate-classification {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    display: none;
+  }
+}
