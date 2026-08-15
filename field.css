@@ -1,3 +1,35 @@
+@font-face {
+  font-display: swap;
+  font-family: "IBM Plex Sans Condensed";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/IBMPlexSansCondensed-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "IBM Plex Sans Condensed";
+  font-style: normal;
+  font-weight: 600 900;
+  src: url("./assets/fonts/IBMPlexSansCondensed-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 600 900;
+  src: url("./assets/fonts/IBMPlexMono-SemiBold.woff2") format("woff2");
+}
+
 /* ======================================================================
    ALEX HQ V6 — GRAPHITE FIELD HARDWARE
    A restrained police MDT / military field-terminal visual system.
@@ -24,9 +56,9 @@
   --xl: 4px;
   --lg: 3px;
   --md: 2px;
-  --sans: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
-  --display: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  --mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --sans: "IBM Plex Sans Condensed", "Avenir Next Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --display: "IBM Plex Sans Condensed", "Avenir Next Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 }
 
 html {
@@ -1424,9 +1456,9 @@ textarea::placeholder {
 }
 
 /* ======================================================================
-   V6.3 — CAD WORKSTATION TYPOGRAPHY
-   A strict system-monospace display layer replaces poster-like condensed
-   lettering while body copy remains readable for daily use.
+   V6.4 — PUBLIC-SAFETY WORKSTATION TYPOGRAPHY
+   Self-hosted IBM Plex Condensed handles readable UI hierarchy while Plex
+   Mono is reserved for status, navigation, data, and command entry.
    ====================================================================== */
 
 .gate-briefing h1,
@@ -1445,16 +1477,15 @@ textarea::placeholder {
 .progress-copy strong,
 .task-copy strong {
   font-family: var(--display);
-  font-variant-numeric: tabular-nums;
   text-rendering: geometricPrecision;
 }
 
 .gate-briefing h1,
 .briefing-head h1 {
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 0.95;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 0.94;
+  text-transform: none;
 }
 
 .gate-panel h2,
@@ -1462,9 +1493,9 @@ textarea::placeholder {
 .panel-heading h2,
 .page-title-row h2,
 .radar-heading h2 {
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: -0.006em;
+  text-transform: none;
 }
 
 .latest-note-card h3,
@@ -1475,8 +1506,8 @@ textarea::placeholder {
 .settings-card h3,
 .progress-copy strong,
 .task-copy strong {
-  font-weight: 700;
-  letter-spacing: 0.005em;
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
 .gate-password-field input,
