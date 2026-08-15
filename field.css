@@ -316,6 +316,10 @@ textarea::placeholder {
   box-shadow: 0 0 0 2px rgba(145, 170, 148, 0.14), inset 3px 0 var(--ember);
 }
 
+.gate-password-field input:focus-visible {
+  outline: 0;
+}
+
 .gate-key-icon {
   border-color: var(--ember);
   border-radius: 0;
