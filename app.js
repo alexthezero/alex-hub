@@ -121,12 +121,12 @@
         unlockApp();
         return;
       }
-      error.textContent = "PASSWORD DOESN’T MATCH · TRY AGAIN";
+      error.textContent = "ACCESS CODE REJECTED · TRY AGAIN";
     } catch {
       error.textContent = "SECURE CHECK UNAVAILABLE";
     } finally {
       submitButton.disabled = false;
-      submitLabel.textContent = "OPEN WORKSPACE";
+      submitLabel.textContent = "AUTHENTICATE";
     }
     passwordInput.value = "";
     $(".gate-panel").classList.remove("denied");
@@ -179,7 +179,7 @@
   let radarLocateRequested = false;
   let radarLastFocus = null;
 
-  function announce(message = "ALL CHANGES SAVED LOCALLY") {
+  function announce(message = "LOCAL DATA CHANNEL NOMINAL") {
     const status = $("#save-status");
     status.textContent = message;
     status.classList.add("flash");
@@ -257,10 +257,10 @@
 
     $("#today-task-list").innerHTML = ordered.length
       ? ordered.slice(0, 5).map((task) => taskMarkup(task)).join("")
-      : '<p class="inline-empty">Queue clear. Add your first move above.</p>';
+      : '<p class="inline-empty">No active assignments. Enter the first task above.</p>';
     $("#all-task-list").innerHTML = visible.length
       ? visible.map((task) => taskMarkup(task, true)).join("")
-      : `<p class="inline-empty">No ${taskFilter === "all" ? "" : `${taskFilter} `}tasks here.</p>`;
+      : `<p class="inline-empty">No ${taskFilter === "all" ? "" : `${taskFilter} `}assignments in this queue.</p>`;
 
     $("#task-total-stat").textContent = tasks.length;
     $("#task-count-label").textContent = `${visible.length} ${visible.length === 1 ? "ITEM" : "ITEMS"}`;
@@ -268,8 +268,8 @@
     $("#progress-fraction").textContent = `${completed} / ${tasks.length}`;
     $("#progress-percent").textContent = `${percent}%`;
     $("#progress-orbit").style.setProperty("--progress", `${percent * 3.6}deg`);
-    $("#remaining-count").textContent = tasks.length === 0 ? "No tasks queued" : remaining === 0 ? "Queue complete" : `${remaining} ${remaining === 1 ? "task" : "tasks"} remaining`;
-    $("#progress-message").textContent = tasks.length === 0 ? "Your runway is clear." : remaining === 0 ? "You handled everything." : percent >= 50 ? "Past halfway. Keep moving." : "Momentum starts with one.";
+    $("#remaining-count").textContent = tasks.length === 0 ? "No assignments queued" : remaining === 0 ? "Operation complete" : `${remaining} ${remaining === 1 ? "assignment" : "assignments"} remaining`;
+    $("#progress-message").textContent = tasks.length === 0 ? "Tasking channel is clear." : remaining === 0 ? "All assigned actions are complete." : percent >= 50 ? "Past halfway. Maintain pace." : "Complete one action to build momentum.";
   }
 
   function saveTasks() {
@@ -321,13 +321,13 @@
   function renderLatestNote() {
     const latest = notes[0];
     if (!latest) {
-      $("#latest-note").innerHTML = '<p class="latest-empty">Nothing saved yet. Capture the thought before it disappears.</p>';
+      $("#latest-note").innerHTML = '<p class="latest-empty">No field log entries. Record the next useful detail here.</p>';
       return;
     }
     $("#latest-note").innerHTML = `<div class="latest-note-card ${esc(latest.color || "ember")}">
       <h3>${esc(latest.title)}</h3>
       <p>${esc(latest.content || "No additional details.")}</p>
-      <button data-open-notes>OPEN VAULT →</button>
+      <button data-open-notes>OPEN FIELD LOG →</button>
     </div>`;
   }
 
@@ -342,7 +342,7 @@
       <footer>${noteDate(note)}</footer>
     </article>`;
     }).join("") : query ? '<p class="inline-empty note-no-results">No notes match that search.</p>' : "";
-    $("#note-count-label").textContent = query ? `${visibleNotes.length} OF ${notes.length}` : `${notes.length} ${notes.length === 1 ? "NOTE" : "NOTES"}`;
+    $("#note-count-label").textContent = query ? `${visibleNotes.length} OF ${notes.length}` : `${notes.length} ${notes.length === 1 ? "ENTRY" : "ENTRIES"}`;
     $("#notes-empty").hidden = notes.length > 0 || !$("#note-form").hidden;
     renderLatestNote();
   }
@@ -372,7 +372,7 @@
     editingNoteId = note ? String(note.id) : null;
     form.reset();
     $("#note-form-label").textContent = note ? "EDIT ENTRY" : "NEW ENTRY";
-    $("#note-save-button").textContent = note ? "UPDATE NOTE" : "SAVE TO VAULT";
+    $("#note-save-button").textContent = note ? "UPDATE LOG ENTRY" : "SAVE LOG ENTRY";
     $("#note-title").value = note?.title || "";
     $("#note-content").value = note?.content || "";
     setNoteColor(note?.color || "ember");
@@ -415,7 +415,7 @@
         <footer><i data-project-bar="${esc(project.id)}" style="--amount:${progress}%"></i></footer>
       </article>`;
     }).join("");
-    $("#project-count").textContent = `${String(projects.length).padStart(2, "0")} ACTIVE`;
+    $("#project-count").textContent = `${String(projects.length).padStart(2, "0")} ACTIVE OPS`;
   }
 
   function updateProjectProgress(projectId, value) {
@@ -966,7 +966,7 @@
     editingNoteId = null;
     setNoteColor();
     $("#note-form-label").textContent = "NEW ENTRY";
-    $("#note-save-button").textContent = "SAVE TO VAULT";
+    $("#note-save-button").textContent = "SAVE LOG ENTRY";
     event.currentTarget.hidden = true;
     saveNotes();
   });

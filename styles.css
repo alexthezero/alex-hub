@@ -113,3 +113,139 @@ input::placeholder,textarea::placeholder{color:#69706f}
 }
 @media(max-width:390px){.brand-copy strong{letter-spacing:.09em}.briefing-head h1{font-size:43px}.weather-meta>span{font-size:9px;padding:10px 8px}.weather-actions a{display:none}.weather-actions{grid-template-columns:1fr 1fr}.task-item{gap:8px;padding:9px}.task-copy strong{font-size:15px}.data-counters{gap:6px}.data-counters>div{padding:10px}.radar-map{min-height:250px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+/* ================================================================
+   V5 FIELD TERMINAL SYSTEM
+   Police MDT + military operations terminal visual layer
+   ================================================================ */
+:root{
+  --canvas:#05090a;
+  --surface:#091012;
+  --raised:#0e181a;
+  --soft:#142023;
+  --line:rgba(165,195,185,.16);
+  --line-strong:rgba(177,207,196,.28);
+  --text:#e7ede8;
+  --muted:#a6b0aa;
+  --faint:#6f7d77;
+  --ember:#f1a13a;
+  --ember-bright:#ffc062;
+  --cyan:#54c8c6;
+  --violet:#8ca8bd;
+  --green:#73d49a;
+  --red:#e36a58;
+  --shadow:0 24px 72px rgba(0,0,0,.48);
+  --xl:4px;
+  --lg:3px;
+  --md:2px;
+  --sans:"Arial Narrow","Roboto Condensed","Avenir Next Condensed","Segoe UI",Arial,sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+}
+html{background:var(--canvas)}
+body{
+  background:
+    linear-gradient(rgba(84,200,198,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(84,200,198,.025) 1px,transparent 1px),
+    radial-gradient(circle at 82% 12%,rgba(241,161,58,.055),transparent 31rem),
+    linear-gradient(145deg,#05090a 0%,#070d0f 52%,#040708 100%);
+  background-size:32px 32px,32px 32px,auto,auto;
+  color:var(--text);
+}
+body:after{background:linear-gradient(180deg,transparent 0,rgba(84,200,198,.018) 49%,rgba(84,200,198,.055) 50%,transparent 52%);background-size:100% 7px;content:"";inset:0;opacity:.42;pointer-events:none;position:fixed;z-index:950}
+.noise{background:linear-gradient(90deg,transparent 0,rgba(241,161,58,.018) 50%,transparent 100%);opacity:1}
+.glow{display:none}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:var(--ember-bright)}
+
+/* Access terminal */
+.access-gate{
+  background:
+    linear-gradient(rgba(84,200,198,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(84,200,198,.025) 1px,transparent 1px),
+    radial-gradient(circle at 18% 28%,rgba(241,161,58,.08),transparent 28rem),
+    #040809;
+  background-size:40px 40px,40px 40px,auto,auto;
+}
+.gate-shell{gap:clamp(48px,8vw,130px);grid-template-columns:minmax(0,1.16fr) minmax(390px,.7fr);max-width:1240px}
+.gate-welcome{border-left:1px solid rgba(241,161,58,.42);min-height:min(720px,calc(100dvh - 64px));padding:14px 0 14px 28px;position:relative}
+.gate-welcome:before,.gate-welcome:after{background:var(--ember);content:"";height:1px;left:-1px;position:absolute;width:28px}.gate-welcome:before{top:0}.gate-welcome:after{bottom:0}
+.gate-brand,.brand-lockup{gap:14px}
+.brand-symbol{background:#0a1113;border:1px solid rgba(241,161,58,.48);border-radius:0;box-shadow:inset 0 0 0 3px #071012,0 0 22px rgba(241,161,58,.08);clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%);height:50px;width:46px}
+.brand-symbol:after{background:var(--ember);bottom:8px;height:2px;left:9px;right:9px}.brand-symbol i{border:1px solid rgba(84,200,198,.25);border-radius:0;height:29px;transform:rotate(45deg);width:29px}.brand-symbol b{font-family:var(--mono);font-size:20px;font-weight:800}
+.brand-copy strong{font-family:var(--mono);font-size:16px;letter-spacing:.12em}.brand-copy strong span{color:var(--ember)}.brand-copy small{color:#85928c;font-size:10px;letter-spacing:.16em}
+.gate-classification{border-bottom:1px solid var(--line);border-top:1px solid var(--line);color:var(--faint);display:flex;font:700 10px var(--mono);justify-content:space-between;letter-spacing:.11em;margin-top:34px;padding:10px 0;width:min(580px,100%)}
+.gate-briefing{padding:58px 0}.micro-label,.status-code{color:#a9b4ae;font-size:12px;font-weight:750;letter-spacing:.13em}.micro-label b{color:var(--ember)}
+.gate-date{font-size:13px}.gate-time{margin:12px 0 32px}.gate-time strong{font-family:var(--mono);font-size:clamp(42px,6.4vw,74px);font-weight:650;letter-spacing:-.08em}.gate-time small{color:var(--ember-bright)}
+.gate-briefing h1{font-size:clamp(52px,6.5vw,84px);font-weight:700;letter-spacing:-.065em;line-height:.91}.gate-briefing h1 span{color:var(--ember-bright)}.gate-tagline{color:var(--muted);font-family:var(--mono);font-size:15px;letter-spacing:.03em;margin-top:25px}
+.gate-local-status>i,.nav-status>i{background:var(--green);border-radius:0;box-shadow:0 0 14px rgba(115,212,154,.46);height:7px;transform:rotate(45deg);width:7px}.gate-local-status strong,.nav-status strong{font-family:var(--mono);font-size:11px}.gate-local-status small,.nav-status small{font-size:10px}
+.gate-panel{background:linear-gradient(180deg,rgba(20,32,35,.92),rgba(7,13,15,.98));border:1px solid rgba(241,161,58,.36);border-radius:2px;box-shadow:var(--shadow),inset 0 0 0 4px rgba(0,0,0,.28);padding:clamp(31px,4vw,48px)}
+.gate-panel:before{background:repeating-linear-gradient(90deg,var(--ember) 0 10px,transparent 10px 16px);height:3px;opacity:.9}.gate-panel:after{border-bottom:1px solid var(--ember);border-right:1px solid var(--ember);bottom:10px;content:"";height:26px;position:absolute;right:10px;width:26px}
+.gate-panel-top{background:rgba(241,161,58,.08);border:1px solid rgba(241,161,58,.18);margin:-8px -8px 0;padding:11px 12px}.gate-panel-top span{color:var(--ember-bright)}.gate-panel-top b{font-size:11px}
+.gate-rule{margin:20px 0 30px}.gate-rule i{background:var(--ember);border-radius:0;transform:rotate(45deg)}
+.gate-panel h2{font-size:clamp(34px,4vw,50px);font-weight:700;letter-spacing:-.045em}.gate-copy{font-size:15px;line-height:1.65}
+.gate-password-field{background:#030708;border-color:rgba(177,207,196,.31);border-radius:1px;min-height:64px}.gate-password-field:focus-within{border-color:var(--ember);box-shadow:0 0 0 2px rgba(241,161,58,.13),inset 4px 0 var(--ember)}
+.gate-key-icon{border-color:var(--ember);border-radius:0;transform:rotate(45deg)}.gate-key-icon:after{background:var(--ember);transform:rotate(-45deg);transform-origin:left center}
+.gate-submit,.solid-action{background:var(--ember);border:1px solid var(--ember-bright);border-radius:1px;color:#120b02;text-shadow:0 1px rgba(255,255,255,.2)}.gate-submit:hover,.solid-action:hover{background:var(--ember-bright)}
+.gate-assurances{font-size:10px}.gate-assurances i{background:var(--green);border-radius:0;transform:rotate(45deg)}
+
+/* Command shell */
+.app-frame{grid-template-columns:246px minmax(0,1fr);max-width:1640px}
+.app-header{background:rgba(4,8,9,.97);border-bottom-color:rgba(241,161,58,.25);height:84px}.app-header:after{background:repeating-linear-gradient(90deg,var(--ember) 0 12px,transparent 12px 20px);bottom:-1px;content:"";height:2px;left:0;position:absolute;width:180px}
+.app-header .brand-symbol{border-radius:0;height:45px;width:42px}.app-header .brand-symbol b{font-size:18px}.header-status{gap:14px}.clock-block{border-left:1px solid var(--line-strong);padding-left:16px}.clock-block strong{font-family:var(--mono);font-size:19px}.local-badge{background:rgba(115,212,154,.06);border-color:rgba(115,212,154,.28);border-radius:1px;color:#a8cdb4;min-height:36px}.local-badge i,.signal i,.privacy-line>i,.radar-location-label i{background:var(--green);border-radius:0;box-shadow:0 0 10px rgba(115,212,154,.4);transform:rotate(45deg)}
+.lock-control,.mobile-lock-control{border:1px solid rgba(227,106,88,.28);border-radius:1px;color:#d99487}.lock-control:hover,.mobile-lock-control:hover{background:rgba(227,106,88,.1);border-color:var(--red)}
+.view-switcher{border-right:1px solid var(--line);gap:6px;min-height:calc(100dvh - 84px);padding:34px 24px 34px 0;top:84px}.view-switcher:before{color:var(--faint);content:"NAV // PRIMARY";font:700 10px var(--mono);letter-spacing:.14em;margin:0 0 11px 12px}
+.switch{border-radius:1px;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.045em;min-height:54px;padding:0 13px;position:relative;text-transform:uppercase}.switch:after{background:transparent;content:"";height:100%;left:-1px;position:absolute;top:0;width:3px}.switch:hover{background:rgba(84,200,198,.045)}.switch.active{background:linear-gradient(90deg,rgba(241,161,58,.15),rgba(241,161,58,.025));border-color:rgba(241,161,58,.28)}.switch.active:after{background:var(--ember)}.switch span{font-size:11px}.nav-status{padding-top:24px}
+.app-frame>main{padding:44px 0 84px clamp(30px,3.8vw,58px)}
+.briefing-head{margin-bottom:22px}.briefing-head h1{font-size:clamp(46px,5vw,68px);font-weight:700;letter-spacing:-.055em;margin-top:14px}.briefing-copy{color:#89968f;font-family:var(--mono);font-size:14px;letter-spacing:.025em;margin-top:14px;text-transform:uppercase}
+.ops-strip{align-items:center;background:rgba(7,14,16,.92);border:1px solid var(--line);border-left:3px solid var(--ember);color:#819088;display:grid;font:700 10px var(--mono);grid-template-columns:repeat(4,minmax(0,1fr));letter-spacing:.08em;margin-bottom:18px;min-height:38px}.ops-strip span{align-items:center;border-right:1px solid var(--line);display:flex;gap:9px;height:100%;padding:0 13px}.ops-strip span:last-child{border-right:0}.ops-strip i{background:var(--green);box-shadow:0 0 10px rgba(115,212,154,.45);height:6px;transform:rotate(45deg);width:6px}
+.outline-action,.arrow-link,.weather-actions button,.weather-actions a{border-radius:1px;font-size:11px}.outline-action:hover,.weather-actions button:hover,.weather-actions a:hover{background:rgba(241,161,58,.08);border-color:rgba(241,161,58,.55)}
+.deck-panel,.settings-card,.task-entry-card,.note-composer{background:linear-gradient(180deg,rgba(14,24,26,.97),rgba(7,13,15,.98));border-color:var(--line);border-radius:2px;box-shadow:inset 0 1px rgba(255,255,255,.025);position:relative}
+.deck-panel:after,.settings-card:after,.task-entry-card:after,.note-composer:after{border-bottom:1px solid rgba(84,200,198,.26);border-right:1px solid rgba(84,200,198,.26);bottom:7px;content:"";height:13px;pointer-events:none;position:absolute;right:7px;width:13px}
+
+/* Overview modules */
+.today-layout{gap:14px;grid-template-areas:"mission progress" "weather scratch" "tasks links" "projects projects" "privacy privacy";grid-template-columns:minmax(0,1.52fr) minmax(330px,.8fr)}
+.mission-card{background:linear-gradient(110deg,rgba(241,161,58,.075),transparent 48%),linear-gradient(180deg,#0d1719,#070d0f);border-color:rgba(241,161,58,.38);border-radius:2px;box-shadow:inset 4px 0 var(--ember),0 24px 70px rgba(0,0,0,.2);min-height:360px;padding:clamp(26px,3vw,36px)}
+.mission-card:before{border:1px solid rgba(241,161,58,.16);border-radius:0;height:220px;right:-115px;top:-98px;transform:rotate(45deg);width:220px}.mission-card:after{border:1px solid rgba(84,200,198,.11);border-radius:0;height:145px;right:-76px;top:-59px;transform:rotate(45deg);width:145px}
+.status-code{color:var(--ember-bright)}.signal{font-size:11px}.mission-date{border-color:rgba(241,161,58,.27)}.mission-number{font-family:var(--mono);font-size:clamp(70px,7.5vw,104px);font-weight:600}.mission-month{color:var(--ember-bright)}.mission-message h2,.panel-heading h2{font-weight:700;letter-spacing:-.035em}.mission-message p{font-size:16px}
+.command-input{background:#030708;border-color:rgba(177,207,196,.27);border-radius:1px}.command-input:focus-within{border-color:rgba(241,161,58,.65);box-shadow:inset 3px 0 var(--ember)}.command-input button{background:var(--ember);border:1px solid var(--ember-bright);border-radius:1px}.command-input button:hover{background:var(--ember-bright)}
+.progress-module{min-height:250px}.progress-orbit{background:conic-gradient(var(--ember) var(--progress),#182326 0);border:1px solid rgba(241,161,58,.32);border-radius:50%;box-shadow:0 0 0 6px rgba(241,161,58,.035)}.progress-orbit:after{background:#091113;border:1px solid var(--line)}.progress-orbit strong{font-family:var(--mono)}
+.weather-deck{background:linear-gradient(135deg,rgba(84,200,198,.075),transparent 43%),linear-gradient(180deg,#0d1719,#070d0f);border-top:2px solid rgba(84,200,198,.48)}.weather-glyph{background:rgba(84,200,198,.07);border-color:rgba(84,200,198,.32);border-radius:1px}.weather-current h2>span{font-family:var(--mono);font-weight:600}.weather-meta>span{background:#050b0c;border-radius:1px;font-size:10px}.forecast-period{background:#060c0e;border-radius:1px}.forecast-period>span{border-radius:1px}.forecast-loading{border-radius:1px}.weather-actions button,.weather-actions a{border-color:var(--line)}.weather-actions .weather-radar-action{background:rgba(84,200,198,.09);border-color:rgba(84,200,198,.38);color:#81e1dd}
+.module-top{border-bottom:1px solid var(--line);padding-bottom:12px}.module-top>button{border-radius:1px}.scratch-module,.link-module{min-height:220px}.latest-note-card{border-left-color:var(--ember);padding-left:16px}
+.task-deck,.project-deck{border-top:2px solid rgba(241,161,58,.34)}.panel-heading{border-bottom:1px solid var(--line);padding-bottom:17px}.task-item{background:#060c0e!important;border-radius:1px!important}.task-check{border-radius:1px!important}.launch-grid a{background:#060c0e!important;border-radius:1px!important}.launch-grid a>span{border-radius:1px!important}.project-unit{background:#060c0e!important;border-radius:1px!important}
+.privacy-line{border-radius:1px}.privacy-line strong{color:#9fc8ad}
+
+/* Secondary terminal views */
+.page-title-row{border-bottom:1px solid var(--line);padding-bottom:24px}.page-title-row h2{font-weight:700;letter-spacing:-.04em}.page-title-row>div>p:last-child{color:var(--muted)}.page-stat,.project-count{border-radius:1px!important}.task-entry-card,.full-task-panel,.settings-card,.note-card,.project-card{border-radius:2px}.large-command input,.note-search,.note-composer>input,.note-composer>textarea,.setting-row,.data-counters>div,.install-path span{background:#050a0c;border-radius:1px}.large-command button,.filter,.note-actions button{border-radius:1px!important}.filter.active{background:rgba(241,161,58,.15)!important;border-color:rgba(241,161,58,.35)!important;color:var(--ember-bright)!important}.note-card{background:linear-gradient(180deg,#0d1618,#070d0f);border-radius:2px!important}.project-card{background:linear-gradient(180deg,#0d1618,#070d0f);border-radius:2px!important}.project-graphic{border-radius:1px}.settings-icon{border:1px solid var(--line);border-radius:1px}
+
+/* Radar scope */
+.radar-backdrop{background:rgba(1,4,5,.9)}.radar-dialog{background:linear-gradient(180deg,#0b1416,#050a0b);border-color:rgba(84,200,198,.35);border-radius:2px;box-shadow:0 30px 120px rgba(0,0,0,.78),inset 0 0 0 4px rgba(0,0,0,.3)}.radar-dialog:before{background:repeating-linear-gradient(90deg,var(--cyan) 0 12px,transparent 12px 20px);content:"";height:2px;left:0;position:absolute;right:0;top:0}.radar-close,.radar-heading-actions button,.radar-timeline button,.radar-zoom-controls button{border-radius:1px}.radar-map-shell{border-color:rgba(84,200,198,.28);border-radius:1px}.radar-map{background-color:#061012;background-image:linear-gradient(rgba(84,200,198,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(84,200,198,.05) 1px,transparent 1px);background-size:32px 32px}.radar-base-layer{filter:grayscale(1) brightness(.42) contrast(1.45) sepia(.12) hue-rotate(118deg)}.radar-center-marker{border-color:var(--ember);border-radius:50%}.radar-center-marker:before,.radar-center-marker:after{background:var(--ember)}.radar-center-marker i{background:var(--ember)}.radar-timeline input{accent-color:var(--cyan)}
+.app-footer{border-top-color:var(--line);font-size:10px}.app-footer span{color:#85938c}.app-footer b{color:var(--ember)}
+.action-toast{background:#0c1517;border-color:rgba(241,161,58,.3);border-radius:1px}
+
+@media(max-width:1280px){
+  .today-layout{grid-template-columns:minmax(0,1.3fr) minmax(310px,.8fr)}
+}
+@media(max-width:1100px){
+  .app-frame{max-width:940px}.app-header{height:78px}
+  .view-switcher{background:rgba(5,10,11,.98);border:1px solid rgba(177,207,196,.28);border-radius:2px;bottom:max(12px,env(safe-area-inset-bottom));box-shadow:0 18px 70px rgba(0,0,0,.68);height:76px;padding:5px;top:auto}
+  .view-switcher:before{display:none}.switch{border-radius:1px;font-size:11px;letter-spacing:.015em;min-height:64px;padding:5px 3px}.switch:after{height:3px;left:12%;top:auto;width:76%}.switch.active{background:rgba(241,161,58,.12);border-color:rgba(241,161,58,.24)}
+  .today-layout{grid-template-areas:"mission" "progress" "weather" "tasks" "scratch" "projects" "links" "privacy";grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:760px){
+  body{background-size:28px 28px,28px 28px,auto,auto}.app-frame{padding:0 14px}.app-header{background:#040809;height:calc(68px + env(safe-area-inset-top))}.app-header:after{width:110px}.app-header .brand-symbol{height:40px;width:37px}.mobile-lock-control{display:block;font-size:11px;min-height:40px;padding:0 13px}
+  .app-frame>main{padding-top:28px}.briefing-head{margin-bottom:18px}.briefing-head h1{font-size:clamp(42px,11.5vw,56px)}.briefing-copy{font-size:12px;line-height:1.55}.micro-label,.status-code{font-size:11.5px;letter-spacing:.1em}
+  .ops-strip{grid-template-columns:1fr 1fr;margin-bottom:14px}.ops-strip span{min-height:35px}.ops-strip span:nth-child(2){border-right:0}.ops-strip span:nth-child(n+3){border-top:1px solid var(--line)}
+  .mission-card{min-height:0;padding:24px 20px 20px}.mission-content{padding:34px 0 28px}.mission-message h2{font-size:28px}.mission-message p{font-size:15px}.command-input{padding:8px}.command-input button{min-height:51px}
+  .progress-module,.scratch-module,.link-module,.weather-deck,.task-deck,.project-deck{padding:22px 20px}.panel-heading h2{font-size:27px}.weather-meta>span{font-size:10px}.forecast-period strong{font-size:14px}.forecast-period small{font-size:10px}.weather-footer>span{font-size:10px}
+  .page-title-row h2{font-size:40px}.page-title-row>div>p:last-child{font-size:16px}.task-entry-card,.full-task-panel,.settings-card{padding:22px 20px}.note-card,.project-card{padding:21px}
+  .radar-dialog{border-radius:2px 2px 0 0}.radar-heading h2{font-size:38px}
+  .app-footer{font-size:9px}.action-toast{border-radius:1px}
+}
+@media(max-width:520px){
+  .access-gate{padding:max(16px,env(safe-area-inset-top)) 14px max(18px,env(safe-area-inset-bottom))}.gate-shell{display:block}.gate-welcome{border-left:0;min-height:0;padding:0}.gate-welcome:before,.gate-welcome:after{display:none}.gate-brand{margin-bottom:20px}.gate-classification{font-size:9px;margin:0 0 24px;padding:8px 0}.gate-briefing{padding:0}.gate-briefing .micro-label{font-size:10.5px}.gate-briefing h1{font-size:clamp(45px,13vw,56px)}.gate-tagline{font-size:13px;margin:16px 0 24px}.gate-panel{border-radius:2px;padding:24px 19px}.gate-panel h2{font-size:32px}.gate-panel-top,.gate-rule,.gate-panel>.micro-label{display:none}.gate-copy{font-size:14px}.gate-assurances{font-size:9px}
+  .view-switcher{border-radius:2px;height:72px;width:calc(100% - 18px)}.switch{font-size:10px;min-height:60px}.switch span{font-size:9px}
+  .mission-content{display:block}.mission-date{border-bottom:1px solid rgba(241,161,58,.24);border-right:0;padding-bottom:20px}.mission-message{padding-top:21px}.mission-number{font-size:61px}.weather-current h2{gap:5px}.weather-actions{grid-template-columns:1.25fr 1fr 1fr}.weather-actions button,.weather-actions a{font-size:9.5px}.progress-copy strong{font-size:18px}.launch-grid{grid-template-columns:1fr}.ops-strip{font-size:9px}
+}
+@media(max-width:390px){
+  .ops-strip span{padding:0 9px}.briefing-head h1{font-size:41px}.micro-label,.status-code{font-size:10.5px}.weather-actions a{display:none}.weather-actions{grid-template-columns:1.2fr 1fr}.gate-classification span:last-child{display:none}.gate-classification{justify-content:flex-start}
+}
+@media(prefers-reduced-motion:reduce){body:after{display:none}}

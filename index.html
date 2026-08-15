@@ -4,20 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.open-meteo.com https://api.rainviewer.com; img-src 'self' data: https://tile.openstreetmap.org https://tilecache.rainviewer.com; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
-    <meta name="theme-color" content="#080a0c" />
+    <meta name="theme-color" content="#05090a" />
     <meta name="color-scheme" content="dark" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Alex HQ" />
-    <meta name="description" content="Alex's private-on-device everyday command center." />
-    <title>Alex HQ</title>
+    <meta name="description" content="Alex HQ — a local-first personal field terminal for daily operations, weather, notes, and projects." />
+    <title>Alex HQ // Field Terminal</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="./icon-180.png" sizes="180x180" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css?v=16" />
-    <script src="./app.js?v=11" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=18" />
+    <script src="./app.js?v=13" defer></script>
   </head>
   <body class="locked">
     <section class="access-gate" id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title" aria-describedby="gate-description">
@@ -25,24 +25,25 @@
         <div class="gate-welcome">
           <div class="gate-brand" aria-hidden="true">
             <span class="brand-symbol"><i></i><b>A</b></span>
-            <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL DAILY OS</small></span>
+            <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>MOBILE COMMAND TERMINAL</small></span>
           </div>
+          <div class="gate-classification" aria-hidden="true"><span>TERMINAL // ALEX-01</span><span>ACCESS // PERSONAL</span></div>
           <div class="gate-briefing">
-            <p class="micro-label">PRIVATE DASHBOARD <b>/</b> PALM COAST</p>
+            <p class="micro-label">LOCAL COMMAND NODE <b>//</b> PALM COAST, FL</p>
             <p class="gate-date" id="gate-date">LOADING TODAY…</p>
             <p class="gate-time"><strong id="gate-clock">--:--</strong><small id="gate-period">--</small></p>
             <h1 id="access-title">Welcome back,<br /><span>Alex.</span></h1>
-            <p class="gate-tagline">Your day, on your terms.</p>
+            <p class="gate-tagline">Personal operations. Local control.</p>
           </div>
-          <div class="gate-local-status"><i></i><span><strong>LOCAL-FIRST</strong><small>YOUR DATA STAYS ON THIS DEVICE</small></span></div>
+          <div class="gate-local-status"><i></i><span><strong>LOCAL NODE READY</strong><small>DATA CHANNEL // THIS DEVICE ONLY</small></span></div>
         </div>
 
         <div class="gate-panel">
-          <div class="gate-panel-top"><span>01</span><b>PRIVATE ACCESS</b></div>
+          <div class="gate-panel-top"><span>AUTH-01</span><b>AUTHORIZED USER TERMINAL</b></div>
           <div class="gate-rule"><span></span><i></i></div>
-          <p class="micro-label">WELCOME TO YOUR HQ</p>
-          <h2>Open your private<br />workspace.</h2>
-          <p class="gate-copy" id="gate-description">Your password blocks casual access. Tasks and notes stay inside this browser.</p>
+          <p class="micro-label">LOCAL ACCESS CONTROL</p>
+          <h2>Authenticate<br />terminal.</h2>
+          <p class="gate-copy" id="gate-description">Enter your access code to open Alex HQ. Operational data remains stored in this browser.</p>
           <form class="access-form" id="access-form">
             <label for="access-password">PASSWORD</label>
             <div class="gate-password-field">
@@ -54,11 +55,11 @@
               <p class="gate-error" id="access-error" role="alert" aria-live="polite"></p>
               <p class="caps-lock-warning" id="caps-lock-warning" hidden>CAPS LOCK IS ON</p>
             </div>
-            <button class="gate-submit" type="submit"><span>OPEN WORKSPACE</span><b>→</b></button>
+            <button class="gate-submit" type="submit"><span>AUTHENTICATE</span><b>→</b></button>
           </form>
           <div class="gate-assurances">
-            <span><i></i> SESSION LOCKED</span>
-            <span>AUTO-LOCK · 30 MIN</span>
+            <span><i></i> TERMINAL LOCKED</span>
+            <span>AUTOLOCK // 30 MIN</span>
           </div>
         </div>
       </div>
@@ -72,42 +73,49 @@
       <header class="app-header">
         <button class="brand-lockup" data-view-target="today" aria-label="Open dashboard">
           <span class="brand-symbol"><i></i><b>A</b></span>
-          <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>PERSONAL DAILY OS</small></span>
+          <span class="brand-copy"><strong>ALEX<span>//</span>HQ</strong><small>MOBILE COMMAND TERMINAL</small></span>
         </button>
 
         <div class="header-status">
           <div class="clock-block"><strong id="live-clock">--:--</strong><small id="clock-period">--</small></div>
-          <span class="local-badge"><i></i>ON DEVICE</span>
+          <span class="local-badge"><i></i>NODE ONLINE</span>
           <button class="lock-control" id="lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
         </div>
         <button class="mobile-lock-control" id="mobile-lock-control" type="button" aria-label="Lock Alex HQ">LOCK</button>
       </header>
 
       <nav class="view-switcher" aria-label="Main navigation">
-        <button class="switch active" data-view-target="today" aria-current="page"><span>01</span>Today</button>
-        <button class="switch" data-view-target="tasks"><span>02</span>Tasks</button>
-        <button class="switch" data-view-target="notes"><span>03</span>Notes</button>
-        <button class="switch" data-view-target="projects"><span>04</span>Projects</button>
-        <button class="switch" data-view-target="settings"><span>05</span>Settings</button>
-        <div class="nav-status"><i></i><span><strong>Private workspace</strong><small>Stored on this device</small></span></div>
+        <button class="switch active" data-view-target="today" aria-current="page"><span>01</span>Overview</button>
+        <button class="switch" data-view-target="tasks"><span>02</span>Tasking</button>
+        <button class="switch" data-view-target="notes"><span>03</span>Field log</button>
+        <button class="switch" data-view-target="projects"><span>04</span>Operations</button>
+        <button class="switch" data-view-target="settings"><span>05</span>System</button>
+        <div class="nav-status"><i></i><span><strong>LOCAL NODE ACTIVE</strong><small>STORAGE // THIS DEVICE</small></span></div>
       </nav>
 
       <main>
         <div class="briefing-head">
           <div>
-            <p class="micro-label"><span id="date-label"></span><b>/</b> PALM COAST</p>
+            <p class="micro-label"><span id="date-label"></span><b>//</b> PALM COAST OPS SECTOR</p>
             <h1 id="greeting">Good morning, Alex.</h1>
-            <p class="briefing-copy">Your day, organized around what matters.</p>
+            <p class="briefing-copy">Operational overview // personal command node</p>
           </div>
-          <button class="outline-action" id="header-note-button"><span>+</span> Quick note</button>
+          <button class="outline-action" id="header-note-button"><span>+</span> NEW FIELD NOTE</button>
+        </div>
+
+        <div class="ops-strip" aria-label="Terminal status">
+          <span><i class="status-green"></i>TERMINAL ACTIVE</span>
+          <span>NODE // ALEX-01</span>
+          <span>SECTOR // PALM COAST</span>
+          <span>DATA // LOCAL</span>
         </div>
 
         <section class="view active" id="view-today" aria-labelledby="greeting">
           <div class="today-layout">
             <article class="mission-card">
               <div class="mission-topline">
-                <span class="status-code">TODAY’S FOCUS</span>
-                <span class="signal"><i></i>READY</span>
+                <span class="status-code">PRIMARY OBJECTIVE</span>
+                <span class="signal"><i></i>STATUS // READY</span>
               </div>
               <div class="mission-content">
                 <div class="mission-date">
@@ -115,22 +123,22 @@
                   <p class="mission-month" id="month-label">---</p>
                 </div>
                 <div class="mission-message">
-                  <h2>Decide what wins today.</h2>
-                  <p>Choose the next move, finish it, then take the next one.</p>
+                  <h2>Set today’s objective.</h2>
+                  <p>Assign the next action and keep the operation moving.</p>
                 </div>
               </div>
               <form class="command-input" id="today-task-form">
                 <label class="sr-only" for="today-task-input">Add a task</label>
                 <span aria-hidden="true">+</span>
-                <input id="today-task-input" maxlength="240" placeholder="What needs your attention?" autocomplete="off" />
-                <button type="submit">ADD TASK</button>
+                <input id="today-task-input" maxlength="240" placeholder="Enter objective or task…" autocomplete="off" />
+                <button type="submit">ASSIGN TASK</button>
               </form>
             </article>
 
             <article class="progress-module deck-panel">
-              <div class="module-top"><p class="micro-label">DAILY PROGRESS</p><span id="progress-fraction">0 / 0</span></div>
+              <div class="module-top"><p class="micro-label">MISSION COMPLETION</p><span id="progress-fraction">0 / 0</span></div>
               <div class="progress-display">
-                <div class="progress-orbit" id="progress-orbit"><strong id="progress-percent">0%</strong><small>DONE</small></div>
+                <div class="progress-orbit" id="progress-orbit"><strong id="progress-percent">0%</strong><small>COMPLETE</small></div>
                 <div class="progress-copy"><strong id="remaining-count">No tasks queued</strong><p id="progress-message">Your runway is clear.</p></div>
               </div>
             </article>
@@ -140,7 +148,7 @@
                 <div class="weather-current">
                   <span class="weather-glyph" id="weather-glyph" aria-hidden="true">•</span>
                   <div>
-                    <p class="micro-label"><span id="weather-location-label">PALM COAST</span> · LIVE WEATHER</p>
+                    <p class="micro-label"><span id="weather-location-label">PALM COAST</span> // LOCAL CONDITIONS</p>
                     <h2 id="weather-title"><span id="weather-temp">--°</span><small id="weather-condition">Loading forecast…</small></h2>
                   </div>
                 </div>
@@ -166,14 +174,14 @@
 
             <article class="deck-panel task-deck">
               <div class="panel-heading">
-                <div><p class="micro-label">ACTIVE QUEUE</p><h2>Today’s lineup</h2></div>
-                <button class="arrow-link" data-view-target="tasks">VIEW ALL <span>↗</span></button>
+                <div><p class="micro-label">ACTIVE TASKING</p><h2>Assignment queue</h2></div>
+                <button class="arrow-link" data-view-target="tasks">OPEN TASKING <span>↗</span></button>
               </div>
               <div class="task-list compact-list" id="today-task-list"></div>
             </article>
 
             <article class="link-module deck-panel">
-              <div class="module-top"><p class="micro-label">QUICK LINKS</p><span>04 LINKS</span></div>
+              <div class="module-top"><p class="micro-label">EXTERNAL SYSTEMS</p><span>04 LINKS</span></div>
               <div class="launch-grid">
                 <a href="https://github.com/alexthezero" target="_blank" rel="noreferrer"><span>GH</span><strong>GitHub</strong><b>↗</b></a>
                 <a href="https://ironnestco.etsy.com" target="_blank" rel="noreferrer"><span>IN</span><strong>IronNest</strong><b>↗</b></a>
@@ -184,30 +192,30 @@
 
             <article class="deck-panel project-deck">
               <div class="panel-heading">
-                <div><p class="micro-label">CURRENT BUILDS</p><h2>Projects in motion</h2></div>
-                <button class="arrow-link" data-view-target="projects">VIEW ALL <span>↗</span></button>
+                <div><p class="micro-label">ACTIVE OPERATIONS</p><h2>Projects in motion</h2></div>
+                <button class="arrow-link" data-view-target="projects">OPEN OPS <span>↗</span></button>
               </div>
               <div class="project-ribbon" id="project-ribbon"></div>
             </article>
 
-            <div class="privacy-line"><i></i><span><strong>PRIVATE ON THIS DEVICE</strong>Your entries never leave this browser.</span></div>
+            <div class="privacy-line"><i></i><span><strong>LOCAL DATA CHANNEL</strong>Tasks, logs, and project data remain in this browser.</span></div>
           </div>
         </section>
 
         <section class="view" id="view-tasks" hidden aria-labelledby="tasks-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">TASK CONTROL</p><h2 id="tasks-title">Clear the queue.</h2><p>Capture it, finish it, move on.</p></div>
-              <div class="page-stat"><strong id="task-total-stat">0</strong><span>TOTAL TASKS</span></div>
+              <div><p class="micro-label">TASKING CONTROL</p><h2 id="tasks-title">Assignment queue.</h2><p>Capture, prioritize, complete, and clear each action.</p></div>
+              <div class="page-stat"><strong id="task-total-stat">0</strong><span>ASSIGNMENTS</span></div>
             </div>
 
             <div class="task-workspace">
               <article class="task-entry-card">
-                <p class="micro-label">NEW TASK</p>
+                <p class="micro-label">NEW ASSIGNMENT</p>
                 <form class="large-command" id="all-task-form">
                   <label class="sr-only" for="all-task-input">Add a task</label>
-                  <input id="all-task-input" maxlength="240" placeholder="What needs your attention?" autocomplete="off" />
-                  <button type="submit">ADD TO QUEUE <span>→</span></button>
+                  <input id="all-task-input" maxlength="240" placeholder="Enter assignment details…" autocomplete="off" />
+                  <button type="submit">ASSIGN TO QUEUE <span>→</span></button>
                 </form>
               </article>
 
@@ -229,8 +237,8 @@
         <section class="view" id="view-notes" hidden aria-labelledby="notes-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">THOUGHT VAULT</p><h2 id="notes-title">Keep the good stuff.</h2><p>Ideas, measurements, lists, and loose thoughts.</p></div>
-              <button class="solid-action" id="new-note-button">+ NEW NOTE</button>
+              <div><p class="micro-label">FIELD LOG</p><h2 id="notes-title">Operational notes.</h2><p>Ideas, measurements, lists, observations, and loose thoughts.</p></div>
+              <button class="solid-action" id="new-note-button">+ NEW LOG ENTRY</button>
             </div>
 
             <form class="note-composer" id="note-form" hidden>
@@ -241,7 +249,7 @@
               <textarea id="note-content" maxlength="10000" placeholder="Start writing…" rows="7"></textarea>
               <div class="composer-footer">
                 <fieldset class="tone-picker"><legend>COLOR</legend><button class="ember selected" type="button" data-note-color="ember" aria-label="Orange note"></button><button class="cyan" type="button" data-note-color="cyan" aria-label="Teal note"></button><button class="violet" type="button" data-note-color="violet" aria-label="Violet note"></button></fieldset>
-                <button class="solid-action" id="note-save-button" type="submit">SAVE TO VAULT</button>
+                <button class="solid-action" id="note-save-button" type="submit">SAVE LOG ENTRY</button>
               </div>
             </form>
 
@@ -251,7 +259,7 @@
             </div>
             <div class="notes-masonry" id="notes-grid"></div>
             <div class="empty-state" id="notes-empty">
-              <span>03</span><h3>The vault is empty.</h3><p>Save the thought now. You can organize it later.</p><button class="outline-action" id="first-note-button"><span>+</span> Create first note</button>
+              <span>LOG-00</span><h3>No field entries.</h3><p>Record the thought now. Organize it when the operation slows down.</p><button class="outline-action" id="first-note-button"><span>+</span> CREATE FIRST ENTRY</button>
             </div>
           </div>
         </section>
@@ -259,8 +267,8 @@
         <section class="view" id="view-projects" hidden aria-labelledby="projects-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">PROJECT BAY</p><h2 id="projects-title">Build what matters.</h2><p>Keep each progress slider honest as the work moves forward.</p></div>
-              <span class="project-count" id="project-count">03 ACTIVE</span>
+              <div><p class="micro-label">OPERATIONS BOARD</p><h2 id="projects-title">Active operations.</h2><p>Track each build, objective, and completion percentage.</p></div>
+              <span class="project-count" id="project-count">03 ACTIVE OPS</span>
             </div>
 
             <div class="project-showcase" id="project-showcase"></div>
@@ -270,8 +278,8 @@
         <section class="view" id="view-settings" hidden aria-labelledby="settings-title">
           <div class="page-shell">
             <div class="page-title-row">
-              <div><p class="micro-label">SYSTEM CONTROL</p><h2 id="settings-title">Keep HQ dependable.</h2><p>Privacy controls, local backups, storage health, and installation.</p></div>
-              <span class="project-count">LOCAL FIRST</span>
+              <div><p class="micro-label">TERMINAL CONTROL</p><h2 id="settings-title">System configuration.</h2><p>Access control, local backups, storage health, and field installation.</p></div>
+              <span class="project-count">LOCAL NODE</span>
             </div>
 
             <div class="settings-grid">
@@ -315,7 +323,7 @@
         </section>
       </main>
 
-      <footer class="app-footer"><span>ALEX//HQ</span><p id="save-status" role="status">ALL CHANGES SAVED LOCALLY</p><b>V3.0.0</b></footer>
+      <footer class="app-footer"><span>ALEX//HQ · FIELD TERMINAL</span><p id="save-status" role="status">LOCAL DATA CHANNEL NOMINAL</p><b>V5.0.0</b></footer>
 
       <section class="radar-modal" id="radar-modal" hidden>
         <div class="radar-backdrop" data-radar-close aria-hidden="true"></div>
@@ -323,9 +331,9 @@
           <button class="radar-close" id="radar-close" type="button" aria-label="Close weather radar">×</button>
           <div class="radar-heading">
             <div>
-              <p class="micro-label">LIVE PRECIPITATION / PAST 70 MINUTES</p>
-              <h2 id="radar-title">Radar around you.</h2>
-              <p class="radar-description" id="radar-description">Open a local view when you need it, without crowding your daily dashboard.</p>
+              <p class="micro-label">WEATHER SURVEILLANCE // PAST 70 MINUTES</p>
+              <h2 id="radar-title">Local radar scope.</h2>
+              <p class="radar-description" id="radar-description">Animated precipitation tracking centered on the selected operating location.</p>
             </div>
             <div class="radar-heading-actions">
               <span class="radar-location-label" id="radar-location-label"><i></i> PALM COAST FALLBACK</span>

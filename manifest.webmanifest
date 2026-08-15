@@ -1,15 +1,15 @@
 {
   "name": "Alex HQ",
   "short_name": "Alex HQ",
-  "description": "Alex's private-on-device everyday command center.",
+  "description": "Alex HQ — a local-first personal field terminal for daily operations, weather, notes, and projects.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#080a0c",
-  "theme_color": "#080a0c",
+  "background_color": "#05090a",
+  "theme_color": "#05090a",
   "categories": ["productivity", "utilities"],
   "icons": [
     {
@@ -33,14 +33,14 @@
   ],
   "shortcuts": [
     {
-      "name": "Open tasks",
-      "short_name": "Tasks",
+      "name": "Open tasking",
+      "short_name": "Tasking",
       "url": "./#tasks",
       "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Open notes",
-      "short_name": "Notes",
+      "name": "Open field log",
+      "short_name": "Field log",
       "url": "./#notes",
       "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
