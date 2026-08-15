@@ -25,8 +25,8 @@
   --lg: 3px;
   --md: 2px;
   --sans: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
-  --display: "DIN Condensed", "Avenir Next Condensed", "Arial Narrow", "Bahnschrift Condensed", "Roboto Condensed", "Segoe UI", sans-serif;
-  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --display: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
 html {
@@ -1424,9 +1424,9 @@ textarea::placeholder {
 }
 
 /* ======================================================================
-   V6.2 — DUTY TERMINAL TYPOGRAPHY
-   Condensed display faces mirror MDT/CAD hardware while monospaced entry
-   fields keep operational data visually distinct from readable body copy.
+   V6.3 — CAD WORKSTATION TYPOGRAPHY
+   A strict system-monospace display layer replaces poster-like condensed
+   lettering while body copy remains readable for daily use.
    ====================================================================== */
 
 .gate-briefing h1,
@@ -1445,7 +1445,6 @@ textarea::placeholder {
 .progress-copy strong,
 .task-copy strong {
   font-family: var(--display);
-  font-stretch: condensed;
   font-variant-numeric: tabular-nums;
   text-rendering: geometricPrecision;
 }
@@ -1453,8 +1452,9 @@ textarea::placeholder {
 .gate-briefing h1,
 .briefing-head h1 {
   font-weight: 700;
-  letter-spacing: 0.005em;
-  line-height: 0.94;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  text-transform: uppercase;
 }
 
 .gate-panel h2,
@@ -1463,7 +1463,8 @@ textarea::placeholder {
 .page-title-row h2,
 .radar-heading h2 {
   font-weight: 700;
-  letter-spacing: 0.012em;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
 }
 
 .latest-note-card h3,
@@ -1475,7 +1476,7 @@ textarea::placeholder {
 .progress-copy strong,
 .task-copy strong {
   font-weight: 700;
-  letter-spacing: 0.018em;
+  letter-spacing: 0.005em;
 }
 
 .gate-password-field input,
