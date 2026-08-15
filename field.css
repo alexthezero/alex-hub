@@ -25,6 +25,7 @@
   --lg: 3px;
   --md: 2px;
   --sans: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+  --display: "DIN Condensed", "Avenir Next Condensed", "Arial Narrow", "Bahnschrift Condensed", "Roboto Condensed", "Segoe UI", sans-serif;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
@@ -1420,6 +1421,80 @@ textarea::placeholder {
   body::after {
     display: none;
   }
+}
+
+/* ======================================================================
+   V6.2 — DUTY TERMINAL TYPOGRAPHY
+   Condensed display faces mirror MDT/CAD hardware while monospaced entry
+   fields keep operational data visually distinct from readable body copy.
+   ====================================================================== */
+
+.gate-briefing h1,
+.gate-panel h2,
+.briefing-head h1,
+.mission-message h2,
+.panel-heading h2,
+.page-title-row h2,
+.radar-heading h2,
+.latest-note-card h3,
+.note-card h3,
+.empty-state h3,
+.project-unit h3,
+.project-card h3,
+.settings-card h3,
+.progress-copy strong,
+.task-copy strong {
+  font-family: var(--display);
+  font-stretch: condensed;
+  font-variant-numeric: tabular-nums;
+  text-rendering: geometricPrecision;
+}
+
+.gate-briefing h1,
+.briefing-head h1 {
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  line-height: 0.94;
+}
+
+.gate-panel h2,
+.mission-message h2,
+.panel-heading h2,
+.page-title-row h2,
+.radar-heading h2 {
+  font-weight: 700;
+  letter-spacing: 0.012em;
+}
+
+.latest-note-card h3,
+.note-card h3,
+.empty-state h3,
+.project-unit h3,
+.project-card h3,
+.settings-card h3,
+.progress-copy strong,
+.task-copy strong {
+  font-weight: 700;
+  letter-spacing: 0.018em;
+}
+
+.gate-password-field input,
+.command-input input,
+.large-command input,
+.note-search input,
+.note-composer > input,
+.note-composer > textarea {
+  font-family: var(--mono);
+  letter-spacing: 0.005em;
+}
+
+.clock-block,
+.mission-number,
+.weather-current h2 > span,
+.page-stat strong,
+.data-counters strong,
+.project-control output {
+  font-variant-numeric: tabular-nums slashed-zero;
 }
 
 /* ======================================================================
