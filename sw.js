@@ -1,5 +1,5 @@
-const CACHE = "alex-hq-v29";
-const APP = ["./", "./index.html", "./styles.css?v=20", "./field.css?v=8", "./app.js?v=19", "./manifest.webmanifest", "./icon.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./assets/fonts/ChakraPetch-Regular.woff2", "./assets/fonts/ChakraPetch-SemiBold.woff2", "./assets/fonts/ChakraPetch-Bold.woff2", "./assets/fonts/IBMPlexMono-Regular.woff2", "./assets/fonts/IBMPlexMono-SemiBold.woff2"];
+const CACHE = "alex-hq-v30";
+const APP = ["./", "./index.html", "./styles.css?v=20", "./field.css?v=9", "./app.js?v=20", "./manifest.webmanifest", "./icon.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./assets/fonts/D-DIN-Regular.woff2", "./assets/fonts/D-DIN-Bold.woff2", "./assets/fonts/IBMPlexMono-Regular.woff2", "./assets/fonts/IBMPlexMono-SemiBold.woff2"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP)).then(() => self.skipWaiting()));

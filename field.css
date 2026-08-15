@@ -1,25 +1,17 @@
 @font-face {
   font-display: swap;
-  font-family: "Chakra Petch";
+  font-family: "D-DIN";
   font-style: normal;
   font-weight: 400;
-  src: url("./assets/fonts/ChakraPetch-Regular.woff2") format("woff2");
+  src: url("./assets/fonts/D-DIN-Regular.woff2") format("woff2");
 }
 
 @font-face {
   font-display: swap;
-  font-family: "Chakra Petch";
-  font-style: normal;
-  font-weight: 600;
-  src: url("./assets/fonts/ChakraPetch-SemiBold.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Chakra Petch";
+  font-family: "D-DIN";
   font-style: normal;
   font-weight: 700;
-  src: url("./assets/fonts/ChakraPetch-Bold.woff2") format("woff2");
+  src: url("./assets/fonts/D-DIN-Bold.woff2") format("woff2");
 }
 
 @font-face {
@@ -64,8 +56,8 @@
   --xl: 4px;
   --lg: 3px;
   --md: 2px;
-  --sans: "Chakra Petch", "Arial Narrow", "Segoe UI", sans-serif;
-  --display: "Chakra Petch", "Arial Narrow", "Segoe UI", sans-serif;
+  --sans: "D-DIN", "Arial Narrow", "Segoe UI", sans-serif;
+  --display: "D-DIN", "Arial Narrow", "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 }
 
@@ -1464,8 +1456,8 @@ textarea::placeholder {
 }
 
 /* ======================================================================
-   V6.5 — PUBLIC-SAFETY WORKSTATION TYPOGRAPHY
-   Chakra Petch supplies the squared technical silhouette for headings and
+   V6.6 — PUBLIC-SAFETY WORKSTATION TYPOGRAPHY
+   D-DIN supplies the restrained industrial structure for headings and
    interface copy. Plex Mono remains reserved for data and command surfaces.
    ====================================================================== */
 
@@ -1501,8 +1493,8 @@ textarea::placeholder {
 .panel-heading h2,
 .page-title-row h2,
 .radar-heading h2 {
-  font-weight: 600;
-  letter-spacing: -0.018em;
+  font-weight: 700;
+  letter-spacing: -0.012em;
   text-transform: none;
 }
 
@@ -1514,7 +1506,7 @@ textarea::placeholder {
 .settings-card h3,
 .progress-copy strong,
 .task-copy strong {
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0;
 }
 
@@ -1550,6 +1542,10 @@ textarea::placeholder {
 
   .app-frame {
     padding-inline: 12px;
+  }
+
+  .gate-briefing h1 {
+    font-size: clamp(42px, 11.5vw, 50px);
   }
 
   .app-header {
