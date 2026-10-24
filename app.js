@@ -7,7 +7,7 @@
   const WEATHER_KEY = "alexHub.weather.v4";
   const AUTH_KEY = "alexHQ.auth.v1";
   const LAST_BACKUP_KEY = "alexHQ.lastBackup.v1";
-  const PASSWORD_HASH = "16a0b62c9aeb7ec7da8e886b84d7dfa38f73e711e83d97a1ebc2ba358c834c50";
+  const PASSWORD_HASH = "7d06ff18ea3efba7f57a5f867d6bed6063985da3ea4721bee387994d4532462a";
   const IDLE_LOCK_MS = 30 * 60 * 1000;
   const VIEWS = ["today", "tasks", "notes", "projects", "settings"];
   const DEFAULT_LOCATION = Object.freeze({ latitude: 29.5845, longitude: -81.2079, label: "PALM COAST" });
