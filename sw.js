@@ -1,4 +1,4 @@
-const CACHE = "alex-hq-v30";
+const CACHE = "alex-hq-v31";
 const APP = ["./", "./index.html", "./styles.css?v=20", "./field.css?v=9", "./app.js?v=20", "./manifest.webmanifest", "./icon.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./assets/fonts/D-DIN-Regular.woff2", "./assets/fonts/D-DIN-Bold.woff2", "./assets/fonts/IBMPlexMono-Regular.woff2", "./assets/fonts/IBMPlexMono-SemiBold.woff2"];
 
 self.addEventListener("install", (event) => {
